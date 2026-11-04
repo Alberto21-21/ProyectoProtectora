@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('rol', ['admin', 'adoptante', 'personal', 'veterinario'])->default('adoptante'); // Valor por defecto 'adoptante'
             $table->rememberToken();
             $table->timestamps();
         });
