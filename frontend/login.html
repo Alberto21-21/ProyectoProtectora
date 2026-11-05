@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iniciar sesión - Patas y Bigotes</title>
+
+    <link rel="stylesheet" href="src/style.css">
+    <script type="module" src="/src/login.js"></script>
+</head>
+
+<body>
+
+    <!-- FORMULARIO DE INICIO DE SESIÓN -->
+    <main class="registro">
+
+        <section class="ventana-registro">
+
+            <h1>Iniciar sesión</h1>
+
+            <form id="formularioLogin">
+
+                <!-- EMAIL -->
+                <label for="emailLogin">Correo electrónico</label>
+                <input
+                    type="email"
+                    id="emailLogin"
+                    name="email"
+                    autocomplete="username"
+                    required
+                >
+
+                <!-- CONTRASEÑA -->
+                <label for="passwordLogin">Contraseña</label>
+                <input
+                    type="password"
+                    id="passwordLogin"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <!-- MENSAJES -->
+                <p id="mensajeLogin" role="status"></p>
+
+                <button type="submit" id="botonLogin">
+                    Entrar
+                </button>
+
+            </form>
+
+            <p>
+                ¿No tienes cuenta?
+                <a href="index.html">Regístrate</a>
+            </p>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
