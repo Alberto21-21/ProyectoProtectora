@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -15,6 +16,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
+            'fecha_nacimiento' => 'required|date|before_or_equal:today',
             'password' => 'required|string|min:8|confirmed'
         ], [
             'name.required' => 'El nombre es obligatorio.',
@@ -24,6 +26,9 @@ class AuthController extends Controller
             'email.email' => 'El email debe ser un correo válido.',
             'email.max' => 'El email no puede superar los 255 caracteres.',
             'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento debe ser una fecha anterior o igual a la fecha actual.',
             'password.required' => 'La contraseña es obligatoria.',
             'password.string' => 'La contraseña debe ser un texto.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
@@ -33,8 +38,9 @@ class AuthController extends Controller
         $usuario = new User();
         $usuario->name = $request->name;
         $usuario->email = $request->email;
-        $usuario->password = bcrypt($request->password);
-
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->password = Hash::make($request->password);
+        
         // El registro público siempre crea adoptantes.
         $usuario->rol = 'adoptante';
         $usuario->save();
@@ -46,6 +52,7 @@ class AuthController extends Controller
                 'id' => $usuario->id,
                 'name' => $usuario->name,
                 'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
                 'rol' => $usuario->rol
             ]
         ], 201);

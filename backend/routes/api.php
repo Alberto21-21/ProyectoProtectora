@@ -9,4 +9,3 @@ Route::get('/user', function (Request $request) {return $request->user();})->mid
 //Rutas para el registro, login y logout de usuarios:
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'cerrarSesion'])->middleware('auth:sanctum');
