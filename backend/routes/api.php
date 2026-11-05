@@ -4,8 +4,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-Route::get('/user', function (Request $request) {return $request->user();})->middleware('auth:sanctum');
+// CONSULTAR EL USUARIO AUTENTICADO
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 
-//Rutas para el registro, login y logout de usuarios:
+// REGISTRAR USUARIOS
 Route::post('/register', [AuthController::class, 'register']);
+
+// INICIAR SESION
 Route::post('/login', [AuthController::class, 'login']);
