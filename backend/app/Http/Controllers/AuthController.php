@@ -40,10 +40,13 @@ class AuthController extends Controller
         $usuario->email = $request->email;
         $usuario->fecha_nacimiento = $request->fecha_nacimiento;
         $usuario->password = Hash::make($request->password);
-        
+
         //REGISTRAR USUARIO - El registro público siempre crea adoptantes.
         $usuario->rol = 'adoptante';
         $usuario->save();
+
+        // CREAR TOKEN CON LOS PERMISOS DEL ADOPTANTE
+        $tokenResultado = $usuario->createToken('LaravelSanctumAuth',  [$usuario->rol]);
 
         return response()->json([
             'success' => true,
@@ -53,7 +56,8 @@ class AuthController extends Controller
                 'name' => $usuario->name,
                 'email' => $usuario->email,
                 'fecha_nacimiento' => $usuario->fecha_nacimiento,
-                'rol' => $usuario->rol
+                'rol' => $usuario->rol,
+                'token' => $tokenResultado->plainTextToken
             ]
         ], 201);
     }
