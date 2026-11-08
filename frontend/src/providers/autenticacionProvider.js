@@ -61,4 +61,27 @@ export async function obtenerUsuario(token) {
     }
 
     return await respuesta.json();
+
+    
+}
+
+// CERRAR SESION
+export async function cerrarSesion(token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/logout",
+        {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    if (!respuesta.ok) {
+        throw new Error(`Error HTTP: ${respuesta.status}`);
+    }
+
+    return await respuesta.json();
 }

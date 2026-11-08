@@ -14,3 +14,6 @@ Route::post('/register', [AuthController::class, 'register']);
 
 // INICIAR SESION
 Route::post('/login', [AuthController::class, 'login']);
+
+// CERRAR SESION
+Route::post('/logout', [AuthController::class, 'cerrarSesion'])->middleware('auth:sanctum');
