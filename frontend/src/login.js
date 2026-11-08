@@ -1,12 +1,14 @@
 import {
     iniciarSesion,
-    obtenerUsuario
+    obtenerUsuario,
+    cerrarSesion
 } from "./providers/autenticacionProvider.js";
 
 // OBTENER ELEMENTOS DEL FORMULARIO
 const formulario = document.querySelector("#formularioLogin");
 const estado = document.querySelector("#mensajeLogin");
 const boton = document.querySelector("#botonLogin");
+const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 
 // INICIAR SESIÓN
 async function enviarLogin(evento) {
@@ -30,6 +32,8 @@ async function enviarLogin(evento) {
     const token = sessionStorage.getItem("token");
     const usuario = await obtenerUsuario(token);
 
+    botonCerrarSesion.hidden = false;
+    
     estado.textContent =
         "Sesión iniciada correctamente. Bienvenido, " + usuario.name + ".";
 
@@ -46,3 +50,39 @@ async function enviarLogin(evento) {
 
 // ESCUCHAR EL ENVÍO DEL FORMULARIO
 formulario.addEventListener("submit", enviarLogin);
+
+// CERRAR SESION
+async function salirDeLaSesion() {
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        estado.textContent = "No hay ninguna sesión activa.";
+        botonCerrarSesion.hidden = true;
+        return;
+    }
+
+    estado.textContent = "Cerrando sesión...";
+    botonCerrarSesion.disabled = true;
+
+    try {
+        const resultado = await cerrarSesion(token);
+
+        // BORRAR EL TOKEN SOLO CUANDO LARAVEL CONFIRME EL CIERRE
+        sessionStorage.removeItem("token");
+
+        estado.textContent = resultado.message;
+        botonCerrarSesion.hidden = true;
+        formulario.reset();
+
+    } catch (error) {
+        estado.textContent =
+            `No se pudo cerrar la sesión: ${error.message}`;
+
+    } finally {
+        botonCerrarSesion.disabled = false;
+    }
+}
+
+// ESCUCHAR EL BOTON DE CIERRE
+botonCerrarSesion.addEventListener("click", salirDeLaSesion);

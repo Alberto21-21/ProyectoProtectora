@@ -1,5 +1,6 @@
 import { registrarUsuario } from "./providers/autenticacionProvider.js";
 
+
 // OBTENER ELEMENTOS DEL FORMULARIO
 const formulario = document.querySelector("#formularioRegistro");
 const estado = document.querySelector("#mensajeRegistro");

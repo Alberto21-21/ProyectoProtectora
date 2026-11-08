@@ -6,8 +6,7 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #FFAC16;
+    font-family: "Montserrat", Arial, sans-serif;    background-color: #FFAC16;
     color: #300E28;
 }
 
@@ -142,6 +141,36 @@ body {
 .ventana-registro a:focus-visible {
     outline: 2px solid #300E28;
     outline-offset: 3px;
+}
+
+/* BOTON CERRAR SESION */
+
+#botonCerrarSesion {
+    width: 100%;
+    margin-top: 15px;
+    padding: 13px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonCerrarSesion:hover {
+    background-color: #8B5C4A;
+}
+
+#botonCerrarSesion:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
+}
+
+#botonCerrarSesion:disabled {
+    opacity: 0.6;
+    cursor: wait;
 }
 
 /* ADAPTACIÓN A MÓVILES */
