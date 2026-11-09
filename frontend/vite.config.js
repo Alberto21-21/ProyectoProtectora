@@ -4,7 +4,8 @@ export default defineConfig({
     build: {
         rollupOptions: {
             input: {
-                registro: "index.html",
+                inicio: "index.html",
+                registro: "registro.html",
                 login: "login.html",
                 perfil: "perfil.html"
             }

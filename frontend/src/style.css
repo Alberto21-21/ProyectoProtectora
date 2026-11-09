@@ -1,3 +1,165 @@
+/* PAGINA DE INICIO */
+
+.pagina-inicio {
+    min-height: 100vh;
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+/* CABECERA */
+
+.pagina-inicio .cabecera {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+/* MARCA */
+
+.pagina-inicio .marca {
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+/* NAVEGACION */
+
+.pagina-inicio .cabecera nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.pagina-inicio .cabecera nav a {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagina-inicio .cabecera nav a:hover,
+.pagina-inicio .cabecera nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+/* PORTADA */
+
+.pagina-inicio .portada {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 70px 40px 100px;
+}
+
+/* TITULAR */
+
+.pagina-inicio .texto-portada h1 {
+    margin: 0 0 25px;
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 0.95;
+}
+
+/* TEXTO DE PRESENTACION */
+
+.pagina-inicio .texto-portada p {
+    max-width: 370px;
+    margin: 0 0 30px;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* BOTON COMENZAR */
+
+.pagina-inicio .boton-portada {
+    display: inline-block;
+    padding: 14px 35px;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagina-inicio .boton-portada:hover {
+    background-color: #8B5C4A;
+}
+
+/* ADAPTACION A MOVILES */
+
+@media (max-width: 600px) {
+
+    .pagina-inicio .cabecera {
+        padding: 25px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .pagina-inicio .cabecera nav {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .pagina-inicio .portada {
+        padding: 45px 20px 70px;
+    }
+
+    .pagina-inicio .texto-portada h1 {
+        font-size: 56px;
+    }
+
+}
+
+/* DISTRIBUCION DEL TEXTO Y LA IMAGEN */
+
+.pagina-inicio .portada {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.pagina-inicio .texto-portada,
+.pagina-inicio .imagen-portada {
+    flex: 1;
+    min-width: 0;
+}
+
+.pagina-inicio .imagen-portada img {
+    display: block;
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* IMAGEN EN MOVILES */
+
+@media (max-width: 700px) {
+
+    .pagina-inicio .portada {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pagina-inicio .imagen-portada img {
+        max-width: 300px;
+    }
+
+}
+
+/*----------------------------------------------------------------*/
+
 /* ESTILOS GENERALES */
 
 * {

@@ -1,96 +1,69 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inicio - Patas y Bigotes</title>
+
     <!-- TIPOGRAFIA CORPORATIVA -->
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
         rel="stylesheet"
     >
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
     <link rel="stylesheet" href="src/style.css">
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+</head>
 
-    <!-- FORMULARIO DE REGISTRO -->
-  <main class="registro">
+<body class="pagina-inicio">
 
-      <section class="ventana-registro">
+    <!-- CABECERA -->
+    <header class="cabecera">
 
-          <h1>Regístrate</h1>
-          
-          <form id="formularioRegistro">
+        <a href="index.html" class="marca">
+            Patas y Bigotes
+        </a>
 
-              <!-- NOMBRE -->
-              <label for="nombreRegistro">Nombre</label>
-              <input
-                  type="text"
-                  id="nombreRegistro"
-                  name="name"
-                  autocomplete="name"
-                  maxlength="255"
-                  required
-              >
+        <nav aria-label="Navegación principal">
+            <a href="index.html" aria-current="page">Inicio</a>
+            <a href="login.html">Iniciar sesión</a>
+            <a href="registro.html">Registrarse</a>
+        </nav>
 
-              <!-- EMAIL -->
-              <label for="emailRegistro">Correo electrónico</label>
-              <input
-                  type="email"
-                  id="emailRegistro"
-                  name="email"
-                  autocomplete="email"
-                  maxlength="255"
-                  required
-              >
+    </header>
 
-              <!-- FECHA DE NACIMIENTO -->
-              <label for="fechaNacimientoRegistro">Fecha de nacimiento</label>
-              <input
-                  type="date"
-                  id="fechaNacimientoRegistro"
-                  name="fecha_nacimiento"
-                  autocomplete="bday"
-                  required
-              >
+    <!-- PORTADA -->
+    <main>
 
-              <!-- CONTRASEÑA -->
-              <label for="passwordRegistro">Contraseña</label>
-              <input
-                  type="password"
-                  id="passwordRegistro"
-                  name="password"
-                  autocomplete="new-password"
-                  minlength="8"
-                  required
-              >
+        <section class="portada">
 
-              <!-- CONFIRMAR CONTRASEÑA -->
-              <label for="confirmarPassword">Repite la contraseña</label>
-              <input
-                  type="password"
-                  id="confirmarPassword"
-                  name="password_confirmation"
-                  autocomplete="new-password"
-                  minlength="8"
-                  required
-              >
+            <div class="texto-portada">
 
-              <!-- MENSAJES DEL REGISTRO -->
-              <p id="mensajeRegistro" role="status"></p>
+                <h1>ADOPTA<br>CON<br>AMOR</h1>
 
-              <button type="submit" id="botonRegistro">
-                  Crear cuenta
-              </button>
+                <p>
+                    Cada animal merece una segunda oportunidad.
+                    Da el primer paso para encontrar a tu nuevo compañero.
+                </p>
 
-          </form>
+                <a href="registro.html" class="boton-portada">
+                    Comenzar
+                </a>
 
-      </section>
+            </div>
 
-  </main>
+            <div class="imagen-portada">
+                <img
+                    src="/frontend/src/img/perro_portada.jpg"
+                    alt="Perro esperando encontrar una familia"
+                >
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
 
 </html>
