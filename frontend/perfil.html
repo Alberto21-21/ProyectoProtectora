@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mi perfil - Patas y Bigotes</title>
+
+    <!-- TIPOGRAFIA CORPORATIVA -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+
+    <!-- PERFIL DEL USUARIO -->
+    <main class="registro">
+
+        <section class="ventana-registro">
+
+            <h1>Mi perfil</h1>
+
+            <!-- ESTADO DE LA CONSULTA -->
+            <p id="mensajePerfil" role="status"></p>
+
+            <!-- DATOS DEL USUARIO -->
+            <div id="datosPerfil" hidden>
+
+                <h2>Nombre</h2>
+                <p id="nombrePerfil"></p>
+
+                <h2>Correo electrónico</h2>
+                <p id="emailPerfil"></p>
+
+                <h2>Fecha de nacimiento</h2>
+                <p id="fechaNacimientoPerfil"></p>
+
+                <h2>Rol</h2>
+                <p id="rolPerfil"></p>
+
+            </div>
+
+            <p>
+                <a href="login.html">Volver al acceso</a>
+            </p>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="/src/perfil.js"></script>
+
+</body>
+
+</html>
