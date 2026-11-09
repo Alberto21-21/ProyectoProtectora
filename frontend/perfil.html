@@ -66,9 +66,15 @@
             <!-- RESUMEN LATERAL -->
             <aside class="resumen-perfil">
 
-                <div class="avatar-perfil" aria-hidden="true">
+                <div class="avatar-perfil" id="avatarPredeterminado" aria-hidden="true">
                     🐾
                 </div>
+
+                <img
+                    id="fotografiaPerfil"
+                    alt="Fotografía de mi perfil"
+                    hidden
+                >
 
                 <h2>Tu cuenta</h2>
 
@@ -76,9 +82,28 @@
                     Un espacio para consultar tu información personal.
                 </span>
 
-                <a href="index.html" class="volver-inicio">
-                    Volver al inicio
-                </a>
+                <!-- CAMBIAR LA FOTOGRAFÍA DEL PERFIL -->
+                <form id="formularioFotografia">
+
+                    <label for="fotografiaEditar" class="seleccionar-fotografia">
+                        Seleccionar fotografía
+                    </label>
+
+                    <input
+                        type="file"
+                        id="fotografiaEditar"
+                        name="fotografia"
+                        accept="image/jpeg,image/png,image/webp"
+                        required
+                    >
+
+                    <p id="mensajeFotografia" role="status"></p>
+
+                    <button type="submit" id="botonGuardarFotografia">
+                        Guardar fotografía
+                    </button>
+
+                </form>
 
             </aside>
 
@@ -111,6 +136,47 @@
 
                 </dl>
 
+                <!-- FORMULARIO PARA EDITAR EL PERFIL -->
+                <form id="formularioEditarPerfil">
+
+                    <h2>Editar mis datos</h2>
+
+                    <label for="nombreEditar">Nombre</label>
+                    <input
+                        type="text"
+                        id="nombreEditar"
+                        name="name"
+                        autocomplete="name"
+                        maxlength="255"
+                        required
+                    >
+
+                    <label for="emailEditar">Correo electrónico</label>
+                    <input
+                        type="email"
+                        id="emailEditar"
+                        name="email"
+                        autocomplete="email"
+                        maxlength="255"
+                        required
+                    >
+
+                    <label for="fechaNacimientoEditar">Fecha de nacimiento</label>
+                    <input
+                        type="date"
+                        id="fechaNacimientoEditar"
+                        name="fecha_nacimiento"
+                        autocomplete="bday"
+                        required
+                    >
+
+                    <p id="mensajeEditarPerfil" role="status"></p>
+
+                    <button type="submit" id="botonGuardarPerfil">
+                        Guardar cambios
+                    </button>
+
+                </form>
             </section>
 
         </div>
