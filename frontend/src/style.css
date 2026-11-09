@@ -6,28 +6,188 @@
 
 body {
     margin: 0;
-    font-family: "Montserrat", Arial, sans-serif;    background-color: #FFAC16;
+    font-family: "Montserrat", Arial, sans-serif;
+    background-color: #FFAC16;
     color: #300E28;
 }
 
-/* CONTENEDOR PRINCIPAL */
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+html:has(dialog[open]) {
+    overflow: hidden;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
+}
+
+
+/* CABECERA DE LA PÁGINA DE INICIO */
+
+.pagina-inicio {
+    min-height: 100vh;
+    background-color: #FFAC16;
+}
+
+.pagina-inicio .cabecera {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.marca {
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.pagina-inicio .cabecera nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.pagina-inicio .cabecera nav a,
+.pagina-inicio .cabecera nav button {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pagina-inicio .cabecera nav a:hover,
+.pagina-inicio .cabecera nav button:hover,
+.pagina-inicio .cabecera nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+.pagina-inicio .cabecera #botonCerrarSesion {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#mensajeSesion {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#mensajeSesion:empty {
+    display: none;
+}
+
+
+/* PORTADA DE INICIO */
+
+.portada {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 70px 40px 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+.texto-portada,
+.imagen-portada {
+    flex: 1;
+    min-width: 0;
+}
+
+.texto-portada h1 {
+    margin: 0 0 25px;
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 0.95;
+}
+
+.texto-portada p {
+    max-width: 370px;
+    margin: 0 0 30px;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.imagen-portada img {
+    display: block;
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    margin: 0 auto;
+}
+
+.boton-portada {
+    display: inline-block;
+    padding: 14px 35px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.boton-portada:hover {
+    background-color: #8B5C4A;
+}
+
+
+/* PÁGINAS INDEPENDIENTES DE REGISTRO E INICIO DE SESIÓN */
 
 .registro {
     min-height: 100vh;
+    padding: 30px 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px 20px;
 }
-
-/* VENTANA DEL FORMULARIO */
 
 .ventana-registro {
     width: 100%;
     max-width: 420px;
     padding: 35px;
-    background-color: #FFFFFF;
     border-radius: 20px;
+    background-color: #FFFFFF;
 }
 
 .ventana-registro h1 {
@@ -44,28 +204,86 @@ body {
     text-align: center;
 }
 
+
+/* VENTANAS MODALES */
+
+.modal-acceso {
+    position: relative;
+    width: calc(100% - 40px);
+    max-width: 420px;
+    max-height: calc(100vh - 40px);
+    max-height: calc(100dvh - 40px);
+    margin: auto;
+    padding: 45px 30px 30px;
+    overflow-y: auto;
+    border: none;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-family: "Montserrat", Arial, sans-serif;
+}
+
+.modal-acceso::backdrop {
+    background-color: rgba(48, 14, 40, 0.6);
+}
+
+.modal-acceso h2 {
+    margin: 0 0 25px;
+    font-size: 26px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.modal-acceso > p {
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.cerrar-modal {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.cerrar-modal:hover {
+    color: #8B5C4A;
+}
+
+
 /* FORMULARIOS */
 
 #formularioRegistro,
-#formularioLogin {
+#formularioLogin,
+#formularioEditarPerfil,
+#formularioFotografia {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* ETIQUETAS */
-
 #formularioRegistro label,
-#formularioLogin label {
+#formularioLogin label,
+#formularioEditarPerfil label,
+#formularioFotografia label {
     margin-top: 8px;
     font-size: 13px;
     font-weight: 600;
 }
 
-/* CAMPOS */
-
 #formularioRegistro input,
-#formularioLogin input {
+#formularioLogin input,
+#formularioEditarPerfil input,
+#formularioFotografia input {
     width: 100%;
     min-width: 0;
     padding: 12px;
@@ -73,142 +291,430 @@ body {
     border-radius: 8px;
     background-color: #FFFFFF;
     color: #300E28;
-    font: inherit;
+    font-family: inherit;
     font-size: 14px;
 }
 
 #formularioRegistro input:focus,
-#formularioLogin input:focus {
+#formularioLogin input:focus,
+#formularioEditarPerfil input:focus,
+#formularioFotografia input:focus {
     outline: 2px solid #300E28;
     outline-offset: 2px;
 }
 
-/* MENSAJES */
+
+/* MENSAJES DE LOS FORMULARIOS */
 
 #mensajeRegistro,
-#mensajeLogin {
+#mensajeLogin,
+#mensajePerfil,
+#mensajeEditarPerfil,
+#mensajeFotografia {
     margin: 5px 0;
     font-size: 13px;
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
-/* BOTONES */
+#mensajeRegistro:empty,
+#mensajeLogin:empty,
+#mensajePerfil:empty,
+#mensajeEditarPerfil:empty,
+#mensajeFotografia:empty {
+    display: none;
+}
+
+
+/* BOTONES DE LOS FORMULARIOS */
 
 #botonRegistro,
-#botonLogin {
+#botonLogin,
+#botonGuardarPerfil,
+#botonGuardarFotografia,
+#botonCerrarSesion {
     padding: 13px;
-    background-color: #300E28;
-    color: #FFFFFF;
     border: none;
     border-radius: 25px;
-    font: inherit;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
 }
 
 #botonRegistro:hover,
-#botonLogin:hover {
+#botonLogin:hover,
+#botonGuardarPerfil:hover,
+#botonGuardarFotografia:hover,
+#botonCerrarSesion:hover {
     background-color: #8B5C4A;
 }
 
-#botonRegistro:focus-visible,
-#botonLogin:focus-visible {
-    outline: 2px solid #300E28;
-    outline-offset: 3px;
-}
-
 #botonRegistro:disabled,
-#botonLogin:disabled {
+#botonLogin:disabled,
+#botonGuardarPerfil:disabled,
+#botonGuardarFotografia:disabled,
+#botonCerrarSesion:disabled {
     opacity: 0.6;
     cursor: wait;
 }
 
-/* ENLACES ENTRE FORMULARIOS */
+#botonCerrarSesion {
+    width: 100%;
+    margin-top: 15px;
+}
 
-.ventana-registro a {
+/* MANTENER EL BOTÓN DEL HEADER COMO ENLACE */
+
+.pagina-inicio .cabecera #botonCerrarSesion:hover {
+    background-color: transparent;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+
+/* ENLACES PARA CAMBIAR ENTRE LOGIN Y REGISTRO */
+
+.ventana-registro a,
+.modal-acceso a {
     color: #300E28;
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
 }
 
-.ventana-registro a:hover {
+.ventana-registro a:hover,
+.modal-acceso a:hover {
     color: #8B5C4A;
 }
 
-.ventana-registro a:focus-visible {
-    outline: 2px solid #300E28;
-    outline-offset: 3px;
-}
-
-/* BOTON CERRAR SESION */
-
-#botonCerrarSesion {
-    width: 100%;
-    margin-top: 15px;
-    padding: 13px;
-    background-color: #300E28;
-    color: #FFFFFF;
+.modal-acceso .cambiar-modal {
+    padding: 0;
     border: none;
-    border-radius: 25px;
-    font: inherit;
-    font-size: 14px;
+    background-color: transparent;
+    color: #300E28;
+    font-family: inherit;
+    font-size: inherit;
     font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
     cursor: pointer;
 }
 
-#botonCerrarSesion:hover {
-    background-color: #8B5C4A;
-}
-
-#botonCerrarSesion:focus-visible {
-    outline: 2px solid #300E28;
-    outline-offset: 3px;
-}
-
-#botonCerrarSesion:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-/* DATOS DEL PERFIL */
-
-#datosPerfil {
-    margin-top: 25px;
-}
-
-#datosPerfil h2 {
-    margin: 20px 0 6px;
-    font-size: 13px;
-    font-weight: 600;
+.modal-acceso .cambiar-modal:hover {
     color: #8B5C4A;
 }
 
-#datosPerfil p {
+
+/* AJUSTES DE LA VENTANA DE REGISTRO */
+
+#modalRegistro {
+    padding: 35px 25px 20px;
+}
+
+#modalRegistro h2 {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+#modalRegistro #formularioRegistro {
+    gap: 6px;
+}
+
+#modalRegistro #formularioRegistro label {
+    margin-top: 4px;
+}
+
+#modalRegistro #formularioRegistro input {
+    padding: 9px 12px;
+}
+
+#modalRegistro #botonRegistro {
+    margin-top: 6px;
+    padding: 11px;
+}
+
+#modalRegistro > p {
+    margin: 12px 0 0;
+}
+
+
+/* PÁGINA MI PERFIL */
+
+.pagina-perfil {
+    min-height: 100vh;
+    background-color: #F5F5F5;
+}
+
+.pagina-perfil .cabecera-perfil {
+    background-color: #FFAC16;
+}
+
+.pagina-perfil .interior-cabecera {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.pagina-perfil .cabecera-perfil nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.pagina-perfil .cabecera-perfil nav a {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagina-perfil .cabecera-perfil nav a:hover,
+.pagina-perfil .cabecera-perfil nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+.pagina-perfil .contenido-perfil {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 40px 70px;
+}
+
+.pagina-perfil .titulo-perfil {
+    margin-bottom: 35px;
+}
+
+.pagina-perfil .titulo-perfil > span {
+    color: #8B5C4A;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.pagina-perfil .titulo-perfil h1 {
+    margin: 10px 0;
+    font-size: 38px;
+    font-weight: 900;
+}
+
+.pagina-perfil .titulo-perfil p {
     margin: 0;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #F5F5F5;
     font-size: 15px;
+    line-height: 1.6;
+}
+
+.pagina-perfil .distribucion-perfil {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    align-items: start;
+    gap: 30px;
+}
+
+
+/* RESUMEN DE LA CUENTA */
+
+.pagina-perfil .resumen-perfil {
+    padding: 30px 25px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+    text-align: center;
+}
+
+.pagina-perfil .avatar-perfil {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background-color: #FFAC16;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+}
+
+.pagina-perfil .resumen-perfil h2 {
+    margin: 0 0 12px;
+    color: #300E28;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.pagina-perfil .resumen-perfil > span {
+    display: block;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.pagina-perfil .volver-inicio {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagina-perfil .volver-inicio:hover {
+    background-color: #8B5C4A;
+}
+
+
+/* INFORMACIÓN PERSONAL */
+
+.pagina-perfil .informacion-perfil {
+    min-width: 0;
+    padding: 35px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.pagina-perfil .informacion-perfil h2 {
+    margin: 0 0 25px;
+    color: #300E28;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.pagina-perfil .lista-datos-perfil {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
+    margin: 0;
+}
+
+.pagina-perfil .dato-perfil {
+    min-width: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.pagina-perfil .dato-perfil dt {
+    margin-bottom: 10px;
+    color: #8B5C4A;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.pagina-perfil .dato-perfil dd {
+    margin: 0;
+    font-size: 16px;
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
-/* MENSAJES DEL PERFIL */
-
-#mensajePerfil {
-    font-size: 13px;
-    line-height: 1.5;
+.pagina-perfil #mensajePerfil {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
-/* RESPETAR LOS ELEMENTOS OCULTOS */
 
-[hidden] {
-    display: none !important;
+/* FOTOGRAFÍA Y EDICIÓN DEL PERFIL */
+
+#fotografiaPerfil {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto;
+    border-radius: 50%;
+    object-fit: cover;
 }
+
+#formularioEditarPerfil,
+#formularioFotografia {
+    margin-top: 20px;
+}
+
+
+/* ADAPTACIÓN A TABLETS */
+
+@media (max-width: 750px) {
+
+    .pagina-perfil .distribucion-perfil {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .portada {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .imagen-portada img {
+        max-width: 300px;
+    }
+
+}
+
 
 /* ADAPTACIÓN A MÓVILES */
+
+@media (max-width: 600px) {
+
+    .pagina-inicio .cabecera {
+        padding: 25px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .pagina-inicio .cabecera nav {
+        gap: 20px;
+    }
+
+    #mensajeSesion {
+        padding: 0 20px;
+    }
+
+    .portada {
+        padding: 45px 20px 70px;
+    }
+
+    .texto-portada h1 {
+        font-size: 56px;
+    }
+
+    .pagina-perfil .interior-cabecera {
+        padding: 25px 20px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .pagina-perfil .cabecera-perfil nav {
+        gap: 20px;
+    }
+
+    .pagina-perfil .contenido-perfil {
+        padding: 35px 20px;
+    }
+
+    .pagina-perfil .titulo-perfil h1 {
+        font-size: 30px;
+    }
+
+    .pagina-perfil .informacion-perfil {
+        padding: 25px 20px;
+    }
+
+    .pagina-perfil .lista-datos-perfil {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+}
 
 @media (max-width: 480px) {
 
@@ -220,4 +726,119 @@ body {
         font-size: 24px;
     }
 
+    .modal-acceso {
+        padding: 45px 20px 25px;
+    }
+
+    .modal-acceso h2 {
+        font-size: 24px;
+    }
+
+    #modalRegistro {
+        padding: 35px 20px 20px;
+    }
+
+    #formularioRegistro input,
+    #formularioLogin input,
+    #formularioEditarPerfil input,
+    #formularioFotografia input {
+        font-size: 16px;
+    }
+}
+
+/* CERRAR SESIÓN DESDE EL PERFIL */
+
+.pagina-perfil .cabecera-perfil nav {
+    align-items: center;
+}
+
+.pagina-perfil .cabecera-perfil #botonCerrarSesion {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pagina-perfil .cabecera-perfil #botonCerrarSesion:hover {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+/* AJUSTAR EL INICIO A LA ALTURA DE LA PANTALLA */
+
+.pagina-inicio {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.pagina-inicio > main {
+    flex: 1;
+    display: flex;
+}
+
+.pagina-inicio .portada {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.pagina-inicio .imagen-portada img {
+    max-height: 65dvh;
+    object-fit: contain;
+}
+
+@media (max-width: 700px) {
+
+    .pagina-inicio .imagen-portada img {
+        max-height: 35dvh;
+    }
+
+}
+
+/* SELECTOR DE FOTOGRAFÍA */
+
+#formularioFotografia {
+    position: relative;
+}
+
+#formularioFotografia #fotografiaEditar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: none;
+}
+
+#formularioFotografia .seleccionar-fotografia {
+    display: block;
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+
+#formularioFotografia .seleccionar-fotografia:hover {
+    background-color: #F5F5F5;
+}
+
+#formularioFotografia:has(#fotografiaEditar:focus-visible)
+.seleccionar-fotografia {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
 }

@@ -1,96 +1,262 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inicio - Patas y Bigotes</title>
+
     <!-- TIPOGRAFIA CORPORATIVA -->
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
         rel="stylesheet"
     >
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
     <link rel="stylesheet" href="src/style.css">
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+</head>
 
-    <!-- FORMULARIO DE REGISTRO -->
-  <main class="registro">
+<body class="pagina-inicio">
 
-      <section class="ventana-registro">
+    <!-- CABECERA -->
+    <header class="cabecera">
 
-          <h1>Regístrate</h1>
-          
-          <form id="formularioRegistro">
+        <a href="index.html" class="marca">
+            Patas y Bigotes
+        </a>
 
-              <!-- NOMBRE -->
-              <label for="nombreRegistro">Nombre</label>
-              <input
-                  type="text"
-                  id="nombreRegistro"
-                  name="name"
-                  autocomplete="name"
-                  maxlength="255"
-                  required
-              >
+        <nav aria-label="Navegación principal">
 
-              <!-- EMAIL -->
-              <label for="emailRegistro">Correo electrónico</label>
-              <input
-                  type="email"
-                  id="emailRegistro"
-                  name="email"
-                  autocomplete="email"
-                  maxlength="255"
-                  required
-              >
+            <a href="index.html" aria-current="page">
+                Inicio
+            </a>
 
-              <!-- FECHA DE NACIMIENTO -->
-              <label for="fechaNacimientoRegistro">Fecha de nacimiento</label>
-              <input
-                  type="date"
-                  id="fechaNacimientoRegistro"
-                  name="fecha_nacimiento"
-                  autocomplete="bday"
-                  required
-              >
+            <button type="button" id="abrirLogin">
+                Iniciar sesión
+            </button>
 
-              <!-- CONTRASEÑA -->
-              <label for="passwordRegistro">Contraseña</label>
-              <input
-                  type="password"
-                  id="passwordRegistro"
-                  name="password"
-                  autocomplete="new-password"
-                  minlength="8"
-                  required
-              >
+            <a href="perfil.html" id="enlacePerfil" hidden>
+                Mi perfil
+            </a>
 
-              <!-- CONFIRMAR CONTRASEÑA -->
-              <label for="confirmarPassword">Repite la contraseña</label>
-              <input
-                  type="password"
-                  id="confirmarPassword"
-                  name="password_confirmation"
-                  autocomplete="new-password"
-                  minlength="8"
-                  required
-              >
+            <button type="button" id="botonCerrarSesion" hidden>
+                Cerrar sesión
+            </button>
 
-              <!-- MENSAJES DEL REGISTRO -->
-              <p id="mensajeRegistro" role="status"></p>
+        </nav>
 
-              <button type="submit" id="botonRegistro">
-                  Crear cuenta
-              </button>
+    </header>
 
-          </form>
+    <p id="mensajeSesion" role="status"></p>
 
-      </section>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
 
-  </main>
+        <section class="portada">
+
+            <!-- TEXTO DE LA PORTADA -->
+            <div class="texto-portada">
+
+                <h1>ADOPTA<br>CON<br>AMOR</h1>
+
+                <p>
+                    Cada animal merece una segunda oportunidad.
+                    Da el primer paso para encontrar a tu nuevo compañero.
+                </p>
+
+                <button
+                    type="button"
+                    id="comenzarRegistro"
+                    class="boton-portada"
+                >
+                    Comenzar
+                </button>
+
+            </div>
+
+            <!-- IMAGEN DE LA PORTADA -->
+            <div class="imagen-portada">
+
+                <img
+                    src="/src/assets/imagen_portada.png"
+                    alt="Perro esperando encontrar una familia"
+                >
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL DE INICIO DE SESION -->
+    <dialog
+        id="modalLogin"
+        class="modal-acceso"
+        aria-labelledby="tituloLogin"
+    >
+
+        <button
+            type="button"
+            id="cerrarLogin"
+            class="cerrar-modal"
+            aria-label="Cerrar inicio de sesión"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloLogin">Iniciar sesión</h2>
+
+        <form id="formularioLogin">
+
+            <!-- EMAIL -->
+            <label for="emailLogin">Correo electrónico</label>
+            <input
+                type="email"
+                id="emailLogin"
+                name="email"
+                autocomplete="username"
+                required
+            >
+
+            <!-- CONTRASEÑA -->
+            <label for="passwordLogin">Contraseña</label>
+            <input
+                type="password"
+                id="passwordLogin"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <!-- MENSAJES -->
+            <p id="mensajeLogin" role="status"></p>
+
+            <button type="submit" id="botonLogin">
+                Entrar
+            </button>
+
+        </form>
+
+        <!-- CERRAR SESION -->
+        <button type="button" id="botonCerrarSesion" hidden>
+            Cerrar sesión
+        </button>
+
+        <!-- PERFIL -->
+        <p>
+            <a href="perfil.html">Consultar mi perfil</a>
+        </p>
+
+        <!-- PASAR AL REGISTRO -->
+        <p>
+            ¿No tienes cuenta?
+
+            <button type="button" id="irRegistro" class="cambiar-modal">
+                Regístrate
+            </button>
+        </p>
+
+    </dialog>
+
+    <!-- MODAL DE REGISTRO -->
+    <dialog
+        id="modalRegistro"
+        class="modal-acceso"
+        aria-labelledby="tituloRegistro"
+    >
+
+        <button
+            type="button"
+            id="cerrarRegistro"
+            class="cerrar-modal"
+            aria-label="Cerrar registro"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloRegistro">Regístrate</h2>
+
+        <form id="formularioRegistro">
+
+            <!-- NOMBRE -->
+            <label for="nombreRegistro">Nombre</label>
+            <input
+                type="text"
+                id="nombreRegistro"
+                name="name"
+                autocomplete="name"
+                maxlength="255"
+                required
+            >
+
+            <!-- EMAIL -->
+            <label for="emailRegistro">Correo electrónico</label>
+            <input
+                type="email"
+                id="emailRegistro"
+                name="email"
+                autocomplete="email"
+                maxlength="255"
+                required
+            >
+
+            <!-- FECHA DE NACIMIENTO -->
+            <label for="fechaNacimientoRegistro">
+                Fecha de nacimiento
+            </label>
+            <input
+                type="date"
+                id="fechaNacimientoRegistro"
+                name="fecha_nacimiento"
+                autocomplete="bday"
+                required
+            >
+
+            <!-- CONTRASEÑA -->
+            <label for="passwordRegistro">Contraseña</label>
+            <input
+                type="password"
+                id="passwordRegistro"
+                name="password"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <!-- CONFIRMAR CONTRASEÑA -->
+            <label for="confirmarPassword">Repite la contraseña</label>
+            <input
+                type="password"
+                id="confirmarPassword"
+                name="password_confirmation"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <!-- MENSAJES -->
+            <p id="mensajeRegistro" role="status"></p>
+
+            <button type="submit" id="botonRegistro">
+                Crear cuenta
+            </button>
+
+        </form>
+
+        <!-- PASAR AL LOGIN -->
+        <p>
+            ¿Ya tienes cuenta?
+
+            <button type="button" id="irLogin" class="cambiar-modal">
+                Inicia sesión
+            </button>
+        </p>
+
+    </dialog>
+
+    <!-- JAVASCRIPT DE LA PORTADA -->
+    <script type="module" src="/src/inicio.js"></script>
+
+</body>
 
 </html>

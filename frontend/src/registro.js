@@ -25,8 +25,35 @@ async function enviarRegistro(evento) {
     try {
         const resultado = await registrarUsuario(datos);
 
-        estado.textContent = resultado.message;
+        const modalRegistro = document.querySelector("#modalRegistro");
+        const modalLogin = document.querySelector("#modalLogin");
+
         formulario.reset();
+
+        if (modalRegistro && modalLogin) {
+            estado.textContent = "";
+
+            modalRegistro.close();
+
+            // PREPARAR EL INICIO DE SESION
+            document.querySelector("#emailLogin").value = datos.email;
+            document.querySelector("#passwordLogin").value = "";
+
+            document.querySelector("#mensajeLogin").textContent =
+                resultado.message + " Ya puedes iniciar sesión.";
+
+            // LIMPIAR AVISOS ANTERIORES DE LA PORTADA
+            const mensajeSesion = document.querySelector("#mensajeSesion");
+
+            if (mensajeSesion) {
+                mensajeSesion.textContent = "";
+            }
+
+            modalLogin.showModal();
+
+        } else {
+            estado.textContent = resultado.message;
+        }
 
     } catch (error) {
         estado.textContent =
@@ -34,7 +61,7 @@ async function enviarRegistro(evento) {
 
     } finally {
         boton.disabled = false;
-    }
+}
 }
 
 // ESCUCHAR EL ENVÍO DEL FORMULARIO

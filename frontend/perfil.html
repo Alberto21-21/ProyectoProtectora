@@ -16,40 +16,170 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 
-<body>
+<body class="pagina-perfil">
 
-    <!-- PERFIL DEL USUARIO -->
-    <main class="registro">
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
 
-        <section class="ventana-registro">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                Patas y Bigotes
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+
+                <a href="perfil.html" aria-current="page">
+                    Mi perfil
+                </a>
+
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+
+    </header>
+
+    <!-- CONTENIDO DEL PERFIL -->
+    <main class="contenido-perfil">
+
+        <!-- PRESENTACION -->
+        <div class="titulo-perfil">
+
+            <span>MI CUENTA</span>
 
             <h1>Mi perfil</h1>
 
-            <!-- ESTADO DE LA CONSULTA -->
-            <p id="mensajePerfil" role="status"></p>
+            <p>Consulta los datos de tu cuenta en Patas y Bigotes.</p>
 
-            <!-- DATOS DEL USUARIO -->
-            <div id="datosPerfil" hidden>
+        </div>
 
-                <h2>Nombre</h2>
-                <p id="nombrePerfil"></p>
+        <!-- MENSAJES -->
+        <p id="mensajePerfil" role="status"></p>
 
-                <h2>Correo electrónico</h2>
-                <p id="emailPerfil"></p>
+        <!-- INFORMACION AUTORIZADA DEL USUARIO -->
+        <div id="datosPerfil" class="distribucion-perfil" hidden>
 
-                <h2>Fecha de nacimiento</h2>
-                <p id="fechaNacimientoPerfil"></p>
+            <!-- RESUMEN LATERAL -->
+            <aside class="resumen-perfil">
 
-                <h2>Rol</h2>
-                <p id="rolPerfil"></p>
+                <div class="avatar-perfil" id="avatarPredeterminado" aria-hidden="true">
+                    🐾
+                </div>
 
-            </div>
+                <img
+                    id="fotografiaPerfil"
+                    alt="Fotografía de mi perfil"
+                    hidden
+                >
 
-            <p>
-                <a href="login.html">Volver al acceso</a>
-            </p>
+                <h2>Tu cuenta</h2>
 
-        </section>
+                <span>
+                    Un espacio para consultar tu información personal.
+                </span>
+
+                <!-- CAMBIAR LA FOTOGRAFÍA DEL PERFIL -->
+                <form id="formularioFotografia">
+
+                    <label for="fotografiaEditar" class="seleccionar-fotografia">
+                        Seleccionar fotografía
+                    </label>
+
+                    <input
+                        type="file"
+                        id="fotografiaEditar"
+                        name="fotografia"
+                        accept="image/jpeg,image/png,image/webp"
+                        required
+                    >
+
+                    <p id="mensajeFotografia" role="status"></p>
+
+                    <button type="submit" id="botonGuardarFotografia">
+                        Guardar fotografía
+                    </button>
+
+                </form>
+
+            </aside>
+
+            <!-- DATOS PERSONALES -->
+            <section class="informacion-perfil">
+
+                <h2>Información personal</h2>
+
+                <dl class="lista-datos-perfil">
+
+                    <div class="dato-perfil">
+                        <dt>Nombre</dt>
+                        <dd id="nombrePerfil"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Correo electrónico</dt>
+                        <dd id="emailPerfil"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Fecha de nacimiento</dt>
+                        <dd id="fechaNacimientoPerfil"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Rol</dt>
+                        <dd id="rolPerfil"></dd>
+                    </div>
+
+                </dl>
+
+                <!-- FORMULARIO PARA EDITAR EL PERFIL -->
+                <form id="formularioEditarPerfil">
+
+                    <h2>Editar mis datos</h2>
+
+                    <label for="nombreEditar">Nombre</label>
+                    <input
+                        type="text"
+                        id="nombreEditar"
+                        name="name"
+                        autocomplete="name"
+                        maxlength="255"
+                        required
+                    >
+
+                    <label for="emailEditar">Correo electrónico</label>
+                    <input
+                        type="email"
+                        id="emailEditar"
+                        name="email"
+                        autocomplete="email"
+                        maxlength="255"
+                        required
+                    >
+
+                    <label for="fechaNacimientoEditar">Fecha de nacimiento</label>
+                    <input
+                        type="date"
+                        id="fechaNacimientoEditar"
+                        name="fecha_nacimiento"
+                        autocomplete="bday"
+                        required
+                    >
+
+                    <p id="mensajeEditarPerfil" role="status"></p>
+
+                    <button type="submit" id="botonGuardarPerfil">
+                        Guardar cambios
+                    </button>
+
+                </form>
+            </section>
+
+        </div>
 
     </main>
 

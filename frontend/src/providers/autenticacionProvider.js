@@ -85,3 +85,59 @@ export async function cerrarSesion(token) {
 
     return await respuesta.json();
 }
+
+// ACTUALIZAR EL PERFIL DEL USUARIO
+export async function actualizarPerfil(datos, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/user",
+        {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(datos)
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo actualizar el perfil."
+        );
+    }
+
+    return resultado;
+}
+
+// ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO
+export async function actualizarFotografia(fotografia, token) {
+
+    const datos = new FormData();
+    datos.append("fotografia", fotografia);
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/user/fotografia",
+        {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: datos
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo actualizar la fotografía."
+        );
+    }
+
+    return resultado;
+}
