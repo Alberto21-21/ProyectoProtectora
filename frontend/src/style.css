@@ -173,6 +173,41 @@ body {
     cursor: wait;
 }
 
+/* DATOS DEL PERFIL */
+
+#datosPerfil {
+    margin-top: 25px;
+}
+
+#datosPerfil h2 {
+    margin: 20px 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8B5C4A;
+}
+
+#datosPerfil p {
+    margin: 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F5F5F5;
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* MENSAJES DEL PERFIL */
+
+#mensajePerfil {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* RESPETAR LOS ELEMENTOS OCULTOS */
+
+[hidden] {
+    display: none !important;
+}
+
 /* ADAPTACIÓN A MÓVILES */
 
 @media (max-width: 480px) {
