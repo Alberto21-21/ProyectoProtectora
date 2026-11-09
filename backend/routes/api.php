@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-// CONSULTAR EL USUARIO AUTENTICADO
+// CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
 Route::get('/user', function (Request $request) {
     $usuario = $request->user();
 
@@ -27,10 +27,13 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // CERRAR SESION
-Route::post('/logout', [AuthController::class, 'cerrarSesion'])->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class, 'cerrarSesion'])
+    ->middleware('auth:sanctum');
 
 // ACTUALIZAR EL PERFIL DEL USUARIO AUTENTICADO
-Route::put('/user', [AuthController::class, 'actualizarPerfil'])->middleware('auth:sanctum');
+Route::put('/user', [AuthController::class, 'actualizarPerfil'])
+    ->middleware('auth:sanctum');
 
 // ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO AUTENTICADO
-Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])->middleware('auth:sanctum');
+Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])
+    ->middleware('auth:sanctum');
