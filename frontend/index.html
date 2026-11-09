@@ -26,18 +26,35 @@
         </a>
 
         <nav aria-label="Navegación principal">
-            <a href="index.html" aria-current="page">Inicio</a>
-            <a href="login.html">Iniciar sesión</a>
-            <a href="registro.html">Registrarse</a>
+
+            <a href="index.html" aria-current="page">
+                Inicio
+            </a>
+
+            <button type="button" id="abrirLogin">
+                Iniciar sesión
+            </button>
+
+            <a href="perfil.html" id="enlacePerfil" hidden>
+                Mi perfil
+            </a>
+
+            <button type="button" id="botonCerrarSesion" hidden>
+                Cerrar sesión
+            </button>
+
         </nav>
 
     </header>
 
-    <!-- PORTADA -->
+    <p id="mensajeSesion" role="status"></p>
+
+    <!-- CONTENIDO PRINCIPAL -->
     <main>
 
         <section class="portada">
 
+            <!-- TEXTO DE LA PORTADA -->
             <div class="texto-portada">
 
                 <h1>ADOPTA<br>CON<br>AMOR</h1>
@@ -47,22 +64,198 @@
                     Da el primer paso para encontrar a tu nuevo compañero.
                 </p>
 
-                <a href="registro.html" class="boton-portada">
+                <button
+                    type="button"
+                    id="comenzarRegistro"
+                    class="boton-portada"
+                >
                     Comenzar
-                </a>
+                </button>
 
             </div>
 
+            <!-- IMAGEN DE LA PORTADA -->
             <div class="imagen-portada">
+
                 <img
-                    src="/frontend/src/img/perro_portada.jpg"
+                    src="/src/assets/imagen_portada.png"
                     alt="Perro esperando encontrar una familia"
                 >
+
             </div>
 
         </section>
 
     </main>
+
+    <!-- MODAL DE INICIO DE SESION -->
+    <dialog
+        id="modalLogin"
+        class="modal-acceso"
+        aria-labelledby="tituloLogin"
+    >
+
+        <button
+            type="button"
+            id="cerrarLogin"
+            class="cerrar-modal"
+            aria-label="Cerrar inicio de sesión"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloLogin">Iniciar sesión</h2>
+
+        <form id="formularioLogin">
+
+            <!-- EMAIL -->
+            <label for="emailLogin">Correo electrónico</label>
+            <input
+                type="email"
+                id="emailLogin"
+                name="email"
+                autocomplete="username"
+                required
+            >
+
+            <!-- CONTRASEÑA -->
+            <label for="passwordLogin">Contraseña</label>
+            <input
+                type="password"
+                id="passwordLogin"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <!-- MENSAJES -->
+            <p id="mensajeLogin" role="status"></p>
+
+            <button type="submit" id="botonLogin">
+                Entrar
+            </button>
+
+        </form>
+
+        <!-- CERRAR SESION -->
+        <button type="button" id="botonCerrarSesion" hidden>
+            Cerrar sesión
+        </button>
+
+        <!-- PERFIL -->
+        <p>
+            <a href="perfil.html">Consultar mi perfil</a>
+        </p>
+
+        <!-- PASAR AL REGISTRO -->
+        <p>
+            ¿No tienes cuenta?
+
+            <button type="button" id="irRegistro" class="cambiar-modal">
+                Regístrate
+            </button>
+        </p>
+
+    </dialog>
+
+    <!-- MODAL DE REGISTRO -->
+    <dialog
+        id="modalRegistro"
+        class="modal-acceso"
+        aria-labelledby="tituloRegistro"
+    >
+
+        <button
+            type="button"
+            id="cerrarRegistro"
+            class="cerrar-modal"
+            aria-label="Cerrar registro"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloRegistro">Regístrate</h2>
+
+        <form id="formularioRegistro">
+
+            <!-- NOMBRE -->
+            <label for="nombreRegistro">Nombre</label>
+            <input
+                type="text"
+                id="nombreRegistro"
+                name="name"
+                autocomplete="name"
+                maxlength="255"
+                required
+            >
+
+            <!-- EMAIL -->
+            <label for="emailRegistro">Correo electrónico</label>
+            <input
+                type="email"
+                id="emailRegistro"
+                name="email"
+                autocomplete="email"
+                maxlength="255"
+                required
+            >
+
+            <!-- FECHA DE NACIMIENTO -->
+            <label for="fechaNacimientoRegistro">
+                Fecha de nacimiento
+            </label>
+            <input
+                type="date"
+                id="fechaNacimientoRegistro"
+                name="fecha_nacimiento"
+                autocomplete="bday"
+                required
+            >
+
+            <!-- CONTRASEÑA -->
+            <label for="passwordRegistro">Contraseña</label>
+            <input
+                type="password"
+                id="passwordRegistro"
+                name="password"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <!-- CONFIRMAR CONTRASEÑA -->
+            <label for="confirmarPassword">Repite la contraseña</label>
+            <input
+                type="password"
+                id="confirmarPassword"
+                name="password_confirmation"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <!-- MENSAJES -->
+            <p id="mensajeRegistro" role="status"></p>
+
+            <button type="submit" id="botonRegistro">
+                Crear cuenta
+            </button>
+
+        </form>
+
+        <!-- PASAR AL LOGIN -->
+        <p>
+            ¿Ya tienes cuenta?
+
+            <button type="button" id="irLogin" class="cambiar-modal">
+                Inicia sesión
+            </button>
+        </p>
+
+    </dialog>
+
+    <!-- JAVASCRIPT DE LA PORTADA -->
+    <script type="module" src="/src/inicio.js"></script>
 
 </body>
 

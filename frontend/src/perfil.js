@@ -1,4 +1,7 @@
-import { obtenerUsuario } from "./providers/autenticacionProvider.js";
+import {
+    obtenerUsuario,
+    cerrarSesion
+} from "./providers/autenticacionProvider.js";
 
 // OBTENER ELEMENTOS DEL HTML
 const estado = document.querySelector("#mensajePerfil");
@@ -40,3 +43,34 @@ async function cargarPerfil() {
 
 // CARGAR EL PERFIL AL ABRIR LA PAGINA
 cargarPerfil();
+
+// CERRAR SESIÓN DESDE EL PERFIL
+const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
+
+async function salirSesion() {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    botonCerrarSesion.disabled = true;
+
+    try {
+        await cerrarSesion(token);
+
+        sessionStorage.removeItem("token");
+
+        window.location.href = "index.html";
+
+    } catch (error) {
+        estado.textContent =
+            `No se pudo cerrar sesión: ${error.message}`;
+
+    } finally {
+        botonCerrarSesion.disabled = false;
+    }
+}
+
+botonCerrarSesion.addEventListener("click", salirSesion);
