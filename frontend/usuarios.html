@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Usuarios - Patas y Bigotes</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="pagina-perfil pagina-usuarios">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                Patas y Bigotes
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="perfil.html">Mi perfil</a>
+                <a href="usuarios.html" aria-current="page">Usuarios</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <!-- TÍTULO -->
+        <div class="titulo-perfil">
+            <span>ADMINISTRACIÓN</span>
+            <h1>Usuarios</h1>
+            <p>Consulta y busca las cuentas de Patas y Bigotes.</p>
+        </div>
+
+        <p id="mensajeUsuarios" role="status"></p>
+
+        <!-- CONTENIDO EXCLUSIVO PARA ADMINISTRADORES -->
+        <section id="gestionUsuarios" hidden>
+
+            <!-- BÚSQUEDA Y FILTROS -->
+            <form id="formularioFiltros">
+
+                <div>
+                    <label for="buscarUsuario">Nombre o correo</label>
+                    <input
+                        type="search"
+                        id="buscarUsuario"
+                        name="buscar"
+                        placeholder="Buscar usuarios"
+                        maxlength="255"
+                    >
+                </div>
+
+                <div>
+                    <label for="rolUsuario">Rol</label>
+                    <select id="rolUsuario" name="rol">
+                        <option value="">Todos los roles</option>
+                        <option value="admin">Administrador</option>
+                        <option value="adoptante">Adoptante</option>
+                        <option value="personal">Personal</option>
+                        <option value="veterinario">Veterinario</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="estadoUsuario">Estado</label>
+                    <select id="estadoUsuario" name="estado">
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="botonBuscarUsuarios">
+                    Buscar
+                </button>
+
+                <button type="button" id="botonLimpiarFiltros">
+                    Limpiar filtros
+                </button>
+
+            </form>
+
+            <!-- LISTADO -->
+            <div class="tabla-usuarios">
+                <table>
+                    <caption>Listado de usuarios</caption>
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Correo electrónico</th>
+                            <th scope="col">Rol</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Detalle</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="listaUsuarios"></tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <nav class="paginacion-usuarios" aria-label="Páginas de usuarios">
+
+                <button type="button" id="paginaAnterior" disabled>
+                    Anterior
+                </button>
+
+                <span id="informacionPagina" aria-live="polite"></span>
+
+                <button type="button" id="paginaSiguiente" disabled>
+                    Siguiente
+                </button>
+
+            </nav>
+
+        </section>
+
+        <!-- DETALLE DEL USUARIO -->
+        <dialog
+            id="modalDetalleUsuario"
+            class="modal-acceso"
+            aria-labelledby="tituloDetalleUsuario"
+        >
+
+            <button
+                type="button"
+                id="cerrarDetalleUsuario"
+                class="cerrar-modal"
+                aria-label="Cerrar detalle"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloDetalleUsuario">Detalle del usuario</h2>
+
+            <p id="mensajeDetalleUsuario" role="status"></p>
+
+            <div id="datosDetalleUsuario" hidden>
+
+                <img
+                    id="fotografiaDetalleUsuario"
+                    alt="Fotografía del usuario"
+                    hidden
+                >
+
+                <dl class="lista-datos-perfil">
+
+                    <div class="dato-perfil">
+                        <dt>Nombre</dt>
+                        <dd id="nombreDetalleUsuario"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Correo electrónico</dt>
+                        <dd id="emailDetalleUsuario"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Fecha de nacimiento</dt>
+                        <dd id="fechaDetalleUsuario"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Rol</dt>
+                        <dd id="rolDetalleUsuario"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Estado</dt>
+                        <dd id="estadoDetalleUsuario"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Fecha de registro</dt>
+                        <dd id="registroDetalleUsuario"></dd>
+                    </div>
+
+                </dl>
+
+            </div>
+
+        </dialog>
+
+    </main>
+
+</body>
+
+<script type="module" src="/src/usuarios.js"></script>
+
+</html>
