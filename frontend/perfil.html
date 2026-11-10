@@ -177,6 +177,50 @@
                     </button>
 
                 </form>
+
+                <!-- FORMULARIO PARA CAMBIAR LA CONTRASEÑA -->
+                <form id="formularioContrasena">
+
+                    <h2>Cambiar contraseña</h2>
+
+                    <label for="passwordActual">Contraseña actual</label>
+                    <input
+                        type="password"
+                        id="passwordActual"
+                        name="password_actual"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <label for="passwordNueva">Nueva contraseña</label>
+                    <input
+                        type="password"
+                        id="passwordNueva"
+                        name="password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <label for="confirmarPasswordNueva">
+                        Repite la nueva contraseña
+                    </label>
+                    <input
+                        type="password"
+                        id="confirmarPasswordNueva"
+                        name="password_confirmation"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <p id="mensajeContrasena" role="status"></p>
+
+                    <button type="submit" id="botonGuardarContrasena">
+                        Cambiar contraseña
+                    </button>
+
+                </form>
             </section>
 
         </div>

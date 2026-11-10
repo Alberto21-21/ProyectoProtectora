@@ -37,3 +37,7 @@ Route::put('/user', [AuthController::class, 'actualizarPerfil'])
 // ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO AUTENTICADO
 Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])
     ->middleware('auth:sanctum');
+
+// CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
+Route::put('/user/password', [AuthController::class, 'cambiarContrasena'])
+    ->middleware('auth:sanctum');

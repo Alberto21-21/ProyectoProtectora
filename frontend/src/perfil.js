@@ -2,6 +2,7 @@ import {
     obtenerUsuario,
     actualizarPerfil,
     actualizarFotografia,
+    cambiarContrasena,
     cerrarSesion
 } from "./providers/autenticacionProvider.js";
 
@@ -20,6 +21,14 @@ const emailEditar = document.querySelector("#emailEditar");
 const fechaNacimientoEditar = document.querySelector("#fechaNacimientoEditar");
 const mensajeEditar = document.querySelector("#mensajeEditarPerfil");
 const botonGuardar = document.querySelector("#botonGuardarPerfil");
+
+// ELEMENTOS DEL FORMULARIO DE CONTRASEÑA
+const formularioContrasena = document.querySelector("#formularioContrasena");
+const passwordActual = document.querySelector("#passwordActual");
+const passwordNueva = document.querySelector("#passwordNueva");
+const confirmarPasswordNueva = document.querySelector("#confirmarPasswordNueva");
+const mensajeContrasena = document.querySelector("#mensajeContrasena");
+const botonGuardarContrasena = document.querySelector("#botonGuardarContrasena");
 
 // BOTÓN PARA CERRAR SESIÓN
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
@@ -195,10 +204,48 @@ async function guardarFotografia(evento) {
     }
 }
 
+// GUARDAR LA NUEVA CONTRASEÑA
+async function guardarContrasena(evento) {
+
+    evento.preventDefault();
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        mensajeContrasena.textContent =
+            "Debes iniciar sesión para cambiar la contraseña.";
+        return;
+    }
+
+    const datos = {
+        password_actual: passwordActual.value,
+        password: passwordNueva.value,
+        password_confirmation: confirmarPasswordNueva.value
+    };
+
+    mensajeContrasena.textContent = "Cambiando contraseña...";
+    botonGuardarContrasena.disabled = true;
+
+    try {
+        const resultado = await cambiarContrasena(datos, token);
+
+        formularioContrasena.reset();
+        mensajeContrasena.textContent = resultado.message;
+
+    } catch (error) {
+        mensajeContrasena.textContent =
+            `No se pudo cambiar la contraseña: ${error.message}`;
+
+    } finally {
+        botonGuardarContrasena.disabled = false;
+    }
+}
+
 // ESCUCHAR LOS EVENTOS
 formulario.addEventListener("submit", guardarPerfil);
 botonCerrarSesion.addEventListener("click", salirSesion);
 formularioFotografia.addEventListener("submit", guardarFotografia);
+formularioContrasena.addEventListener("submit", guardarContrasena);
 
 // CARGAR LOS DATOS AL ABRIR LA PÁGINA
 cargarPerfil();
