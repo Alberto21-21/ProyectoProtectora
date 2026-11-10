@@ -20,5 +20,15 @@ class Animal extends Model
         'estado',
         'descripcion',
         'imagen',
+        'peso',
+        'caracter',
+        'necesidades_especiales',
+        'observaciones_clinicas',
+    ];
+
+    // LOS DATOS CLÍNICOS NO SE ENVÍAN EN EL LISTADO NI EN LA FICHA PÚBLICA
+    protected $hidden = [
+        'necesidades_especiales',
+        'observaciones_clinicas',
     ];
 }
