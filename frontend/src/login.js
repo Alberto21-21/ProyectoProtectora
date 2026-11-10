@@ -13,11 +13,12 @@ const boton = document.querySelector("#botonLogin");
 const abrirLogin = document.querySelector("#abrirLogin");
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 const enlacePerfil = document.querySelector("#enlacePerfil");
+const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
 const mensajeSesion = document.querySelector("#mensajeSesion");
 const modalLogin = document.querySelector("#modalLogin");
 
 // ACTUALIZAR LA CABECERA
-function actualizarCabecera(sesionActiva) {
+function actualizarCabecera(sesionActiva, rol = "") {
 
     if (abrirLogin) {
         abrirLogin.hidden = sesionActiva;
@@ -25,6 +26,10 @@ function actualizarCabecera(sesionActiva) {
 
     if (enlacePerfil) {
         enlacePerfil.hidden = !sesionActiva;
+    }
+
+    if (enlaceUsuarios) {
+        enlaceUsuarios.hidden = !sesionActiva || rol !== "admin";
     }
 
     botonCerrarSesion.hidden = !sesionActiva;
@@ -60,7 +65,7 @@ async function enviarLogin(evento) {
 
         const usuario = await obtenerUsuario(resultado.data.token);
 
-        actualizarCabecera(true);
+        actualizarCabecera(true, usuario.rol);        
         formulario.reset();
         estado.textContent = "";
 
@@ -124,8 +129,8 @@ async function comprobarSesion() {
     }
 
     try {
-        await obtenerUsuario(token);
-        actualizarCabecera(true);
+        const usuario = await obtenerUsuario(token);
+        actualizarCabecera(true, usuario.rol);
 
     } catch (error) {
         mostrarMensaje(
