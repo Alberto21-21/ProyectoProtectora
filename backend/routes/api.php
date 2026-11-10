@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Middleware\EsAdministrador;
 
@@ -43,7 +44,7 @@ Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])
 // CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
 Route::put('/user/password', [AuthController::class, 'cambiarContrasena'])
     ->middleware('auth:sanctum');
-    
+
 // CONSULTAR Y BUSCAR USUARIOS: SOLO ADMINISTRADORES
 Route::get('/usuarios', [UsuarioController::class, 'index'])
     ->middleware(['auth:sanctum', EsAdministrador::class]);
@@ -51,3 +52,7 @@ Route::get('/usuarios', [UsuarioController::class, 'index'])
 // CONSULTAR EL DETALLE DE UN USUARIO: SOLO ADMINISTRADORES
 Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->whereNumber('id')
     ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// RUTAS DE ANIMALES
+Route::get('/animales', [AnimalController::class, 'index']);
+Route::post('/animales', [AnimalController::class, 'store']);
