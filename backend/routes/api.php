@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AnimalController;
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
 Route::get('/user', function (Request $request) {
@@ -41,3 +42,11 @@ Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])
 // CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
 Route::put('/user/password', [AuthController::class, 'cambiarContrasena'])
     ->middleware('auth:sanctum');
+
+// RUTAS DE ANIMALES PROTEGIDAS POR ABILITIES
+Route::middleware(['auth:sanctum', 'ability:admin,protectora'])->group(function () {
+    Route::post('/animales', [AnimalController::class, 'store']);
+});
+
+Route::get('/animales', [AnimalController::class, 'index']);
+Route::post('/animales', [AnimalController::class, 'store']);

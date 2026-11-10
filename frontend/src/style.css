@@ -831,3 +831,210 @@ button:focus-visible {
     flex-shrink: 0;
     background-color: #FFAC16;
 }
+/* ==========================================================================
+   SECCIÓN DE ANIMALES Y TARJETAS (CATÁLOGO)
+   ========================================================================== */
+
+.seccion-animales {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+}
+
+.titulo-seccion {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.titulo-seccion h2 {
+    margin: 0 0 10px;
+    font-size: 36px;
+    font-weight: 900;
+    color: #300E28;
+}
+
+.titulo-seccion p {
+    margin: 0;
+    font-size: 15px;
+    color: #300E28;
+}
+
+/* GRID DE ANIMALES */
+
+.grid-animales {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+/* TARJETA DE ANIMAL */
+
+.tarjeta-animal {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(48, 14, 40, 0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjeta-animal:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(48, 14, 40, 0.2);
+}
+
+.tarjeta-animal img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.info-tarjeta {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+}
+
+.info-tarjeta h3 {
+    margin: 0 0 5px;
+    font-size: 22px;
+    font-weight: 900;
+    color: #300E28;
+}
+
+.info-tarjeta p {
+    margin: 0;
+    font-size: 14px;
+    color: #300E28;
+}
+
+.info-tarjeta p strong {
+    color: #8B5C4A;
+}
+
+.boton-ver-ficha {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background-color 0.2s ease;
+}
+
+.boton-ver-ficha:hover {
+    background-color: #8B5C4A;
+}
+
+
+/* ==========================================================================
+   MODAL FICHA DE DETALLE DEL ANIMAL
+   ========================================================================== */
+
+.modal-detalle {
+    max-width: 520px;
+}
+
+.detalle-animal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.detalle-animal-body img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.detalle-animal-body h2 {
+    margin: 0;
+    text-align: left;
+}
+
+.detalle-animal-body p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #300E28;
+}
+
+.detalle-animal-body p strong {
+    color: #8B5C4A;
+}
+
+.detalle-animal-body .boton-portada {
+    margin-top: 10px;
+    text-align: center;
+}
+
+
+/* ADAPTACIONES RESPONSIVE (MÓVILES) */
+
+@media (max-width: 600px) {
+
+    .seccion-animales {
+        padding: 30px 20px 60px;
+    }
+
+    .titulo-seccion h2 {
+        font-size: 28px;
+    }
+
+    .grid-animales {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+}
+/* FORMULARIO Y CAMPOS DE LA PÁGINA ANIMALES */
+
+#formularioAnimal {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formularioAnimal label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioAnimal input,
+#formularioAnimal select,
+#formularioAnimal textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#formularioAnimal textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+#formularioAnimal input:focus,
+#formularioAnimal select:focus,
+#formularioAnimal textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
