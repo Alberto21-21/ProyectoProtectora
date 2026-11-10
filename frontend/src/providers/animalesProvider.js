@@ -1,0 +1,131 @@
+// CONSULTAR LA FICHA DE UN ANIMAL
+export async function obtenerAnimal(id) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id,
+        {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo consultar el animal."
+        );
+    }
+
+    return resultado;
+}
+
+// ACTUALIZAR LOS DATOS GENERALES DE UN ANIMAL
+export async function actualizarAnimal(id, datos, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id,
+        {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(datos)
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo actualizar el animal."
+        );
+    }
+
+    return resultado;
+}
+
+// ACTUALIZAR LA FOTOGRAFÍA DE UN ANIMAL
+export async function actualizarImagenAnimal(id, imagen, token) {
+
+    const datos = new FormData();
+    datos.append("imagen", imagen);
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id + "/imagen",
+        {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: datos
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo actualizar la fotografía."
+        );
+    }
+
+    return resultado;
+}
+
+// CONSULTAR LOS DATOS CLÍNICOS DE UN ANIMAL
+export async function obtenerDatosClinicos(id, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id + "/clinico",
+        {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudieron consultar los datos clínicos."
+        );
+    }
+
+    return resultado;
+}
+
+// ACTUALIZAR LOS DATOS CLÍNICOS DE UN ANIMAL
+export async function actualizarDatosClinicos(id, datos, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id + "/clinico",
+        {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(datos)
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudieron actualizar los datos clínicos."
+        );
+    }
+
+    return resultado;
+}
