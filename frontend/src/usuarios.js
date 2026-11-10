@@ -5,7 +5,8 @@ import {
 
 import {
     obtenerUsuarios,
-    obtenerDetalleUsuario
+    obtenerDetalleUsuario,
+    crearUsuarioInterno
 } from "./providers/usuariosProvider.js";
 
 // ELEMENTOS DEL LISTADO
@@ -31,6 +32,16 @@ const botonCerrarDetalle = document.querySelector("#cerrarDetalleUsuario");
 const mensajeDetalle = document.querySelector("#mensajeDetalleUsuario");
 const datosDetalle = document.querySelector("#datosDetalleUsuario");
 const fotografiaDetalle = document.querySelector("#fotografiaDetalleUsuario");
+
+// ELEMENTOS DEL ALTA DE USUARIOS
+const abrirAltaUsuario = document.querySelector("#abrirAltaUsuario");
+const cerrarAltaUsuario = document.querySelector("#cerrarAltaUsuario");
+const modalAltaUsuario = document.querySelector("#modalAltaUsuario");
+const formularioAltaUsuario = document.querySelector("#formularioAltaUsuario");
+const mensajeAltaUsuario = document.querySelector("#mensajeAltaUsuario");
+const botonCrearUsuario = document.querySelector("#botonCrearUsuario");
+
+let guardandoUsuario = false;
 
 // ESTADO DE LA PAGINACIÓN
 let paginaActual = 1;
@@ -291,6 +302,70 @@ async function salirSesion() {
     }
 }
 
+// CREAR UNA CUENTA INTERNA
+async function guardarUsuarioInterno(evento) {
+
+    evento.preventDefault();
+
+    if (guardandoUsuario) {
+        return;
+    }
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        mensajeAltaUsuario.textContent =
+            "Debes iniciar sesión para crear usuarios.";
+        return;
+    }
+
+    const datos = {
+        name: document.querySelector("#nombreAltaUsuario").value.trim(),
+        email: document.querySelector("#emailAltaUsuario").value.trim(),
+        fecha_nacimiento: document.querySelector("#fechaAltaUsuario").value,
+        rol: document.querySelector("#rolAltaUsuario").value,
+        password: document.querySelector("#passwordAltaUsuario").value,
+        password_confirmation:
+            document.querySelector("#confirmarPasswordAltaUsuario").value
+    };
+
+    guardandoUsuario = true;
+    botonCrearUsuario.disabled = true;
+    cerrarAltaUsuario.disabled = true;
+    mensajeAltaUsuario.textContent = "Creando cuenta...";
+
+    try {
+        const resultado = await crearUsuarioInterno(datos, token);
+
+        formularioAltaUsuario.reset();
+        mensajeAltaUsuario.textContent = "";
+        modalAltaUsuario.close();
+
+        // MOSTRAR EL LISTADO SIN FILTROS
+        formulario.reset();
+
+        filtrosActuales = {
+            buscar: "",
+            rol: "",
+            estado: ""
+        };
+
+        await cargarUsuarios(1);
+
+        mensaje.textContent =
+            resultado.message + " " + mensaje.textContent;
+
+    } catch (error) {
+        mensajeAltaUsuario.textContent =
+            `No se pudo crear la cuenta: ${error.message}`;
+
+    } finally {
+        guardandoUsuario = false;
+        botonCrearUsuario.disabled = false;
+        cerrarAltaUsuario.disabled = false;
+    }
+}
+
 // ESCUCHAR LOS EVENTOS
 formulario.addEventListener("submit", buscarUsuarios);
 
@@ -316,3 +391,25 @@ botonCerrarSesion.addEventListener("click", salirSesion);
 
 // COMPROBAR LOS PERMISOS AL ABRIR LA PÁGINA
 comprobarAcceso();
+
+// ABRIR EL FORMULARIO DE ALTA
+abrirAltaUsuario.addEventListener("click", function () {
+    formularioAltaUsuario.reset();
+    mensajeAltaUsuario.textContent = "";
+    modalAltaUsuario.showModal();
+});
+
+// CERRAR EL FORMULARIO DE ALTA
+cerrarAltaUsuario.addEventListener("click", function () {
+    modalAltaUsuario.close();
+});
+
+// EVITAR CERRAR CON ESCAPE MIENTRAS SE GUARDA
+modalAltaUsuario.addEventListener("cancel", function (evento) {
+    if (guardandoUsuario) {
+        evento.preventDefault();
+    }
+});
+
+// ENVIAR EL FORMULARIO DE ALTA
+formularioAltaUsuario.addEventListener("submit", guardarUsuarioInterno);

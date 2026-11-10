@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
@@ -99,5 +100,56 @@ class UsuarioController extends Controller
                 'created_at' => $usuario->created_at
             ]
         ], 200);
+    }    // DAR DE ALTA PERSONAL Y VETERINARIOS
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'fecha_nacimiento' => 'required|date|before_or_equal:today',
+            'rol' => 'required|in:personal,veterinario',
+            'password' => 'required|string|min:8|confirmed'
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser un texto.',
+            'name.max' => 'El nombre no puede superar los 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'email.max' => 'El email no puede superar los 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.',
+            'rol.required' => 'Debes seleccionar un rol.',
+            'rol.in' => 'Solo puedes crear cuentas de personal o veterinario.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string' => 'La contraseña debe ser un texto.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.'
+        ]);
+
+        $usuario = new User();
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->rol = $request->rol;
+        $usuario->estado = 'activo';
+        $usuario->password = Hash::make($request->password);
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario interno creado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado
+            ]
+        ], 201);
     }
+
+
 }

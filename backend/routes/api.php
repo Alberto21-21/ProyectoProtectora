@@ -56,3 +56,7 @@ Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->whereNumber('i
 // RUTAS DE ANIMALES
 Route::get('/animales', [AnimalController::class, 'index']);
 Route::post('/animales', [AnimalController::class, 'store']);
+
+// CREAR CUENTAS INTERNAS: SOLO ADMINISTRADORES
+Route::post('/usuarios', [UsuarioController::class, 'store'])
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
