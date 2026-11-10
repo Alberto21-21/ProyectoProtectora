@@ -200,4 +200,40 @@ class AuthController extends Controller
             ]
         ], 200);
     }
+
+    // CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
+    public function cambiarContrasena(Request $request)
+    {
+        $request->validate([
+            'password_actual' => 'required|string',
+            'password' => 'required|string|min:8|confirmed|different:password_actual'
+        ], [
+            'password_actual.required' => 'La contraseña actual es obligatoria.',
+            'password_actual.string' => 'La contraseña actual debe ser un texto.',
+            'password.required' => 'La nueva contraseña es obligatoria.',
+            'password.string' => 'La nueva contraseña debe ser un texto.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas nuevas no coinciden.',
+            'password.different' => 'La nueva contraseña debe ser diferente de la actual.'
+        ]);
+
+        $usuario = $request->user();
+
+        // COMPROBAR LA CONTRASEÑA ACTUAL
+        if (!Hash::check($request->password_actual, $usuario->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La contraseña actual es incorrecta.'
+            ], 422);
+        }
+
+        // GUARDAR EL HASH DE LA NUEVA CONTRASEÑA
+        $usuario->password = Hash::make($request->password);
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña actualizada correctamente.'
+        ], 200);
+    }
 }
