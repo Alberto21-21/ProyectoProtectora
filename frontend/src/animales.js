@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const rolUsuario = usuarioSesion.rol || "adoptante";
 
     // Si el usuario no tiene rol autorizado, redirige al inicio
-    /*if (!rolesAutorizados.includes(rolUsuario)) {
+    if (!rolesAutorizados.includes(rolUsuario)) {
         alert("No tienes permisos para acceder a la gestión de animales.");
         window.location.href = "index.html";
         return;
-    }*/
+    }
 
     // -------------------------------------------------------------
     // ELEMENTOS DEL DOM
