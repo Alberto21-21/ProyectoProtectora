@@ -97,8 +97,16 @@
 
             <!-- LISTADO -->
             <div class="tabla-usuarios">
-                <table>
-                    <caption>Listado de usuarios</caption>
+
+                <div class="cabecera-listado">
+                    <h2 id="tituloListadoUsuarios">Listado de usuarios</h2>
+
+                    <button type="button" id="abrirAltaUsuario">
+                        Añadir usuario interno
+                    </button>
+                </div>
+
+                <table aria-labelledby="tituloListadoUsuarios">
 
                     <thead>
                         <tr>
@@ -196,6 +204,93 @@
             </div>
 
         </dialog>
+
+        <!-- ALTA DE PERSONAL Y VETERINARIOS -->
+    <dialog
+        id="modalAltaUsuario"
+        class="modal-acceso"
+        aria-labelledby="tituloAltaUsuario"
+    >
+
+        <button
+            type="button"
+            id="cerrarAltaUsuario"
+            class="cerrar-modal"
+            aria-label="Cerrar alta de usuario"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloAltaUsuario">Añadir usuario interno</h2>
+
+        <form id="formularioAltaUsuario">
+
+            <label for="nombreAltaUsuario">Nombre</label>
+            <input
+                type="text"
+                id="nombreAltaUsuario"
+                name="name"
+                autocomplete="name"
+                maxlength="255"
+                required
+            >
+
+            <label for="emailAltaUsuario">Correo electrónico</label>
+            <input
+                type="email"
+                id="emailAltaUsuario"
+                name="email"
+                autocomplete="off"
+                maxlength="255"
+                required
+            >
+
+            <label for="fechaAltaUsuario">Fecha de nacimiento</label>
+            <input
+                type="date"
+                id="fechaAltaUsuario"
+                name="fecha_nacimiento"
+                required
+            >
+
+            <label for="rolAltaUsuario">Rol</label>
+            <select id="rolAltaUsuario" name="rol" required>
+                <option value="">Selecciona un rol</option>
+                <option value="personal">Personal</option>
+                <option value="veterinario">Veterinario</option>
+            </select>
+
+            <label for="passwordAltaUsuario">Contraseña</label>
+            <input
+                type="password"
+                id="passwordAltaUsuario"
+                name="password"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <label for="confirmarPasswordAltaUsuario">
+                Repite la contraseña
+            </label>
+            <input
+                type="password"
+                id="confirmarPasswordAltaUsuario"
+                name="password_confirmation"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <p id="mensajeAltaUsuario" role="status"></p>
+
+            <button type="submit" id="botonCrearUsuario">
+                Crear cuenta
+            </button>
+
+        </form>
+
+    </dialog>
 
     </main>
 

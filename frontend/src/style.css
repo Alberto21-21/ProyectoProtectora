@@ -1265,3 +1265,157 @@ button:focus-visible {
     }
 
 }
+
+/* BOTONES DEL ALTA DE USUARIOS */
+
+#abrirAltaUsuario,
+#botonCrearUsuario {
+    padding: 13px 22px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#abrirAltaUsuario {
+    margin-bottom: 20px;
+}
+
+#abrirAltaUsuario:hover,
+#botonCrearUsuario:hover {
+    background-color: #8B5C4A;
+}
+
+#botonCrearUsuario:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+
+/* VENTANA DE ALTA DE USUARIOS */
+
+#modalAltaUsuario {
+    max-width: 460px;
+    padding: 40px 25px 25px;
+}
+
+#modalAltaUsuario h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+
+/* FORMULARIO DE ALTA DE USUARIOS */
+
+#formularioAltaUsuario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#formularioAltaUsuario label {
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioAltaUsuario input,
+#formularioAltaUsuario select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#formularioAltaUsuario input:focus,
+#formularioAltaUsuario select:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#botonCrearUsuario {
+    margin-top: 10px;
+}
+
+#mensajeAltaUsuario {
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeAltaUsuario:empty {
+    display: none;
+}
+
+
+/* ALTA DE USUARIOS EN MÓVILES */
+
+@media (max-width: 480px) {
+
+    #modalAltaUsuario {
+        padding: 40px 20px 25px;
+    }
+
+    #formularioAltaUsuario input,
+    #formularioAltaUsuario select {
+        font-size: 16px;
+    }
+
+}
+
+/* CABECERA DEL LISTADO DE USUARIOS */
+
+.cabecera-listado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+}
+
+.cabecera-listado h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.cabecera-listado #abrirAltaUsuario {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+
+    .cabecera-listado {
+        padding: 20px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cabecera-listado #abrirAltaUsuario {
+        width: 100%;
+    }
+
+}
+
+/* BOTÓN DE ALTA EN NARANJA */
+
+.cabecera-listado #abrirAltaUsuario {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.cabecera-listado #abrirAltaUsuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
