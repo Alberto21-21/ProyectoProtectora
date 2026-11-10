@@ -55,4 +55,5 @@ Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->whereNumber('i
 
 // RUTAS DE ANIMALES
 Route::get('/animales', [AnimalController::class, 'index']);
+Route::get('/animales/{id}', [AnimalController::class, 'show'])->whereNumber('id');
 Route::post('/animales', [AnimalController::class, 'store']);
