@@ -1448,3 +1448,119 @@ button:focus-visible {
     background-color: #300E28;
     color: #FFFFFF;
 }
+
+/* ACCIONES DE LAS CUENTAS */
+
+.acciones-cuenta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.acciones-cuenta button {
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+.acciones-cuenta .boton-editar-usuario {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-cuenta .boton-editar-usuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.acciones-cuenta .boton-desactivar-usuario {
+    background-color: #F5F5F5;
+    color: #300E28;
+    border: 1px solid #8B5C4A;
+}
+
+.acciones-cuenta .boton-desactivar-usuario:hover {
+    background-color: #8B5C4A;
+    color: #FFFFFF;
+}
+
+.acciones-cuenta button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+
+/* VENTANA DE EDICIÓN DE USUARIOS */
+
+#modalEditarUsuario {
+    max-width: 460px;
+}
+
+#formularioEditarUsuario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formularioEditarUsuario label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioEditarUsuario input {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#formularioEditarUsuario input:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#mensajeEditarUsuario {
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeEditarUsuario:empty {
+    display: none;
+}
+
+#botonActualizarUsuario {
+    margin-top: 10px;
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonActualizarUsuario:hover {
+    background-color: #8B5C4A;
+}
+
+#botonActualizarUsuario:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+@media (max-width: 480px) {
+
+    #formularioEditarUsuario input {
+        font-size: 16px;
+    }
+
+}
