@@ -14,6 +14,7 @@ class Animal extends Model
     protected $fillable = [
         'nombre',
         'fotografia',
+        'imagen',
         'especie',
         'raza',
         'fecha_nacimiento',
@@ -24,15 +25,23 @@ class Animal extends Model
         'motivo',
         'estado',
         'caracter',
+        'descripcion',
         'con_ninos',
         'con_otros_animales',
         'con_desconocidos',
         'necesidades_especiales',
         'observaciones',
+        'observaciones_clinicas',
         'user_id',
     ];
 
-    // USUARIO DEL PERSONAL QUE REGISTRO AL ANIMAL
+    // Ocultar atributos sensibles/clínicos por defecto en serialización JSON
+    protected $hidden = [
+        'necesidades_especiales',
+        'observaciones_clinicas',
+    ];
+
+    // Relación con el usuario del personal que registró al animal
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');

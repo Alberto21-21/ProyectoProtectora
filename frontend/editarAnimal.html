@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar animal - Salvando Huellas</title>
+
+    <!-- TIPOGRAFIA CORPORATIVA -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                Salvando Huellas
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+
+                <a href="animales.html" aria-current="page">
+                    Animales
+                </a>
+
+                <a href="perfil.html">
+                    Mi perfil
+                </a>
+
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>
+                    Usuarios
+                </a>
+
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+
+    </header>
+
+    <!-- CONTENIDO -->
+    <main class="contenido-perfil">
+
+        <!-- PRESENTACION -->
+        <div class="titulo-perfil">
+
+            <span>ADMINISTRACIÓN</span>
+
+            <h1>Editar ficha del animal</h1>
+
+            <p>Mantén actualizados los datos de los animales de la protectora.</p>
+
+        </div>
+
+        <!-- MENSAJES -->
+        <p id="mensajeFicha" role="status"></p>
+
+        <!-- FICHA DEL ANIMAL -->
+        <div id="datosAnimal" class="distribucion-perfil" hidden>
+
+            <!-- FOTOGRAFÍA -->
+            <aside class="resumen-perfil">
+
+                <div class="avatar-perfil" id="imagenPredeterminada" aria-hidden="true">
+                    🐾
+                </div>
+
+                <img
+                    id="imagenAnimal"
+                    alt="Fotografía del animal"
+                    hidden
+                >
+
+                <h2 id="nombreAnimalTitulo"></h2>
+
+                <!-- CAMBIAR LA FOTOGRAFÍA DEL ANIMAL -->
+                <form id="formularioImagen">
+
+                    <label for="imagenEditar" class="seleccionar-fotografia">
+                        Seleccionar fotografía
+                    </label>
+
+                    <input
+                        type="file"
+                        id="imagenEditar"
+                        name="imagen"
+                        accept="image/jpeg,image/png,image/webp"
+                        required
+                    >
+
+                    <p id="mensajeImagen" role="status"></p>
+
+                    <button type="submit" id="botonGuardarImagen">
+                        Guardar fotografía
+                    </button>
+
+                </form>
+
+            </aside>
+
+            <section class="informacion-perfil">
+
+                <!-- FORMULARIO DE DATOS GENERALES -->
+                <form id="formularioAnimal">
+
+                    <h2>Datos generales</h2>
+
+                    <label for="nombreEditar">Nombre</label>
+                    <input
+                        type="text"
+                        id="nombreEditar"
+                        name="nombre"
+                        maxlength="255"
+                        required
+                    >
+
+                    <label for="especieEditar">Especie</label>
+                    <select id="especieEditar" name="especie" required>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+
+                    <label for="razaEditar">Raza</label>
+                    <input
+                        type="text"
+                        id="razaEditar"
+                        name="raza"
+                        maxlength="100"
+                    >
+
+                    <label for="edadEditar">Edad (años)</label>
+                    <input
+                        type="number"
+                        id="edadEditar"
+                        name="edad"
+                        min="0"
+                        max="40"
+                    >
+
+                    <label for="sexoEditar">Sexo</label>
+                    <select id="sexoEditar" name="sexo" required>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                    </select>
+
+                    <label for="estadoEditar">Estado</label>
+                    <select id="estadoEditar" name="estado" required>
+                        <option value="Disponible">Disponible</option>
+                        <option value="En acogida">En acogida</option>
+                        <option value="Adoptado">Adoptado</option>
+                        <option value="En Tratamiento">En Tratamiento</option>
+                    </select>
+
+                    <label for="pesoEditar">Peso (kg)</label>
+                    <input
+                        type="number"
+                        id="pesoEditar"
+                        name="peso"
+                        min="0"
+                        max="200"
+                        step="0.01"
+                    >
+
+                    <label for="caracterEditar">Carácter</label>
+                    <input
+                        type="text"
+                        id="caracterEditar"
+                        name="caracter"
+                        maxlength="255"
+                    >
+
+                    <label for="descripcionEditar">Descripción</label>
+                    <textarea
+                        id="descripcionEditar"
+                        name="descripcion"
+                        rows="4"
+                    ></textarea>
+
+                    <p id="mensajeAnimal" role="status"></p>
+
+                    <button type="submit" id="botonGuardarAnimal">
+                        Guardar cambios
+                    </button>
+
+                </form>
+
+                <!-- FORMULARIO DE DATOS CLÍNICOS (SOLO VETERINARIO Y ADMINISTRADOR) -->
+                <form id="formularioClinico" hidden>
+
+                    <h2>Información clínica restringida</h2>
+
+                    <label for="necesidadesEditar">Necesidades especiales</label>
+                    <textarea
+                        id="necesidadesEditar"
+                        name="necesidades_especiales"
+                        rows="3"
+                        maxlength="2000"
+                    ></textarea>
+
+                    <label for="observacionesEditar">Observaciones clínicas</label>
+                    <textarea
+                        id="observacionesEditar"
+                        name="observaciones_clinicas"
+                        rows="4"
+                        maxlength="2000"
+                    ></textarea>
+
+                    <p id="mensajeClinico" role="status"></p>
+
+                    <button type="submit" id="botonGuardarClinico">
+                        Guardar datos clínicos
+                    </button>
+
+                </form>
+
+                <!-- AVISO PARA EL PERSONAL SIN ACCESO CLÍNICO -->
+                <p id="avisoClinico" hidden>
+                    La información clínica solo puede consultarla y editarla un veterinario o un administrador.
+                </p>
+
+                <a href="animales.html">Volver al listado de animales</a>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <script type="module" src="/src/editarAnimal.js"></script>
+
+</body>
+
+</html>

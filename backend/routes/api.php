@@ -5,7 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EmpleadoController;
 use App\Http\Middleware\EsAdministrador;
+use App\Http\Middleware\EsPersonalAutorizado;
+use App\Http\Middleware\EsVeterinario;
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
 Route::get('/user', function (Request $request) {
@@ -53,9 +56,55 @@ Route::get('/usuarios', [UsuarioController::class, 'index'])
 Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->whereNumber('id')
     ->middleware(['auth:sanctum', EsAdministrador::class]);
 
-// LISTAR LOS ANIMALES
+// CREAR CUENTAS INTERNAS: SOLO ADMINISTRADORES
+Route::post('/usuarios', [UsuarioController::class, 'store'])
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// CREAR FICHA LABORAL: SOLO ADMINISTRADORES
+Route::post('/empleados', [EmpleadoController::class, 'store'])
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// CONSULTAR FICHA POR CUENTA: SOLO ADMINISTRADORES
+Route::get('/empleados/usuario/{userId}', [EmpleadoController::class, 'mostrarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// EDITAR FICHA POR CUENTA: SOLO ADMINISTRADORES
+Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualizarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// ==========================================================================
+// RUTAS DE ANIMALES
+// ==========================================================================
+
+// LISTAR TODOS LOS ANIMALES
 Route::get('/animales', [AnimalController::class, 'index']);
 
-// DAR DE ALTA UN ANIMAL: SOLO PERSONAL AUTORIZADO
+// CONSULTAR EL DETALLE DE UN ANIMAL
+Route::get('/animales/{id}', [AnimalController::class, 'show'])
+    ->whereNumber('id');
+
+// DAR DE ALTA UN ANIMAL: SOLO PERSONAL AUTORIZADO / AUTENTICADO
 Route::post('/animales', [AnimalController::class, 'store'])
     ->middleware('auth:sanctum');
+
+// EDITAR LOS DATOS GENERALES DE UN ANIMAL: SOLO PERSONAL AUTORIZADO
+Route::put('/animales/{id}', [AnimalController::class, 'update'])
+    ->whereNumber('id')
+    ->middleware(['auth:sanctum', EsPersonalAutorizado::class]);
+
+// CAMBIAR LA FOTOGRAFÍA DE UN ANIMAL: SOLO PERSONAL AUTORIZADO
+Route::post('/animales/{id}/imagen', [AnimalController::class, 'actualizarImagen'])
+    ->whereNumber('id')
+    ->middleware(['auth:sanctum', EsPersonalAutorizado::class]);
+
+// CONSULTAR LOS DATOS CLÍNICOS: SOLO VETERINARIOS Y ADMINISTRADORES
+Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
+    ->whereNumber('id')
+    ->middleware(['auth:sanctum', EsVeterinario::class]);
+
+// EDITAR LOS DATOS CLÍNICOS: SOLO VETERINARIOS Y ADMINISTRADORES
+Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosClinicos'])
+    ->whereNumber('id')
+    ->middleware(['auth:sanctum', EsVeterinario::class]);
