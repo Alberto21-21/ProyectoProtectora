@@ -13,12 +13,28 @@ class Animal extends Model
 
     protected $fillable = [
         'nombre',
+        'fotografia',
         'especie',
         'raza',
-        'edad',
+        'fecha_nacimiento',
         'sexo',
+        'tamano',
+        'peso',
+        'fecha_entrada',
+        'motivo',
         'estado',
-        'descripcion',
-        'imagen',
+        'caracter',
+        'con_ninos',
+        'con_otros_animales',
+        'con_desconocidos',
+        'necesidades_especiales',
+        'observaciones',
+        'user_id',
     ];
+
+    // USUARIO DEL PERSONAL QUE REGISTRO AL ANIMAL
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

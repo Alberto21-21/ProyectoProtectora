@@ -53,6 +53,9 @@ Route::get('/usuarios', [UsuarioController::class, 'index'])
 Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->whereNumber('id')
     ->middleware(['auth:sanctum', EsAdministrador::class]);
 
-// RUTAS DE ANIMALES
+// LISTAR LOS ANIMALES
 Route::get('/animales', [AnimalController::class, 'index']);
-Route::post('/animales', [AnimalController::class, 'store']);
+
+// DAR DE ALTA UN ANIMAL: SOLO PERSONAL AUTORIZADO
+Route::post('/animales', [AnimalController::class, 'store'])
+    ->middleware('auth:sanctum');

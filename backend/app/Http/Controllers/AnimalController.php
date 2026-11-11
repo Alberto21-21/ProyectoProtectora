@@ -7,32 +7,40 @@ use App\Models\Animal;
 
 class AnimalController extends Controller
 {
-    /**
-     * Obtener el listado de todos los animales.
-     */
+    // LISTAR TODOS LOS ANIMALES
     public function index()
     {
         return response()->json(Animal::all(), 200);
     }
 
-    /**
-     * Registrar un nuevo animal.
-     */
+    // DAR DE ALTA UN ANIMAL
     public function store(StoreAnimalRequest $request)
     {
-        // Obtiene los datos ya validados y autorizados por el Request
-        $validated = $request->validated();
+        // DATOS YA VALIDADOS POR EL REQUEST
+        $datos = $request->validated();
 
-        if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('animales', 'public');
-            $validated['imagen'] = $path;
+        // GUARDAR LA FOTOGRAFIA SI SE HA ENVIADO
+        if ($request->hasFile('fotografia')) {
+            $datos['fotografia'] = $request->file('fotografia')->store('animales', 'public');
         }
 
-        $animal = Animal::create($validated);
+        // GUARDAR QUIEN DA DE ALTA AL ANIMAL
+        $datos['user_id'] = $request->user()->id;
+
+        $animal = Animal::create($datos);
 
         return response()->json([
-            'message' => 'Animal registrado correctamente',
-            'animal'  => $animal
+            'success' => true,
+            'message' => 'Animal registrado correctamente.',
+            'data' => [
+                'id' => $animal->id,
+                'nombre' => $animal->nombre,
+                'especie' => $animal->especie,
+                'estado' => $animal->estado,
+                'fotografia_url' => $animal->fotografia
+                    ? asset('storage/' . $animal->fotografia)
+                    : null
+            ]
         ], 201);
     }
 }
