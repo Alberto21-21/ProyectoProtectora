@@ -47,33 +47,55 @@ class AnimalController extends Controller
         $animal = Animal::find($id);
 
         if (!$animal) {
-            return response()->json(['message' => 'Animal no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Animal no encontrado.'
+            ], 404);
         }
 
         return response()->json($animal, 200);
     }
 
     /**
-     * Registrar un nuevo animal (manteniendo tu método store).
+     * Registrar un nuevo animal (Dar de alta).
      */
     public function store(StoreAnimalRequest $request)
     {
-        $validated = $request->validated();
+        // Datos validados por el FormRequest
+        $datos = $request->validated();
 
-        if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('animales', 'public');
-            $validated['imagen'] = $path;
+        // Guardar la fotografía si se ha subido
+        if ($request->hasFile('fotografia')) {
+            $datos['fotografia'] = $request->file('fotografia')->store('animales', 'public');
+        } elseif ($request->hasFile('imagen')) {
+            $datos['fotografia'] = $request->file('imagen')->store('animales', 'public');
         }
 
-        $animal = Animal::create($validated);
+        // Registrar el usuario que da de alta (si hay autenticación activa)
+        if ($request->user()) {
+            $datos['user_id'] = $request->user()->id;
+        }
+
+        $animal = Animal::create($datos);
 
         return response()->json([
-            'message' => 'Animal registrado correctamente',
-            'animal'  => $animal
+            'success' => true,
+            'message' => 'Animal registrado correctamente.',
+            'data' => [
+                'id' => $animal->id,
+                'nombre' => $animal->nombre,
+                'especie' => $animal->especie,
+                'estado' => $animal->estado,
+                'fotografia_url' => $animal->fotografia
+                    ? asset('storage/' . $animal->fotografia)
+                    : null
+            ]
         ], 201);
     }
 
-    // ACTUALIZAR LOS DATOS GENERALES DE UN ANIMAL
+    /**
+     * Actualizar los datos generales de un animal.
+     */
     public function update(Request $request, $id)
     {
         $animal = Animal::find($id);
@@ -118,7 +140,6 @@ class AnimalController extends Controller
             'descripcion.string' => 'La descripción debe ser un texto.'
         ]);
 
-        // SOLO SE GUARDAN LOS DATOS GENERALES, LOS CLÍNICOS NO SE TOCAN AQUÍ
         $animal->nombre = $request->nombre;
         $animal->especie = $request->especie;
         $animal->raza = $request->raza;
@@ -137,7 +158,9 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    // ACTUALIZAR LA FOTOGRAFÍA DE UN ANIMAL
+    /**
+     * Actualizar la fotografía de un animal.
+     */
     public function actualizarImagen(Request $request, $id)
     {
         $animal = Animal::find($id);
@@ -160,13 +183,13 @@ class AnimalController extends Controller
 
         $imagenAnterior = $animal->imagen;
 
-        // GUARDAR LA NUEVA IMAGEN
+        // Guardar la nueva imagen
         $ruta = $request->file('imagen')->store('animales', 'public');
 
         $animal->imagen = $ruta;
         $animal->save();
 
-        // ELIMINAR LA IMAGEN ANTERIOR
+        // Eliminar la imagen anterior si existía
         if ($imagenAnterior) {
             Storage::disk('public')->delete($imagenAnterior);
         }
@@ -180,7 +203,9 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    // CONSULTAR LOS DATOS CLÍNICOS DE UN ANIMAL
+    /**
+     * Consultar los datos clínicos de un animal.
+     */
     public function mostrarDatosClinicos($id)
     {
         $animal = Animal::find($id);
@@ -202,7 +227,9 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    // ACTUALIZAR LOS DATOS CLÍNICOS DE UN ANIMAL
+    /**
+     * Actualizar los datos clínicos de un animal.
+     */
     public function actualizarDatosClinicos(Request $request, $id)
     {
         $animal = Animal::find($id);

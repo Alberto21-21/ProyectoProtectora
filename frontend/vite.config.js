@@ -7,7 +7,8 @@ export default defineConfig({
                 inicio: "index.html",
                 registro: "registro.html",
                 login: "login.html",
-                perfil: "perfil.html"
+                perfil: "perfil.html",
+                animales: "animales.html"
             }
         }
     }

@@ -343,6 +343,7 @@ button:focus-visible {
 #botonGuardarPerfil,
 #botonGuardarFotografia,
 #botonGuardarContrasena,
+#botonGuardarAnimal,
 #botonCerrarSesion {
     padding: 13px;
     border: none;
@@ -360,6 +361,7 @@ button:focus-visible {
 #botonGuardarPerfil:hover,
 #botonGuardarFotografia:hover,
 #botonGuardarContrasena:hover,
+#botonGuardarAnimal:hover,
 #botonCerrarSesion:hover {
     background-color: #8B5C4A;
 }
@@ -369,6 +371,7 @@ button:focus-visible {
 #botonGuardarPerfil:disabled,
 #botonGuardarFotografia:disabled,
 #botonGuardarContrasena:disabled,
+#botonGuardarAnimal:disabled,
 #botonCerrarSesion:disabled {
     opacity: 0.6;
     cursor: wait;
@@ -1020,6 +1023,32 @@ button:focus-visible {
 #formularioAnimal textarea:focus {
     outline: 2px solid #300E28;
     outline-offset: 2px;
+}
+
+/* ERRORES DE CADA CAMPO DEL ANIMAL */
+#formularioAnimal .error-campo {
+    margin: 0;
+    color: #B3261E;
+    font-size: 13px;
+}
+
+#formularioAnimal .error-campo:empty {
+    display: none;
+}
+
+#botonGuardarAnimal {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#mensajeAnimal {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#mensajeAnimal:empty {
+    display: none;
 }
 
 

@@ -1,6 +1,33 @@
+// DAR DE ALTA UN ANIMAL
+export async function crearAnimal(datos, token) {
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales",
+        {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: datos
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        const error = new Error(
+            resultado.message || "No se pudo registrar el animal."
+        );
+        // Errores de validación devueltos por campo por Laravel
+        error.errores = resultado.errors;
+        throw error;
+    }
+
+    return resultado;
+}
+
 // CONSULTAR LA FICHA DE UN ANIMAL
 export async function obtenerAnimal(id) {
-
     const respuesta = await fetch(
         "http://127.0.0.1:8000/api/animales/" + id,
         {
@@ -24,7 +51,6 @@ export async function obtenerAnimal(id) {
 
 // ACTUALIZAR LOS DATOS GENERALES DE UN ANIMAL
 export async function actualizarAnimal(id, datos, token) {
-
     const respuesta = await fetch(
         "http://127.0.0.1:8000/api/animales/" + id,
         {
@@ -51,7 +77,6 @@ export async function actualizarAnimal(id, datos, token) {
 
 // ACTUALIZAR LA FOTOGRAFÍA DE UN ANIMAL
 export async function actualizarImagenAnimal(id, imagen, token) {
-
     const datos = new FormData();
     datos.append("imagen", imagen);
 
@@ -80,7 +105,6 @@ export async function actualizarImagenAnimal(id, imagen, token) {
 
 // CONSULTAR LOS DATOS CLÍNICOS DE UN ANIMAL
 export async function obtenerDatosClinicos(id, token) {
-
     const respuesta = await fetch(
         "http://127.0.0.1:8000/api/animales/" + id + "/clinico",
         {
@@ -105,7 +129,6 @@ export async function obtenerDatosClinicos(id, token) {
 
 // ACTUALIZAR LOS DATOS CLÍNICOS DE UN ANIMAL
 export async function actualizarDatosClinicos(id, datos, token) {
-
     const respuesta = await fetch(
         "http://127.0.0.1:8000/api/animales/" + id + "/clinico",
         {

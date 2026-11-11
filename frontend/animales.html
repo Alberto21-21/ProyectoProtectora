@@ -30,73 +30,80 @@
 
         <div class="titulo-perfil">
             <span>ADMINISTRACIÓN</span>
-            <h1>Consulta y Fichas de Animales</h1>
-            <p>Filtra y localiza la información técnica de los animales registrados.</p>
+            <h1>Gestión y Consulta de Animales</h1>
+            <p>Registra nuevos animales o filtra y localiza la información técnica de los ya existentes.</p>
         </div>
 
         <p id="mensajeAnimal" role="status"></p>
 
-        <!-- BARRA DE BÚSQUEDA Y FILTROS -->
-        <form id="formularioFiltros">
-            <div>
-                <label for="buscarTexto">Búsqueda</label>
-                <input type="text" id="buscarTexto" placeholder="Nombre o raza...">
-            </div>
+        <!-- SECCIÓN DE ALTA DE ANIMAL -->
+        <div id="gestionAnimales" class="distribucion-perfil">
 
-            <div>
-                <label for="filtroEspecie">Especie</label>
-                <select id="filtroEspecie">
-                    <option value="">Todas</option>
-                    <option value="Perro">Perro</option>
-                    <option value="Gato">Gato</option>
-                    <option value="Otro">Otro</option>
-                </select>
-            </div>
+            <!-- TARJETA IZQUIERDA -->
+            <aside class="resumen-perfil">
+                <div class="avatar-perfil">
+                    🐾
+                </div>
 
-            <div>
-                <label for="filtroEstado">Estado</label>
-                <select id="filtroEstado">
-                    <option value="">Todos</option>
-                    <option value="Disponible">Disponible</option>
-                    <option value="En acogida">En acogida</option>
-                    <option value="Adoptado">Adoptado</option>
-                </select>
-            </div>
+                <h2>Alta de Animales</h2>
 
-            <button type="submit" id="botonFiltrar">Filtrar</button>
-            <button type="button" id="botonLimpiarFiltros">Limpiar</button>
-        </form>
+                <span>
+                    Un espacio para registrar la llegada de los animales a la protectora.
+                </span>
+            </aside>
 
-        <!-- TABLA DE RESULTADOS -->
-        <div class="tabla-usuarios">
-            <table>
-                <caption>Animales registrados</caption>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Especie</th>
-                        <th>Raza</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaCuerpoAnimales">
-                    <!-- Las filas se generan con animales.js -->
-                </tbody>
-            </table>
-        </div>
+            <!-- TARJETA DERECHA CON EL FORMULARIO COMPLETO -->
+            <section class="informacion-perfil">
 
-    </main>
+                <h2>Datos del animal</h2>
 
-    <!-- MODAL DE DETALLE / FICHA COMPLETA -->
-    <dialog id="modalDetalleAnimal" class="modal-acceso modal-detalle">
-        <button type="button" id="cerrarDetalleAnimal" class="cerrar-modal">×</button>
-        <div class="detalle-animal-body" id="contenidoFichaAnimal">
-            <!-- Datos cargados dinámicamente -->
-        </div>
-        <a href="editarAnimal.html" id="enlaceEditarAnimal">Editar ficha</a>
-    </dialog>
+                <form id="formularioAnimal">
 
-    <script type="module" src="/src/animales.js"></script>
-</body>
-</html>
+                    <!-- NOMBRE -->
+                    <label for="nombreAnimal">Nombre *</label>
+                    <input type="text" id="nombreAnimal" name="nombre" placeholder="Nombre" maxlength="255" required>
+                    <p class="error-campo" id="error-nombre"></p>
+
+                    <!-- FOTOGRAFÍA -->
+                    <label for="fotografiaAnimal">Fotografía</label>
+                    <input type="file" id="fotografiaAnimal" name="fotografia" accept="image/jpeg,image/png,image/webp">
+                    <p class="error-campo" id="error-fotografia"></p>
+
+                    <!-- ESPECIE -->
+                    <label for="especieAnimal">Especie *</label>
+                    <select id="especieAnimal" name="especie" required>
+                        <option value="">Selecciona una especie</option>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <p class="error-campo" id="error-especie"></p>
+
+                    <!-- RAZA -->
+                    <label for="razaAnimal">Raza / características</label>
+                    <input type="text" id="razaAnimal" name="raza" placeholder="Raza / características" maxlength="255">
+                    <p class="error-campo" id="error-raza"></p>
+
+                    <!-- FECHA DE NACIMIENTO -->
+                    <label for="nacimientoAnimal">Nacimiento aproximado</label>
+                    <input type="date" id="nacimientoAnimal" name="fecha_nacimiento">
+                    <p class="error-campo" id="error-fecha_nacimiento"></p>
+
+                    <!-- SEXO -->
+                    <label for="sexoAnimal">Sexo *</label>
+                    <select id="sexoAnimal" name="sexo" required>
+                        <option value="">Selecciona el sexo</option>
+                        <option value="Hembra">Hembra</option>
+                        <option value="Macho">Macho</option>
+                    </select>
+                    <p class="error-campo" id="error-sexo"></p>
+
+                    <!-- TAMAÑO -->
+                    <label for="tamanoAnimal">Tamaño *</label>
+                    <select id="tamanoAnimal" name="tamano" required>
+                        <option value="">Selecciona el tamaño</option>
+                        <option value="Pequeño">Pequeño</option>
+                        <option value="Mediano">Mediano</option>
+                        <option value="Grande">Grande</option>
+                    </select>
+                    <p class="error-campo" id="error-
