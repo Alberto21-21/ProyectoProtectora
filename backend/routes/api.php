@@ -8,6 +8,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Middleware\EsAdministrador;
 use App\Http\Middleware\EsPersonalAutorizado;
 use App\Http\Middleware\EsVeterinario;
+use App\Http\Controllers\EmpleadoController;
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
 Route::get('/user', function (Request $request) {
@@ -81,5 +82,19 @@ Route::post('/animales', [AnimalController::class, 'store']);
 
 // CREAR CUENTAS INTERNAS: SOLO ADMINISTRADORES
 Route::post('/usuarios', [UsuarioController::class, 'store'])
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+    // CREAR FICHA LABORAL: SOLO ADMINISTRADORES
+Route::post('/empleados', [EmpleadoController::class, 'store'])
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// CONSULTAR FICHA POR CUENTA: SOLO ADMINISTRADORES
+Route::get('/empleados/usuario/{userId}', [EmpleadoController::class, 'mostrarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// EDITAR FICHA POR CUENTA: SOLO ADMINISTRADORES
+Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualizarPorUsuario'])
+    ->whereNumber('userId')
     ->middleware(['auth:sanctum', EsAdministrador::class]);
 

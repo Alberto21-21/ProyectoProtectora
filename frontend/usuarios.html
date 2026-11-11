@@ -203,6 +203,75 @@
 
             </div>
 
+            <section id="seccionFichaLaboral" hidden>
+    <hr>
+    <h3>Ficha laboral</h3>
+    <p id="mensajeFichaLaboral" role="status"></p>
+
+    <dl class="lista-datos-perfil">
+        <div class="dato-perfil">
+            <dt>Teléfono</dt>
+            <dd id="telefonoFichaLaboral"></dd>
+        </div>
+
+        <div class="dato-perfil">
+            <dt>Puesto</dt>
+            <dd id="puestoFichaLaboral"></dd>
+        </div>
+
+        <div class="dato-perfil">
+            <dt>Estado laboral</dt>
+            <dd id="estadoFichaLaboral"></dd>
+        </div>
+
+        <div class="dato-perfil">
+            <dt>Disponibilidad</dt>
+            <dd id="disponibilidadFichaLaboral">
+                Se consulta desde el módulo de disponibilidad (T32).
+            </dd>
+        </div>
+    </dl>
+
+    <button type="button" id="botonCrearFichaLaboral" hidden>
+        Crear ficha laboral
+    </button>
+
+    <button type="button" id="botonEditarFichaLaboral" hidden>
+        Editar ficha laboral
+    </button>
+
+    <form id="formularioFichaLaboral" hidden>
+        <label for="telefonoEmpleado">Teléfono</label>
+        <input
+            type="tel"
+            id="telefonoEmpleado"
+            name="telefono"
+            maxlength="30"
+        >
+
+        <label for="puestoEmpleado">Puesto</label>
+        <input
+            type="text"
+            id="puestoEmpleado"
+            name="puesto"
+            maxlength="100"
+            required
+        >
+
+        <label for="estadoLaboralEmpleado">Estado laboral</label>
+        <select id="estadoLaboralEmpleado" name="estado_laboral" required>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+        </select>
+
+        <button type="submit" id="botonGuardarFichaLaboral">
+            Guardar ficha
+        </button>
+
+        <button type="button" id="cancelarFichaLaboral">Cancelar</button>
+    </form>
+</section>
+
         </dialog>
 
         <!-- ALTA DE PERSONAL Y VETERINARIOS -->
