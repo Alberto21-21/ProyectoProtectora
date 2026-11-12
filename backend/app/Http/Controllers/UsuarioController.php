@@ -151,5 +151,96 @@ class UsuarioController extends Controller
         ], 201);
     }
 
+        // EDITAR LOS DATOS DE UNA CUENTA
+    public function update(Request $request, $id)
+    {
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
+            'fecha_nacimiento' => 'required|date|before_or_equal:today'
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser un texto.',
+            'name.max' => 'El nombre no puede superar los 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'email.max' => 'El email no puede superar los 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.'
+        ]);
+
+        // EL CORREO NUEVO QUEDA PENDIENTE DE VERIFICAR
+        if ($usuario->email !== $request->email) {
+            $usuario->email_verified_at = null;
+        }
+
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario actualizado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado
+            ]
+        ], 200);
+    }
+
+        // DESACTIVAR UNA CUENTA SIN ELIMINARLA
+    public function desactivar(Request $request, $id)
+    {
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        // EVITAR QUE EL ADMINISTRADOR DESACTIVE SU PROPIA CUENTA
+        if ($usuario->id === $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes desactivar tu propia cuenta.'
+            ], 422);
+        }
+
+        // GUARDAR EL ESTADO Y REVOCAR LOS TOKENS
+        $usuario->getConnection()->transaction(function () use ($usuario) {
+            $usuario->estado = 'inactivo';
+            $usuario->save();
+
+            $usuario->tokens()->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cuenta desactivada correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'estado' => $usuario->estado
+            ]
+        ], 200);
+    }
 
 }

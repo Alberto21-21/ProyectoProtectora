@@ -90,6 +90,17 @@ class AuthController extends Controller
 
         $usuario = Auth::user();
 
+        // IMPEDIR EL ACCESO A CUENTAS DESACTIVADAS
+        if ($usuario->estado !== 'activo') {
+
+            Auth::logout();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Tu cuenta está desactivada.'
+            ], 403);
+        }
+
         // CREAR TOKEN CON LOS PERMISOS DEL USUARIO
         $tokenResultado = $usuario->createToken(
             'LaravelSanctumAuth',

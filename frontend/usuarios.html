@@ -114,7 +114,7 @@
                             <th scope="col">Correo electrónico</th>
                             <th scope="col">Rol</th>
                             <th scope="col">Estado</th>
-                            <th scope="col">Detalle</th>
+                            <th scope="col">Acciones</th>
                         </tr>
                     </thead>
 
@@ -403,6 +403,62 @@
 
             <button type="submit" id="botonCrearUsuario">
                 Crear cuenta
+            </button>
+
+        </form>
+
+    </dialog>
+
+    <!-- EDITAR LOS DATOS DE UNA CUENTA -->
+    <dialog
+        id="modalEditarUsuario"
+        class="modal-acceso"
+        aria-labelledby="tituloEditarUsuario"
+    >
+
+        <button
+            type="button"
+            id="cerrarEditarUsuario"
+            class="cerrar-modal"
+            aria-label="Cerrar edición de usuario"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloEditarUsuario">Editar usuario</h2>
+
+        <form id="formularioEditarUsuario">
+
+            <label for="nombreEditarUsuario">Nombre</label>
+            <input
+                type="text"
+                id="nombreEditarUsuario"
+                name="name"
+                maxlength="255"
+                required
+            >
+
+            <label for="emailEditarUsuario">Correo electrónico</label>
+            <input
+                type="email"
+                id="emailEditarUsuario"
+                name="email"
+                maxlength="255"
+                required
+            >
+
+            <label for="fechaEditarUsuario">Fecha de nacimiento</label>
+            <input
+                type="date"
+                id="fechaEditarUsuario"
+                name="fecha_nacimiento"
+                required
+            >
+
+            <p id="mensajeEditarUsuario" role="status"></p>
+
+            <button type="submit" id="botonActualizarUsuario">
+                Guardar cambios
             </button>
 
         </form>
