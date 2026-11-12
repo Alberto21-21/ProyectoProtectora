@@ -30,72 +30,221 @@
 
         <div class="titulo-perfil">
             <span>ADMINISTRACIÓN</span>
-            <h1>Consulta y Fichas de Animales</h1>
-            <p>Filtra y localiza la información técnica de los animales registrados.</p>
+            <h1>Gestión y Consulta de Animales</h1>
+            <p>Registra nuevos animales o filtra y localiza la información técnica de los ya existentes.</p>
         </div>
 
         <p id="mensajeAnimal" role="status"></p>
 
-        <!-- BARRA DE BÚSQUEDA Y FILTROS -->
-        <form id="formularioFiltros">
-            <div>
-                <label for="buscarTexto">Búsqueda</label>
-                <input type="text" id="buscarTexto" placeholder="Nombre o raza...">
-            </div>
+        <!-- SECCIÓN DE ALTA DE ANIMAL (SOLO VISIBLE PARA ADMIN) -->
+        <div id="gestionAnimales" class="distribucion-perfil" hidden>
 
-            <div>
-                <label for="filtroEspecie">Especie</label>
-                <select id="filtroEspecie">
-                    <option value="">Todas</option>
-                    <option value="Perro">Perro</option>
-                    <option value="Gato">Gato</option>
-                    <option value="Otro">Otro</option>
-                </select>
-            </div>
+            <!-- TARJETA IZQUIERDA -->
+            <aside class="resumen-perfil">
+                <div class="avatar-perfil">
+                    🐾
+                </div>
 
-            <div>
-                <label for="filtroEstado">Estado</label>
-                <select id="filtroEstado">
-                    <option value="">Todos</option>
-                    <option value="Disponible">Disponible</option>
-                    <option value="En acogida">En acogida</option>
-                    <option value="Adoptado">Adoptado</option>
-                </select>
-            </div>
+                <h2>Alta de Animales</h2>
 
-            <button type="submit" id="botonFiltrar">Filtrar</button>
-            <button type="button" id="botonLimpiarFiltros">Limpiar</button>
-        </form>
+                <span>
+                    Un espacio para registrar la llegada de los animales a la protectora.
+                </span>
+            </aside>
 
-        <!-- TABLA DE RESULTADOS -->
-        <div class="tabla-usuarios">
-            <table>
-                <caption>Animales registrados</caption>
+            <!-- TARJETA DERECHA CON EL FORMULARIO COMPLETO -->
+            <section class="informacion-perfil">
+
+                <h2>Datos del animal</h2>
+
+                <form id="formularioAnimal" enctype="multipart/form-data">
+
+                    <!-- NOMBRE -->
+                    <label for="nombreAnimal">Nombre *</label>
+                    <input type="text" id="nombreAnimal" name="nombre" placeholder="Nombre" maxlength="255" required>
+                    <p class="error-campo" id="error-nombre"></p>
+
+                    <!-- FOTOGRAFÍA -->
+                    <label for="fotografiaAnimal">Fotografía</label>
+                    <input type="file" id="fotografiaAnimal" name="fotografia" accept="image/jpeg,image/png,image/webp">
+                    <p class="error-campo" id="error-fotografia"></p>
+
+                    <!-- ESPECIE -->
+                    <label for="especieAnimal">Especie *</label>
+                    <select id="especieAnimal" name="especie" required>
+                        <option value="">Selecciona una especie</option>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <p class="error-campo" id="error-especie"></p>
+
+                    <!-- RAZA -->
+                    <label for="razaAnimal">Raza / características</label>
+                    <input type="text" id="razaAnimal" name="raza" placeholder="Raza / características" maxlength="255">
+                    <p class="error-campo" id="error-raza"></p>
+
+                    <!-- FECHA DE NACIMIENTO -->
+                    <label for="nacimientoAnimal">Nacimiento aproximado</label>
+                    <input type="date" id="nacimientoAnimal" name="fecha_nacimiento">
+                    <p class="error-campo" id="error-fecha_nacimiento"></p>
+
+                    <!-- SEXO -->
+                    <label for="sexoAnimal">Sexo *</label>
+                    <select id="sexoAnimal" name="sexo" required>
+                        <option value="">Selecciona el sexo</option>
+                        <option value="Hembra">Hembra</option>
+                        <option value="Macho">Macho</option>
+                    </select>
+                    <p class="error-campo" id="error-sexo"></p>
+
+                    <!-- TAMAÑO -->
+                    <label for="tamanoAnimal">Tamaño *</label>
+                    <select id="tamanoAnimal" name="tamano" required>
+                        <option value="">Selecciona el tamaño</option>
+                        <option value="Pequeño">Pequeño</option>
+                        <option value="Mediano">Mediano</option>
+                        <option value="Grande">Grande</option>
+                    </select>
+                    <p class="error-campo" id="error-tamano"></p>
+
+                    <!-- PESO -->
+                    <label for="pesoAnimal">Peso (kg)</label>
+                    <input type="number" id="pesoAnimal" name="peso" placeholder="Ej. 15.5" min="0" max="200" step="0.01">
+                    <p class="error-campo" id="error-peso"></p>
+
+                    <!-- FECHA DE ENTRADA -->
+                    <label for="fechaEntradaAnimal">Fecha de entrada *</label>
+                    <input type="date" id="fechaEntradaAnimal" name="fecha_entrada" required>
+                    <p class="error-campo" id="error-fecha_entrada"></p>
+
+                    <!-- MOTIVO -->
+                    <label for="motivoAnimal">Motivo / procedencia</label>
+                    <input type="text" id="motivoAnimal" name="motivo" placeholder="Abandono, rescate..." maxlength="255">
+                    <p class="error-campo" id="error-motivo"></p>
+
+                    <!-- ESTADO -->
+                    <label for="estadoAnimal">Estado inicial *</label>
+                    <select id="estadoAnimal" name="estado" required>
+                        <option value="En acogida">En acogida</option>
+                        <option value="En tratamiento">En tratamiento</option>
+                        <option value="Disponible">Disponible</option>
+                    </select>
+                    <p class="error-campo" id="error-estado"></p>
+
+                    <!-- CARÁCTER -->
+                    <label for="caracterAnimal">Carácter</label>
+                    <input type="text" id="caracterAnimal" name="caracter" placeholder="Cariñoso, juguetón..." maxlength="255">
+                    <p class="error-campo" id="error-caracter"></p>
+
+                    <!-- CONVIVENCIA CON NIÑOS -->
+                    <label for="conNinosAnimal">¿Sociable con niños?</label>
+                    <select id="conNinosAnimal" name="con_ninos">
+                        <option value="">Sin comprobar</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <p class="error-campo" id="error-con_ninos"></p>
+
+                    <!-- CONVIVENCIA CON OTROS ANIMALES -->
+                    <label for="conOtrosAnimales">¿Sociable con otros animales?</label>
+                    <select id="conOtrosAnimales" name="con_otros_animales">
+                        <option value="">Sin comprobar</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <p class="error-campo" id="error-con_otros_animales"></p>
+
+                    <!-- CONVIVENCIA CON DESCONOCIDOS -->
+                    <label for="conDesconocidosAnimal">¿Sociable con desconocidos?</label>
+                    <select id="conDesconocidosAnimal" name="con_desconocidos">
+                        <option value="">Sin comprobar</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <p class="error-campo" id="error-con_desconocidos"></p>
+
+                    <!-- NECESIDADES ESPECIALES -->
+                    <label for="necesidadesAnimal">Necesidades especiales</label>
+                    <textarea id="necesidadesAnimal" name="necesidades_especiales" rows="3" placeholder="Medicación, alimentación especial..."></textarea>
+                    <p class="error-campo" id="error-necesidades_especiales"></p>
+
+                    <!-- OBSERVACIONES -->
+                    <label for="observacionesAnimal">Observaciones</label>
+                    <textarea id="observacionesAnimal" name="observaciones" rows="3" placeholder="Notas internas del personal..."></textarea>
+                    <p class="error-campo" id="error-observaciones"></p>
+
+                    <button type="submit" id="botonGuardarAnimal">Guardar animal</button>
+
+                </form>
+
+            </section>
+        </div>
+
+        <!-- T14: BUSCADOR Y FILTROS (DISPONIBLE PARA TODOS LOS ROLES) -->
+        <section class="informacion-perfil" style="margin-top: 30px; max-width: 100%;">
+            <h2>Catálogo y búsqueda de animales</h2>
+
+            <form id="formularioFiltros" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="buscarTexto">Buscar</label>
+                    <input type="text" id="buscarTexto" placeholder="Nombre o raza...">
+                </div>
+
+                <div>
+                    <label for="filtroEspecie">Especie</label>
+                    <select id="filtroEspecie">
+                        <option value="">Todas las especies</option>
+                        <option value="Perro">Perros</option>
+                        <option value="Gato">Gatos</option>
+                        <option value="Otro">Otros</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filtroEstado">Estado</label>
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="En acogida">En acogida</option>
+                        <option value="En tratamiento">En tratamiento</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Adoptado">Adoptado</option>
+                    </select>
+                </div>
+
+                <button type="button" id="botonLimpiarFiltros">Limpiar filtros</button>
+            </form>
+
+            <!-- TABLA DE ANIMALES -->
+            <table style="width: 100%; border-collapse: collapse;">
                 <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Especie</th>
-                        <th>Raza</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
+                    <tr style="text-align: left; border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px;">Nombre</th>
+                        <th style="padding: 10px;">Especie</th>
+                        <th style="padding: 10px;">Raza</th>
+                        <th style="padding: 10px;">Estado</th>
+                        <th style="padding: 10px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaCuerpoAnimales">
-                    <!-- Las filas se generan con animales.js -->
+                    <!-- Rellenado dinámicamente desde animales.js -->
                 </tbody>
             </table>
-        </div>
+        </section>
 
     </main>
 
-    <!-- MODAL DE DETALLE / FICHA COMPLETA -->
-    <dialog id="modalDetalleAnimal" class="modal-acceso modal-detalle">
-        <button type="button" id="cerrarDetalleAnimal" class="cerrar-modal">×</button>
-        <div class="detalle-animal-body" id="contenidoFichaAnimal">
-            <!-- Datos cargados dinámicamente -->
+    <!-- MODAL PARA VER FICHA DETALLADA -->
+    <dialog id="modalDetalleAnimal" style="border: none; border-radius: 16px; padding: 25px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <div id="contenidoFichaAnimal"></div>
+        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <a href="#" id="enlaceEditarAnimal" class="boton-portada" style="padding: 8px 15px; text-decoration: none;" hidden>Editar ficha</a>
+            <button type="button" id="cerrarDetalleAnimal">Cerrar</button>
         </div>
     </dialog>
 
-    <script type="module" src="/src/animales.js"></script>
+    <script type="module" src="./src/animales.js"></script>
 </body>
+
 </html>
