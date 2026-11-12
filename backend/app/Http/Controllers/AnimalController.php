@@ -3,18 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAnimalRequest;
+use App\Http\Requests\UpdateEstadoAnimalRequest;
 use App\Models\Animal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AnimalController extends Controller
 {
     /**
      * Obtener listado de animales con búsqueda y filtros.
+     * El catálogo público muestra únicamente los animales disponibles.
      */
     public function index(Request $request)
     {
         $query = Animal::query();
+
+        // Detectar usuario autenticado mediante token Bearer en ruta pública
+        $usuario = $request->user('sanctum');
+        if (!$usuario && $request->bearerToken()) {
+            $accessToken = PersonalAccessToken::findToken($request->bearerToken());
+            $usuario = $accessToken?->tokenable;
+        }
+
+        $esPersonalAutorizado = $usuario && in_array($usuario->rol, ['admin', 'personal', 'veterinario', 'empleado']);
+
+        // Si no es personal autorizado (visitante o adoptante), solo ve los disponibles
+        if (!$esPersonalAutorizado) {
+            $query->where('estado', 'Disponible');
+        } elseif ($request->filled('estado')) {
+            // El personal autorizado sí puede filtrar por cualquier estado
+            $query->where('estado', $request->input('estado'));
+        }
 
         // Filtro por término de búsqueda (nombre o raza)
         if ($request->filled('buscar')) {
@@ -28,11 +48,6 @@ class AnimalController extends Controller
         // Filtro por Especie (Perro, Gato, Otro)
         if ($request->filled('especie')) {
             $query->where('especie', $request->input('especie'));
-        }
-
-        // Filtro por Estado (Disponible, En acogida, Adoptado)
-        if ($request->filled('estado')) {
-            $query->where('estado', $request->input('estado'));
         }
 
         // Devolver la lista ordenada por fecha de creación reciente
@@ -94,7 +109,7 @@ class AnimalController extends Controller
     }
 
     /**
-     * Actualizar los datos generales de un animal.
+     * Actualizar los datos generales de un animal (sin saltar las transiciones de estado).
      */
     public function update(Request $request, $id)
     {
@@ -113,7 +128,6 @@ class AnimalController extends Controller
             'raza' => 'nullable|string|max:100',
             'edad' => 'nullable|integer|min:0|max:40',
             'sexo' => 'required|in:Macho,Hembra',
-            'estado' => 'required|in:Disponible,En acogida,Adoptado,En Tratamiento',
             'peso' => 'nullable|numeric|min:0|max:200',
             'caracter' => 'nullable|string|max:255',
             'descripcion' => 'nullable|string'
@@ -130,8 +144,6 @@ class AnimalController extends Controller
             'edad.max' => 'La edad no puede ser mayor de 40 años.',
             'sexo.required' => 'El sexo es obligatorio.',
             'sexo.in' => 'El sexo debe ser Macho o Hembra.',
-            'estado.required' => 'El estado es obligatorio.',
-            'estado.in' => 'El estado seleccionado no es válido.',
             'peso.numeric' => 'El peso debe ser un número.',
             'peso.min' => 'El peso no puede ser negativo.',
             'peso.max' => 'El peso no puede ser mayor de 200 kg.',
@@ -145,7 +157,6 @@ class AnimalController extends Controller
         $animal->raza = $request->raza;
         $animal->edad = $request->edad;
         $animal->sexo = $request->sexo;
-        $animal->estado = $request->estado;
         $animal->peso = $request->peso;
         $animal->caracter = $request->caracter;
         $animal->descripcion = $request->descripcion;
@@ -154,6 +165,66 @@ class AnimalController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Ficha del animal actualizada correctamente.',
+            'data' => $animal
+        ], 200);
+    }
+
+    /**
+     * T15: Actualizar el estado de un animal aplicando solo transiciones permitidas.
+     */
+    public function actualizarEstado(UpdateEstadoAnimalRequest $request, $id)
+    {
+        $animal = Animal::find($id);
+
+        if (!$animal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Animal no encontrado.'
+            ], 404);
+        }
+
+        $estadoActual = $animal->estado;
+        $nuevoEstado = $request->validated()['estado'];
+
+        // La adopción formalizada se realiza desde su proceso específico
+        if ($nuevoEstado === 'Adoptado') {
+            return response()->json([
+                'success' => false,
+                'message' => 'La adopción formalizada debe realizarse desde su proceso específico.'
+            ], 422);
+        }
+
+        if ($nuevoEstado === $estadoActual) {
+            return response()->json([
+                'success' => false,
+                'message' => "El animal ya se encuentra en estado '{$estadoActual}'."
+            ], 422);
+        }
+
+        // Definición de transiciones permitidas
+        $transicionesPermitidas = [
+            'En acogida'     => ['En tratamiento', 'Disponible'],
+            'En tratamiento' => ['En acogida', 'Disponible'],
+            'Disponible'     => ['En acogida', 'En tratamiento', 'Reservado'],
+            'Reservado'      => ['Disponible', 'En acogida', 'En tratamiento'],
+            'Adoptado'       => [], // Estado final: no admite cambios manuales
+        ];
+
+        $permitidos = $transicionesPermitidas[$estadoActual] ?? [];
+
+        if (!in_array($nuevoEstado, $permitidos, true)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Transición no permitida: un animal en estado '{$estadoActual}' no puede pasar a '{$nuevoEstado}'."
+            ], 422);
+        }
+
+        $animal->estado = $nuevoEstado;
+        $animal->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Estado actualizado a '{$nuevoEstado}' correctamente.",
             'data' => $animal
         ], 200);
     }

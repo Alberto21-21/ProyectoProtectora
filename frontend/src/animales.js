@@ -3,7 +3,10 @@ import {
     cerrarSesion
 } from "./providers/autenticacionProvider.js";
 
-import { crearAnimal } from "./providers/animalesProvider.js";
+import {
+    crearAnimal,
+    actualizarEstadoAnimal
+} from "./providers/animalesProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     // -------------------------------------------------------------
@@ -16,19 +19,47 @@ document.addEventListener("DOMContentLoaded", function () {
     const fechaEntrada = document.querySelector("#fechaEntradaAnimal");
     const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 
+    const etiquetaSeccionAnimales = document.querySelector("#etiquetaSeccionAnimales");
+    const tituloSeccionAnimales = document.querySelector("#tituloSeccionAnimales");
+    const subtituloAnimales = document.querySelector("#subtituloAnimales");
+
     const formularioFiltros = document.querySelector("#formularioFiltros");
     const buscarTexto = document.querySelector("#buscarTexto");
     const filtroEspecie = document.querySelector("#filtroEspecie");
     const filtroEstado = document.querySelector("#filtroEstado");
+    const contenedorFiltroEstado = document.querySelector("#contenedorFiltroEstado");
     const botonLimpiarFiltros = document.querySelector("#botonLimpiarFiltros");
     const tablaCuerpoAnimales = document.querySelector("#tablaCuerpoAnimales");
 
     const modalDetalleAnimal = document.querySelector("#modalDetalleAnimal");
     const cerrarDetalleAnimal = document.querySelector("#cerrarDetalleAnimal");
-    const contenidoFichaAnimal = document.querySelector("#contenidoFichaAnimal");
     const enlaceEditarAnimal = document.querySelector("#enlaceEditarAnimal");
 
+    // Elementos de la ficha modal
+    const fichaNombre = document.querySelector("#fichaNombre");
+    const fichaImagen = document.querySelector("#fichaImagen");
+    const fichaEspecie = document.querySelector("#fichaEspecie");
+    const fichaRaza = document.querySelector("#fichaRaza");
+    const fichaSexo = document.querySelector("#fichaSexo");
+    const fichaEstado = document.querySelector("#fichaEstado");
+    const fichaPeso = document.querySelector("#fichaPeso");
+    const fichaFechaEntrada = document.querySelector("#fichaFechaEntrada");
+    const fichaMotivo = document.querySelector("#fichaMotivo");
+    const fichaCaracter = document.querySelector("#fichaCaracter");
+    const fichaNecesidades = document.querySelector("#fichaNecesidades");
+    const fichaObservaciones = document.querySelector("#fichaObservaciones");
+
+    // Elementos de transición de estado (T15)
+    const bloqueCambioEstado = document.querySelector("#bloqueCambioEstado");
+    const controlesTransicionEstado = document.querySelector("#controlesTransicionEstado");
+    const selectNuevoEstado = document.querySelector("#selectNuevoEstado");
+    const btnGuardarEstadoAnimal = document.querySelector("#btnGuardarEstadoAnimal");
+    const mensajeEstadoModal = document.querySelector("#mensajeEstadoModal");
+    const avisoEstadoFinal = document.querySelector("#avisoEstadoFinal");
+
     const rolesAutorizados = ["admin", "personal", "veterinario", "empleado"];
+    let usuarioActual = null;
+    let animalSeleccionadoId = null;
 
     const campos = [
         "nombre",
@@ -50,6 +81,18 @@ document.addEventListener("DOMContentLoaded", function () {
         "observaciones"
     ];
 
+    // TRANSICIONES PERMITIDAS SEGÚN EL ESTADO ACTUAL (T15)
+    function obtenerTransicionesPermitidas(estadoActual) {
+        const transiciones = {
+            "En acogida": ["En tratamiento", "Disponible"],
+            "En tratamiento": ["En acogida", "Disponible"],
+            "Disponible": ["En acogida", "En tratamiento", "Reservado"],
+            "Reservado": ["Disponible", "En acogida", "En tratamiento"],
+            "Adoptado": []
+        };
+        return transiciones[estadoActual] || [];
+    }
+
     // OBTENER LA FECHA DE HOY (AAAA-MM-DD)
     function fechaDeHoy() {
         const hoy = new Date();
@@ -58,40 +101,67 @@ document.addEventListener("DOMContentLoaded", function () {
         return hoy.getFullYear() + "-" + mes + "-" + dia;
     }
 
-    // COMPROBAR ACCESO Y PERMISOS DE INICIO
+    // CONFIGURAR VISTA PARA ADOPTANTE O VISITANTE (SOLO CONSULTA Y FILTROS)
+    function activarVistaAdoptante(haySesion) {
+        if (gestionAnimales) gestionAnimales.hidden = true;
+        if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = true;
+        if (botonCerrarSesion) botonCerrarSesion.hidden = !haySesion;
+
+        if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADOPCIÓN";
+        if (tituloSeccionAnimales) tituloSeccionAnimales.textContent = "Nuestros Animales";
+        if (subtituloAnimales) {
+            subtituloAnimales.textContent = "Conoce a nuestros compañeros disponibles y encuentra a tu nuevo mejor amigo.";
+        }
+        if (mensajeAnimal) mensajeAnimal.textContent = "";
+    }
+
+    // CONFIGURAR VISTA PARA PERSONAL AUTORIZADO (ALTA + GESTIÓN + ESTADOS)
+    function activarVistaPersonal() {
+        if (fechaEntrada) fechaEntrada.value = fechaDeHoy();
+        if (gestionAnimales) gestionAnimales.hidden = false;
+        if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = false;
+        if (botonCerrarSesion) botonCerrarSesion.hidden = false;
+
+        if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADMINISTRACIÓN";
+        if (tituloSeccionAnimales) tituloSeccionAnimales.textContent = "Gestión de Animales";
+        if (subtituloAnimales) {
+            subtituloAnimales.textContent = "Registra la llegada de nuevos animales y actualiza su situación en la protectora.";
+        }
+        if (mensajeAnimal) mensajeAnimal.textContent = "";
+    }
+
+    // COMPROBAR PERFIL Y ADAPTAR LA INTERFAZ
     async function comprobarAcceso() {
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
         if (!token) {
-            if (mensajeAnimal) mensajeAnimal.textContent = "Debes iniciar sesión para acceder a la gestión de animales.";
-            if (botonCerrarSesion) botonCerrarSesion.hidden = true;
+            activarVistaAdoptante(false);
+            if (tablaCuerpoAnimales) cargarAnimales();
             return;
         }
 
         try {
             const usuario = await obtenerUsuario(token);
+            usuarioActual = usuario;
 
-            if (!rolesAutorizados.includes(usuario.rol)) {
-                alert("No tienes permisos para acceder a la gestión de animales.");
-                window.location.href = "index.html";
-                return;
+            if (rolesAutorizados.includes(usuario.rol)) {
+                activarVistaPersonal();
+            } else {
+                activarVistaAdoptante(true);
             }
-
-            if (fechaEntrada) fechaEntrada.value = fechaDeHoy();
-            if (gestionAnimales) gestionAnimales.hidden = false;
-            if (mensajeAnimal) mensajeAnimal.textContent = "";
 
             if (tablaCuerpoAnimales) {
                 cargarAnimales();
             }
 
         } catch (error) {
-            console.error("Error al comprobar el acceso:", error);
-            if (mensajeAnimal) mensajeAnimal.textContent = `No se pudo comprobar el acceso: ${error.message}`;
+            console.error("Error al comprobar el usuario:", error);
+            activarVistaAdoptante(false);
+            if (tablaCuerpoAnimales) cargarAnimales();
         }
     }
 
-    // LIMPIAR MENSÁJES DE ERROR CAMPO A CAMPO
+    // LIMPIAR MENSAJES DE ERROR CAMPO A CAMPO
     function limpiarErrores() {
         campos.forEach(campo => {
             const el = document.querySelector("#error-" + campo);
@@ -163,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // -------------------------------------------------------------
-    // BÚSQUEDA Y FILTRADO (T13)
+    // BÚSQUEDA Y FILTRADO
     // -------------------------------------------------------------
     if (formularioFiltros) {
         formularioFiltros.addEventListener("submit", function (e) {
@@ -182,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // -------------------------------------------------------------
-    // CONSULTA Y CARGA DE ANIMALES DESDE LA API
+    // CONSULTA Y CARGA DE ANIMALES DESDE LA API (DOM PURO)
     // -------------------------------------------------------------
     async function cargarAnimales() {
         if (!tablaCuerpoAnimales) return;
@@ -196,12 +266,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (filtroEspecie && filtroEspecie.value !== "") {
             params.append("especie", filtroEspecie.value);
         }
-        if (filtroEstado && filtroEstado.value !== "") {
+        if (filtroEstado && !contenedorFiltroEstado?.hidden && filtroEstado.value !== "") {
             params.append("estado", filtroEstado.value);
         }
 
         try {
-            const respuesta = await fetch(`http://localhost:8000/api/animales?${params.toString()}`, {
+            const respuesta = await fetch(`http://127.0.0.1:8000/api/animales?${params.toString()}`, {
                 headers: {
                     "Accept": "application/json",
                     ...(token && { "Authorization": `Bearer ${token}` })
@@ -209,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const animales = await respuesta.json();
-            tablaCuerpoAnimales.innerHTML = "";
+            tablaCuerpoAnimales.replaceChildren();
 
             if (!respuesta.ok) {
                 if (mensajeAnimal) {
@@ -220,28 +290,45 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (animales.length === 0) {
-                tablaCuerpoAnimales.innerHTML = `<tr><td colspan="5" style="text-align:center;">No se encontraron animales registrados.</td></tr>`;
+                const filaVacia = document.createElement("tr");
+                const celdaVacia = document.createElement("td");
+                celdaVacia.colSpan = 5;
+                celdaVacia.style.textAlign = "center";
+                celdaVacia.textContent = "No se encontraron animales disponibles con esos filtros.";
+                filaVacia.appendChild(celdaVacia);
+                tablaCuerpoAnimales.appendChild(filaVacia);
                 return;
             }
 
             animales.forEach(animal => {
                 const fila = document.createElement("tr");
-                fila.innerHTML = `
-                    <td><strong>${animal.nombre}</strong></td>
-                    <td>${animal.especie}</td>
-                    <td>${animal.raza || 'Sin especificar'}</td>
-                    <td>${animal.estado}</td>
-                    <td>
-                        <button type="button" class="boton-detalle" data-id="${animal.id}">Ver Ficha</button>
-                    </td>
-                `;
-                tablaCuerpoAnimales.appendChild(fila);
-            });
 
-            document.querySelectorAll(".boton-detalle").forEach(boton => {
-                boton.addEventListener("click", function () {
-                    verFichaAnimal(this.dataset.id);
+                const tdNombre = document.createElement("td");
+                const strongNombre = document.createElement("strong");
+                strongNombre.textContent = animal.nombre;
+                tdNombre.appendChild(strongNombre);
+
+                const tdEspecie = document.createElement("td");
+                tdEspecie.textContent = animal.especie;
+
+                const tdRaza = document.createElement("td");
+                tdRaza.textContent = animal.raza || "Sin especificar";
+
+                const tdEstado = document.createElement("td");
+                tdEstado.textContent = animal.estado;
+
+                const tdAcciones = document.createElement("td");
+                const botonDetalle = document.createElement("button");
+                botonDetalle.type = "button";
+                botonDetalle.className = "boton-detalle";
+                botonDetalle.textContent = "Ver Ficha";
+                botonDetalle.addEventListener("click", function () {
+                    verFichaAnimal(animal.id);
                 });
+                tdAcciones.appendChild(botonDetalle);
+
+                fila.append(tdNombre, tdEspecie, tdRaza, tdEstado, tdAcciones);
+                tablaCuerpoAnimales.appendChild(fila);
             });
 
         } catch (error) {
@@ -254,15 +341,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // -------------------------------------------------------------
-    // CONSULTA DE FICHA DETALLADA POR ROL (T13)
+    // CONSULTA DE FICHA DETALLADA Y CAMBIO DE ESTADO (T15)
     // -------------------------------------------------------------
     async function verFichaAnimal(id) {
-        if (!modalDetalleAnimal || !contenidoFichaAnimal) return;
+        if (!modalDetalleAnimal) return;
 
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+        animalSeleccionadoId = id;
 
         try {
-            const respuesta = await fetch(`http://localhost:8000/api/animales/${id}`, {
+            const respuesta = await fetch(`http://127.0.0.1:8000/api/animales/${id}`, {
                 headers: {
                     "Accept": "application/json",
                     ...(token && { "Authorization": `Bearer ${token}` })
@@ -278,34 +366,127 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const imgUrl = animal.fotografia || animal.imagen;
 
-            let htmlDetalle = `
-                <h2>Ficha de ${animal.nombre}</h2>
-                ${imgUrl ? `<img src="http://localhost:8000/storage/${imgUrl}" alt="${animal.nombre}" style="width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:15px;">` : ''}
-                <p><strong>Especie:</strong> ${animal.especie}</p>
-                <p><strong>Raza / Características:</strong> ${animal.raza || 'N/A'}</p>
-                <p><strong>Sexo:</strong> ${animal.sexo || 'N/A'}</p>
-                <p><strong>Estado:</strong> ${animal.estado}</p>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #F5F5F5;">
-                <p><strong>Peso:</strong> ${animal.peso ? animal.peso + ' kg' : 'N/A'}</p>
-                <p><strong>Fecha de entrada:</strong> ${animal.fecha_entrada || 'N/A'}</p>
-                <p><strong>Motivo / Procedencia:</strong> ${animal.motivo || 'N/A'}</p>
-                <p><strong>Carácter:</strong> ${animal.caracter || 'Sin especificar'}</p>
-                <p><strong>Necesidades especiales:</strong> ${animal.necesidades_especiales || 'Ninguna'}</p>
-                <p><strong>Observaciones del personal:</strong> ${animal.observaciones || 'Sin observaciones'}</p>
-            `;
+            if (fichaNombre) fichaNombre.textContent = `Ficha de ${animal.nombre}`;
+            if (fichaImagen) {
+                if (imgUrl) {
+                    fichaImagen.src = `http://127.0.0.1:8000/storage/${imgUrl}`;
+                    fichaImagen.alt = animal.nombre;
+                    fichaImagen.hidden = false;
+                } else {
+                    fichaImagen.removeAttribute("src");
+                    fichaImagen.hidden = true;
+                }
+            }
 
-            contenidoFichaAnimal.innerHTML = htmlDetalle;
+            if (fichaEspecie) fichaEspecie.textContent = animal.especie;
+            if (fichaRaza) fichaRaza.textContent = animal.raza || "N/A";
+            if (fichaSexo) fichaSexo.textContent = animal.sexo || "N/A";
+            if (fichaEstado) fichaEstado.textContent = animal.estado;
+            if (fichaPeso) fichaPeso.textContent = animal.peso ? `${animal.peso} kg` : "N/A";
+            if (fichaFechaEntrada) fichaFechaEntrada.textContent = animal.fecha_entrada || "N/A";
+            if (fichaMotivo) fichaMotivo.textContent = animal.motivo || "N/A";
+            if (fichaCaracter) fichaCaracter.textContent = animal.caracter || "Sin especificar";
+            if (fichaNecesidades) fichaNecesidades.textContent = animal.necesidades_especiales || "Ninguna";
+            if (fichaObservaciones) fichaObservaciones.textContent = animal.observaciones || "Sin observaciones";
+
+            // Configurar bloque de cambio de estado (solo para personal autorizado)
+            const esAutorizado = usuarioActual && rolesAutorizados.includes(usuarioActual.rol);
+
+            if (bloqueCambioEstado) {
+                if (esAutorizado) {
+                    bloqueCambioEstado.hidden = false;
+                    const transiciones = obtenerTransicionesPermitidas(animal.estado);
+
+                    if (mensajeEstadoModal) mensajeEstadoModal.textContent = "";
+
+                    if (transiciones.length > 0) {
+                        if (controlesTransicionEstado) controlesTransicionEstado.hidden = false;
+                        if (avisoEstadoFinal) avisoEstadoFinal.hidden = true;
+
+                        if (selectNuevoEstado) {
+                            selectNuevoEstado.replaceChildren();
+
+                            const opcionDefault = document.createElement("option");
+                            opcionDefault.value = "";
+                            opcionDefault.textContent = "Selecciona nuevo estado...";
+                            selectNuevoEstado.appendChild(opcionDefault);
+
+                            transiciones.forEach(estado => {
+                                const opcion = document.createElement("option");
+                                opcion.value = estado;
+                                opcion.textContent = estado;
+                                selectNuevoEstado.appendChild(opcion);
+                            });
+                        }
+                    } else {
+                        if (controlesTransicionEstado) controlesTransicionEstado.hidden = true;
+                        if (avisoEstadoFinal) avisoEstadoFinal.hidden = false;
+                    }
+                } else {
+                    bloqueCambioEstado.hidden = true;
+                }
+            }
 
             if (enlaceEditarAnimal) {
                 enlaceEditarAnimal.href = "editarAnimal.html?id=" + id;
+                enlaceEditarAnimal.hidden = !esAutorizado;
             }
 
-            modalDetalleAnimal.showModal();
+            if (!modalDetalleAnimal.open) {
+                modalDetalleAnimal.showModal();
+            }
 
         } catch (error) {
             console.error("Error obteniendo el detalle:", error);
             alert("No se pudo conectar con el servidor.");
         }
+    }
+
+    // EVENTO PARA GUARDAR EL CAMBIO DE ESTADO (T15)
+    if (btnGuardarEstadoAnimal && selectNuevoEstado) {
+        btnGuardarEstadoAnimal.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            const nuevoEstado = selectNuevoEstado.value;
+
+            if (!nuevoEstado) {
+                if (mensajeEstadoModal) {
+                    mensajeEstadoModal.textContent = "Selecciona un estado permitido antes de guardar.";
+                    mensajeEstadoModal.style.color = "red";
+                }
+                return;
+            }
+
+            btnGuardarEstadoAnimal.disabled = true;
+            if (mensajeEstadoModal) {
+                mensajeEstadoModal.textContent = "Actualizando estado...";
+                mensajeEstadoModal.style.color = "#333";
+            }
+
+            try {
+                const res = await actualizarEstadoAnimal(animalSeleccionadoId, nuevoEstado, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = res.message || "Estado actualizado correctamente.";
+                    mensajeAnimal.style.color = "green";
+                }
+
+                await cargarAnimales();
+                await verFichaAnimal(animalSeleccionadoId);
+
+                if (mensajeEstadoModal) {
+                    mensajeEstadoModal.textContent = res.message || "Estado actualizado correctamente.";
+                    mensajeEstadoModal.style.color = "green";
+                }
+
+            } catch (error) {
+                if (mensajeEstadoModal) {
+                    mensajeEstadoModal.textContent = error.message || "No se pudo cambiar el estado.";
+                    mensajeEstadoModal.style.color = "red";
+                }
+            } finally {
+                btnGuardarEstadoAnimal.disabled = false;
+            }
+        });
     }
 
     if (cerrarDetalleAnimal) {

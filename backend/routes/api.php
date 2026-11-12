@@ -181,6 +181,16 @@ Route::post('/animales/{id}/imagen', [AnimalController::class, 'actualizarImagen
     ]);
 
 
+// ACTUALIZAR EL ESTADO DE UN ANIMAL
+Route::patch('/animales/{id}/estado', [AnimalController::class, 'actualizarEstado'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);
+    
+
 // CONSULTAR LOS DATOS CLÍNICOS
 Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
     ->whereNumber('id')
