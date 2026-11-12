@@ -321,53 +321,6 @@ function limpiarFiltros() {
     cargarUsuarios(1);
 }
 
-async function cargarFichaLaboral(usuario) {
-    const seccion = document.querySelector("#seccionFichaLaboral");
-    const mensaje = document.querySelector("#mensajeFichaLaboral");
-    const botonCrear = document.querySelector("#botonCrearFichaLaboral");
-    const botonEditar = document.querySelector("#botonEditarFichaLaboral");
-    const formulario = document.querySelector("#formularioFichaLaboral");
-    usuarioFichaActualId = usuario.id;
-    fichaLaboralActual = null;
-
-    seccion.hidden = usuario.rol !== "personal";
-    botonCrear.hidden = true;
-    botonEditar.hidden = true;
-    formulario.hidden = true;
-
-    if (usuario.rol !== "personal") {
-        return;
-    }
-
-    mensaje.textContent = "Cargando ficha laboral...";
-
-    try {
-        const token = sessionStorage.getItem("token");
-        const resultado = await obtenerFichaEmpleado(usuario.id, token);
-        const empleado = resultado.data;
-        fichaLaboralActual = empleado; 
-
-        document.querySelector("#telefonoFichaLaboral").textContent =
-            empleado.telefono || "No indicado";
-
-        document.querySelector("#puestoFichaLaboral").textContent =
-            empleado.puesto;
-
-        document.querySelector("#estadoFichaLaboral").textContent =
-            empleado.estado_laboral;
-
-        botonEditar.hidden = false;
-        mensaje.textContent = "";
-        
-         
-    } catch (error) {
-        mensaje.textContent = error.message;
-
-        if (error.message === "Esta cuenta todavía no tiene ficha laboral.") {
-            botonCrear.hidden = false;
-        }
-    }
-}
 
 
 
@@ -490,75 +443,7 @@ async function guardarPerfilVeterinario(evento) {
     }
 }
 
-function abrirAltaFichaLaboral() {
-    const formulario = document.querySelector("#formularioFichaLaboral");
 
-    formulario.reset();
-    document.querySelector("#estadoLaboralEmpleado").value = "activo";
-    formulario.hidden = false;
-    document.querySelector("#mensajeFichaLaboral").textContent = "";
-}
-
-function abrirEdicionFichaLaboral() {
-    if (!fichaLaboralActual) {
-        return;
-    }
-
-    document.querySelector("#telefonoEmpleado").value =
-        fichaLaboralActual.telefono || "";
-
-    document.querySelector("#puestoEmpleado").value =
-        fichaLaboralActual.puesto;
-
-    document.querySelector("#estadoLaboralEmpleado").value =
-        fichaLaboralActual.estado_laboral;
-
-    document.querySelector("#formularioFichaLaboral").hidden = false;
-    document.querySelector("#mensajeFichaLaboral").textContent = "";
-}
-
-async function guardarFichaLaboral(evento) {
-    evento.preventDefault();
-
-    if (guardandoFicha) {
-        return;
-    }
-
-    const token = sessionStorage.getItem("token");
-    const mensaje = document.querySelector("#mensajeFichaLaboral");
-    const botonGuardar = document.querySelector("#botonGuardarFichaLaboral");
-
-    const datos = {
-        telefono: document.querySelector("#telefonoEmpleado").value.trim() || null,
-        puesto: document.querySelector("#puestoEmpleado").value.trim(),
-        estado_laboral: document.querySelector("#estadoLaboralEmpleado").value
-    };
-
-    guardandoFicha = true;
-    botonGuardar.disabled = true;
-    mensaje.textContent = "Guardando ficha laboral...";
-
-    try {
-        if (fichaLaboralActual) {
-            await actualizarFichaEmpleado(usuarioFichaActualId, datos, token);
-        } else {
-            datos.user_id = usuarioFichaActualId;
-            await crearFichaEmpleado(datos, token);
-        }
-
-        document.querySelector("#formularioFichaLaboral").hidden = true;
-
-        await cargarFichaLaboral({
-            id: usuarioFichaActualId,
-            rol: "personal"
-        });
-    } catch (error) {
-        mensaje.textContent = error.message;
-    } finally {
-        guardandoFicha = false;
-        botonGuardar.disabled = false;
-    }
-}
 
 // CONSULTAR EL DETALLE
 async function consultarDetalle(id) {
@@ -567,7 +452,7 @@ async function consultarDetalle(id) {
     fotografiaDetalle.hidden = true;
     fotografiaDetalle.removeAttribute("src");
     mensajeDetalle.textContent = "Cargando usuario...";
-
+    modalDetalle.scrollTop = 0;
     modalDetalle.showModal();
 
     try {
@@ -1002,9 +887,7 @@ botonSiguiente.addEventListener("click", function () {
 
 // EVENTOS DEL DETALLE
 botonCerrarDetalle.addEventListener("click", function () {
-    if (!guardandoFicha) {
-        modalDetalle.close();
-    }
+    modalDetalle.close();
 });
 
 modalDetalle.addEventListener("cancel", function (evento) {
@@ -1081,3 +964,6 @@ document.querySelector("#cancelarPerfilVeterinario").addEventListener("click", f
         formulario.hidden = true;
         document.querySelector("#mensajePerfilVeterinario").textContent = "";
     });
+
+    botonCerrarSesion.addEventListener("click", salirSesion);
+    comprobarAcceso();
