@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Animales - Salvando Huellas</title>
+    <title>Alta de Animal - Salvando Huellas</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/style.css">
 </head>
@@ -30,14 +30,14 @@
 
         <div class="titulo-perfil">
             <span>ADMINISTRACIÓN</span>
-            <h1>Gestión y Consulta de Animales</h1>
-            <p>Registra nuevos animales o filtra y localiza la información técnica de los ya existentes.</p>
+            <h1>Alta de Animal</h1>
+            <p>Registra la llegada de un nuevo animal en la base de datos de la protectora.</p>
         </div>
 
         <p id="mensajeAnimal" role="status"></p>
 
         <!-- SECCIÓN DE ALTA DE ANIMAL -->
-        <div id="gestionAnimales" class="distribucion-perfil">
+        <div id="gestionAnimales" class="distribucion-perfil" hidden>
 
             <!-- TARJETA IZQUIERDA -->
             <aside class="resumen-perfil">
@@ -57,7 +57,7 @@
 
                 <h2>Datos del animal</h2>
 
-                <form id="formularioAnimal">
+                <form id="formularioAnimal" enctype="multipart/form-data">
 
                     <!-- NOMBRE -->
                     <label for="nombreAnimal">Nombre *</label>
@@ -106,4 +106,87 @@
                         <option value="Mediano">Mediano</option>
                         <option value="Grande">Grande</option>
                     </select>
-                    <p class="error-campo" id="error-
+                    <p class="error-campo" id="error-tamano"></p>
+
+                    <!-- PESO -->
+                    <label for="pesoAnimal">Peso (kg)</label>
+                    <input type="number" id="pesoAnimal" name="peso" placeholder="Ej. 15.5" min="0" max="999" step="0.01">
+                    <p class="error-campo" id="error-peso"></p>
+
+                    <!-- FECHA DE ENTRADA -->
+                    <label for="fechaEntradaAnimal">Fecha de entrada *</label>
+                    <input type="date" id="fechaEntradaAnimal" name="fecha_entrada" required>
+                    <p class="error-campo" id="error-fecha_entrada"></p>
+
+                    <!-- MOTIVO -->
+                    <label for="motivoAnimal">Motivo / procedencia *</label>
+                    <input type="text" id="motivoAnimal" name="motivo" placeholder="Abandono, rescate..." maxlength="255" required>
+                    <p class="error-campo" id="error-motivo"></p>
+
+                    <!-- ESTADO -->
+                    <label for="estadoAnimal">Estado inicial *</label>
+                    <select id="estadoAnimal" name="estado" required>
+                        <option value="En acogida">En acogida</option>
+                        <option value="En tratamiento">En tratamiento</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Adoptado">Adoptado</option>
+                    </select>
+                    <p class="error-campo" id="error-estado"></p>
+
+                    <!-- CARÁCTER -->
+                    <label for="caracterAnimal">Carácter</label>
+                    <input type="text" id="caracterAnimal" name="caracter" placeholder="Cariñoso, juguetón..." maxlength="1000">
+                    <p class="error-campo" id="error-caracter"></p>
+
+                    <!-- COMPATIBILIDAD CON NIÑOS -->
+                    <label for="conNinosAnimal">Compatibilidad con niños *</label>
+                    <select id="conNinosAnimal" name="con_ninos" required>
+                        <option value="Desconocido">Desconocido</option>
+                        <option value="Compatible">Compatible</option>
+                        <option value="No compatible">No compatible</option>
+                    </select>
+                    <p class="error-campo" id="error-con_ninos"></p>
+
+                    <!-- COMPATIBILIDAD CON OTROS ANIMALES -->
+                    <label for="conOtrosAnimales">Compatibilidad con otros animales *</label>
+                    <select id="conOtrosAnimales" name="con_otros_animales" required>
+                        <option value="Desconocido">Desconocido</option>
+                        <option value="Compatible">Compatible</option>
+                        <option value="No compatible">No compatible</option>
+                    </select>
+                    <p class="error-campo" id="error-con_otros_animales"></p>
+
+                    <!-- COMPATIBILIDAD CON DESCONOCIDOS -->
+                    <label for="conDesconocidosAnimal">Compatibilidad con desconocidos *</label>
+                    <select id="conDesconocidosAnimal" name="con_desconocidos" required>
+                        <option value="Desconocido">Desconocido</option>
+                        <option value="Compatible">Compatible</option>
+                        <option value="No compatible">No compatible</option>
+                    </select>
+                    <p class="error-campo" id="error-con_desconocidos"></p>
+
+                    <!-- NECESIDADES ESPECIALES -->
+                    <label for="necesidadesAnimal">Necesidades especiales</label>
+                    <textarea id="necesidadesAnimal" name="necesidades_especiales" rows="3" maxlength="1000" placeholder="Medicación, alimentación especial..."></textarea>
+                    <p class="error-campo" id="error-necesidades_especiales"></p>
+
+                    <!-- OBSERVACIONES -->
+                    <label for="observacionesAnimal">Observaciones</label>
+                    <textarea id="observacionesAnimal" name="observaciones" rows="3" maxlength="1000" placeholder="Notas internas del personal..."></textarea>
+                    <p class="error-campo" id="error-observaciones"></p>
+
+                    <!-- BOTÓN GUARDAR -->
+                    <button type="submit" id="botonGuardarAnimal">Guardar animal</button>
+
+                </form>
+
+            </section>
+        </div>
+
+    </main>
+
+    <script type="module" src="./src/animales.js"></script>
+</body>
+
+</html>
