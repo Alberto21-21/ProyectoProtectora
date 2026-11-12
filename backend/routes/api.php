@@ -12,6 +12,7 @@ use App\Http\Middleware\CuentaActiva;
 use App\Http\Middleware\EsAdministrador;
 use App\Http\Middleware\EsPersonalAutorizado;
 use App\Http\Middleware\EsVeterinario;
+use App\Http\Controllers\VeterinarioController;
 
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
@@ -193,8 +194,18 @@ Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClin
 // EDITAR LOS DATOS CLÍNICOS
 Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosClinicos'])
     ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsVeterinario::class
-    ]);
+    ->middleware(['auth:sanctum', EsVeterinario::class]);
+
+    // CREAR PERFIL VETERINARIO
+Route::post('/veterinarios', [VeterinarioController::class, 'store'])
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// CONSULTAR PERFIL POR CUENTA
+Route::get('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'mostrarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+// EDITAR PERFIL POR CUENTA
+Route::put('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'actualizarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware(['auth:sanctum', EsAdministrador::class]);

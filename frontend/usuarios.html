@@ -242,21 +242,10 @@
 
     <form id="formularioFichaLaboral" hidden>
         <label for="telefonoEmpleado">Teléfono</label>
-        <input
-            type="tel"
-            id="telefonoEmpleado"
-            name="telefono"
-            maxlength="30"
-        >
+        <input type="tel" id="telefonoEmpleado" name="telefono" maxlength="30">
 
         <label for="puestoEmpleado">Puesto</label>
-        <input
-            type="text"
-            id="puestoEmpleado"
-            name="puesto"
-            maxlength="100"
-            required
-        >
+        <input type="text" id="puestoEmpleado" name="puesto" maxlength="100" required>
 
         <label for="estadoLaboralEmpleado">Estado laboral</label>
         <select id="estadoLaboralEmpleado" name="estado_laboral" required>
@@ -269,6 +258,65 @@
         </button>
 
         <button type="button" id="cancelarFichaLaboral">Cancelar</button>
+    </form>
+</section>
+
+
+<section id="seccionPerfilVeterinario" hidden>
+    <hr>
+    <h3>Información profesional veterinaria</h3>
+    <p id="mensajePerfilVeterinario" role="status"></p>
+
+    <dl class="lista-datos-perfil">
+        <div class="dato-perfil">
+            <dt>Especialidad</dt>
+            <dd id="especialidadVeterinario"></dd>
+        </div>
+
+        <div class="dato-perfil">
+            <dt>Teléfono</dt>
+            <dd id="telefonoPerfilVeterinario"></dd>
+        </div>
+
+        <div class="dato-perfil">
+        <dt>Estado laboral</dt>
+        <dd id="estadoLaboralVeterinario"></dd>
+        </div>
+
+        <div class="dato-perfil">
+            <dt>Disponibilidad</dt>
+            <dd id="disponibilidadVeterinario">Sin datos registrados</dd>
+        </div>
+
+    </dl>
+
+    <div class="dato-perfil">
+    <dt>Teléfono</dt>
+    <dd id="telefonoPerfilVeterinario"></dd>
+    </div>  
+
+    <button type="button" id="botonCrearPerfilVeterinario" hidden>
+        Añadir información profesional
+    </button>
+
+    <button type="button" id="botonEditarPerfilVeterinario" hidden>
+        Editar información profesional
+    </button>
+
+    <form id="formularioPerfilVeterinario" hidden>
+        <label for="especialidadVeterinarioInput">Especialidad</label>
+        <input type="text" id="especialidadVeterinarioInput" name="especialidad" maxlength="100" required>
+        
+        <label for="telefonoVeterinario">Teléfono de contacto</label>
+    <input type="tel" id="telefonoVeterinarioInput"name="telefono"maxlength="30">
+
+        <button type="submit" id="botonGuardarPerfilVeterinario">
+            Guardar
+        </button>
+
+        <button type="button" id="cancelarPerfilVeterinario">
+            Cancelar
+        </button>
     </form>
 </section>
 
