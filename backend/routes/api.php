@@ -14,6 +14,9 @@ use App\Http\Middleware\EsPersonalAutorizado;
 use App\Http\Middleware\EsVeterinario;
 use App\Http\Controllers\VeterinarioController;
 
+use App\Http\Controllers\DisponibilidadController;
+use App\Http\Controllers\AusenciaController;
+
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
 Route::get('/user', function (Request $request) {
@@ -143,6 +146,44 @@ Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualiza
     ]);
 
 
+
+Route::get('/disponibilidades/empleados', [DisponibilidadController::class, 'empleados'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+    ]);
+    
+Route::get('/disponibilidades', [DisponibilidadController::class, 'index'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+    ]);
+
+
+Route::post('/disponibilidades', [DisponibilidadController::class, 'store'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+    ]);
+
+
+Route::get('/ausencias', [AusenciaController::class, 'index'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+    ]);
+
+
+Route::post('/ausencias', [AusenciaController::class, 'store'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+    ]);
 // ==========================================================================
 // RUTAS DE ANIMALES
 // ==========================================================================

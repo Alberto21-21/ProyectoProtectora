@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disponibilidad - Patas y Bigotes</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="pagina-perfil">
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+            <a href="index.html" class="marca">Patas y Bigotes</a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="usuarios.html">Usuarios</a>
+                <a href="disponibilidad.html" aria-current="page">Disponibilidad</a>
+                <button type="button" id="botonCerrarSesion">Cerrar sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+        <div class="titulo-perfil">
+            <span>ADMINISTRACIÓN</span>
+            <h1>Disponibilidad y ausencias</h1>
+            <p>Registra y consulta los horarios del personal.</p>
+        </div>
+
+        <p id="mensajeDisponibilidad" role="status"></p>
+
+        <section id="gestionDisponibilidad" hidden>
+            <section>
+                <h2>Registrar disponibilidad</h2>
+
+                <form id="formularioDisponibilidad">
+                    <label for="empleadoDisponibilidad">Empleado</label>
+                    <select id="empleadoDisponibilidad" name="empleado_id" required>
+                        <option value="">Selecciona un empleado</option>
+                    </select>
+
+                    <label for="inicioDisponibilidad">Desde</label>
+                    <input
+                        type="datetime-local"
+                        id="inicioDisponibilidad"
+                        name="fecha_inicio"
+                        required
+                    >
+
+                    <label for="finDisponibilidad">Hasta</label>
+                    <input
+                        type="datetime-local"
+                        id="finDisponibilidad"
+                        name="fecha_fin"
+                        required
+                    >
+
+                    <p id="mensajeFormularioDisponibilidad" role="status"></p>
+
+                    <button type="submit" id="botonGuardarDisponibilidad">
+                        Guardar disponibilidad
+                    </button>
+                </form>
+            </section>
+
+            <section>
+                <h2>Registrar ausencia</h2>
+
+                <form id="formularioAusencia">
+                    <label for="empleadoAusencia">Empleado</label>
+                    <select id="empleadoAusencia" name="empleado_id" required>
+                        <option value="">Selecciona un empleado</option>
+                    </select>
+
+                    <label for="inicioAusencia">Desde</label>
+                    <input
+                        type="datetime-local"
+                        id="inicioAusencia"
+                        name="fecha_inicio"
+                        required
+                    >
+
+                    <label for="finAusencia">Hasta</label>
+                    <input
+                        type="datetime-local"
+                        id="finAusencia"
+                        name="fecha_fin"
+                        required
+                    >
+
+                    <label for="motivoAusencia">Motivo (opcional)</label>
+                    <input
+                        type="text"
+                        id="motivoAusencia"
+                        name="motivo"
+                        maxlength="255"
+                    >
+
+                    <p id="mensajeFormularioAusencia" role="status"></p>
+
+                    <button type="submit" id="botonGuardarAusencia">
+                        Registrar ausencia
+                    </button>
+                </form>
+            </section>
+
+            <section>
+                <h2>Consultar horarios y ausencias</h2>
+
+                <form id="formularioFiltrosDisponibilidad">
+                    <label for="filtroEmpleado">Empleado</label>
+                    <select id="filtroEmpleado" name="empleado_id">
+                        <option value="">Todos los empleados</option>
+                    </select>
+
+                    <label for="filtroFechaInicio">Desde</label>
+                    <input
+                        type="datetime-local"
+                        id="filtroFechaInicio"
+                        name="fecha_inicio"
+                        required
+                    >
+
+                    <label for="filtroFechaFin">Hasta</label>
+                    <input
+                        type="datetime-local"
+                        id="filtroFechaFin"
+                        name="fecha_fin"
+                        required
+                    >
+
+                    <button type="submit" id="botonBuscarDisponibilidad">
+                        Consultar
+                    </button>
+                </form>
+
+                <h3>Disponibilidades</h3>
+                <div class="tabla-usuarios">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Desde</th>
+                                <th>Hasta</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaDisponibilidades"></tbody>
+                    </table>
+                </div>
+
+                <h3>Ausencias</h3>
+                <div class="tabla-usuarios">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Desde</th>
+                                <th>Hasta</th>
+                                <th>Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaAusencias"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script type="module" src="/src/disponibilidad.js"></script>
+</body>
+</html>
