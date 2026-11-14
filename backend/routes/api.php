@@ -232,6 +232,26 @@ Route::patch('/animales/{id}/estado', [AnimalController::class, 'actualizarEstad
     ]);
     
 
+// DAR DE BAJA UN ANIMAL - BAJA LÓGICA (T16)
+Route::patch('/animales/{id}/baja', [AnimalController::class, 'darDeBaja'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);
+
+
+// ELIMINAR UN ANIMAL DEFINITIVAMENTE SI NO TIENE REGISTROS (T16)
+Route::delete('/animales/{id}', [AnimalController::class, 'destroy'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);
+
+
 // CONSULTAR LOS DATOS CLÍNICOS
 Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
     ->whereNumber('id')

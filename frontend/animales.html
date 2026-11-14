@@ -216,6 +216,13 @@
                     </select>
                 </div>
 
+                <div id="contenedorFiltroBajas" hidden>
+                    <label for="filtroBajas">
+                        <input type="checkbox" id="filtroBajas">
+                        Ver dados de baja
+                    </label>
+                </div>
+
                 <button type="submit" id="botonBuscarAnimales">Buscar</button>
                 <button type="button" id="botonLimpiarFiltros">Limpiar filtros</button>
             </form>
@@ -279,6 +286,33 @@
             <p><strong>Carácter:</strong> <span id="fichaCaracter"></span></p>
             <p><strong>Necesidades especiales:</strong> <span id="fichaNecesidades"></span></p>
             <p><strong>Observaciones del personal:</strong> <span id="fichaObservaciones"></span></p>
+
+            <!-- AVISO DE ANIMAL DADO DE BAJA (T16) -->
+            <p id="avisoAnimalBaja" hidden style="margin-top: 15px; padding: 12px; background-color: #fdecea; border-radius: 10px; color: #8a1c1c;">
+                Animal dado de baja el <span id="fichaFechaBaja"></span>.
+                Motivo: <span id="fichaMotivoBaja"></span>
+            </p>
+
+            <!-- BLOQUE DE BAJA / ELIMINACIÓN (SOLO PERSONAL AUTORIZADO) (T16) -->
+            <div id="bloqueBajaAnimal" hidden style="margin-top: 15px; padding: 12px; background-color: #fff5f5; border-radius: 10px; border: 1px solid #f3c2c2;">
+                <label for="motivoBajaAnimal" id="etiquetaMotivoBaja" style="display:block; font-weight:600; margin-bottom:6px;">
+                    Dar de baja o eliminar el animal:
+                </label>
+                <textarea id="motivoBajaAnimal" rows="2" maxlength="255" placeholder="Motivo de la baja (fallecimiento, traslado, error de registro...)" style="width:100%;"></textarea>
+                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                    <button type="button" id="btnBajaAnimal" style="padding:8px 14px;">
+                        Dar de baja
+                    </button>
+                    <button type="button" id="btnEliminarAnimal" style="padding:8px 14px;">
+                        Eliminar definitivamente
+                    </button>
+                </div>
+                <p id="mensajeBajaModal" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
+                <small style="color:#666; display:block; margin-top:4px;">
+                    * Dar de baja: el animal deja de aparecer pero se conservan su historial, solicitudes y adopciones.<br>
+                    * Eliminar definitivamente: solo se permite si el animal no tiene ningún registro asociado.
+                </small>
+            </div>
         </div>
 
         <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">

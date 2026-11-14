@@ -5,7 +5,9 @@ import {
 
 import {
     crearAnimal,
-    actualizarEstadoAnimal
+    actualizarEstadoAnimal,
+    darDeBajaAnimal,
+    eliminarAnimal
 } from "./providers/animalesProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -57,6 +59,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensajeEstadoModal = document.querySelector("#mensajeEstadoModal");
     const avisoEstadoFinal = document.querySelector("#avisoEstadoFinal");
 
+    // Elementos de baja / eliminación (T16)
+    const contenedorFiltroBajas = document.querySelector("#contenedorFiltroBajas");
+    const filtroBajas = document.querySelector("#filtroBajas");
+    const bloqueBajaAnimal = document.querySelector("#bloqueBajaAnimal");
+    const motivoBajaAnimal = document.querySelector("#motivoBajaAnimal");
+    const btnBajaAnimal = document.querySelector("#btnBajaAnimal");
+    const btnEliminarAnimal = document.querySelector("#btnEliminarAnimal");
+    const etiquetaMotivoBaja = document.querySelector("#etiquetaMotivoBaja");
+    const mensajeBajaModal = document.querySelector("#mensajeBajaModal");
+    const avisoAnimalBaja = document.querySelector("#avisoAnimalBaja");
+    const fichaFechaBaja = document.querySelector("#fichaFechaBaja");
+    const fichaMotivoBaja = document.querySelector("#fichaMotivoBaja");
+
     const rolesAutorizados = ["admin", "personal", "veterinario", "empleado"];
     let usuarioActual = null;
     let animalSeleccionadoId = null;
@@ -105,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function activarVistaAdoptante(haySesion) {
         if (gestionAnimales) gestionAnimales.hidden = true;
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = true;
+        if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = true;
         if (botonCerrarSesion) botonCerrarSesion.hidden = !haySesion;
 
         if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADOPCIÓN";
@@ -120,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (fechaEntrada) fechaEntrada.value = fechaDeHoy();
         if (gestionAnimales) gestionAnimales.hidden = false;
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = false;
+        if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = false;
         if (botonCerrarSesion) botonCerrarSesion.hidden = false;
 
         if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADMINISTRACIÓN";
@@ -242,11 +259,19 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // RECARGAR LA TABLA AL MARCAR O DESMARCAR "VER DADOS DE BAJA" (T16)
+    if (filtroBajas) {
+        filtroBajas.addEventListener("change", function () {
+            cargarAnimales();
+        });
+    }
+
     if (botonLimpiarFiltros) {
         botonLimpiarFiltros.addEventListener("click", function () {
             if (buscarTexto) buscarTexto.value = "";
             if (filtroEspecie) filtroEspecie.value = "";
             if (filtroEstado) filtroEstado.value = "";
+            if (filtroBajas) filtroBajas.checked = false;
             cargarAnimales();
         });
     }
@@ -268,6 +293,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (filtroEstado && !contenedorFiltroEstado?.hidden && filtroEstado.value !== "") {
             params.append("estado", filtroEstado.value);
+        }
+        if (filtroBajas && !contenedorFiltroBajas.hidden && filtroBajas.checked) {
+            params.append("bajas", "1");
         }
 
         try {
@@ -392,8 +420,29 @@ document.addEventListener("DOMContentLoaded", function () {
             // Configurar bloque de cambio de estado (solo para personal autorizado)
             const esAutorizado = usuarioActual && rolesAutorizados.includes(usuarioActual.rol);
 
+            // Comprobar si el animal está dado de baja (T16)
+            const estaDeBaja = animal.activo === false || animal.activo === 0;
+
+            if (avisoAnimalBaja) {
+                avisoAnimalBaja.hidden = !estaDeBaja;
+                if (fichaFechaBaja) fichaFechaBaja.textContent = animal.fecha_baja || "N/A";
+                if (fichaMotivoBaja) fichaMotivoBaja.textContent = animal.motivo_baja || "Sin motivo";
+            }
+
+            if (bloqueBajaAnimal) {
+                bloqueBajaAnimal.hidden = !esAutorizado;
+
+                // Si ya está dado de baja, solo se muestra la opción de eliminar
+                if (etiquetaMotivoBaja) etiquetaMotivoBaja.hidden = estaDeBaja;
+                if (motivoBajaAnimal) motivoBajaAnimal.hidden = estaDeBaja;
+                if (btnBajaAnimal) btnBajaAnimal.hidden = estaDeBaja;
+
+                if (motivoBajaAnimal) motivoBajaAnimal.value = "";
+                if (mensajeBajaModal) mensajeBajaModal.textContent = "";
+            }
+
             if (bloqueCambioEstado) {
-                if (esAutorizado) {
+                if (esAutorizado && !estaDeBaja) {
                     bloqueCambioEstado.hidden = false;
                     const transiciones = obtenerTransicionesPermitidas(animal.estado);
 
@@ -485,6 +534,96 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } finally {
                 btnGuardarEstadoAnimal.disabled = false;
+            }
+        });
+    }
+
+    // EVENTO PARA DAR DE BAJA UN ANIMAL - BAJA LÓGICA (T16)
+    if (btnBajaAnimal && motivoBajaAnimal) {
+        btnBajaAnimal.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            const motivo = motivoBajaAnimal.value.trim();
+
+            if (motivo === "") {
+                if (mensajeBajaModal) {
+                    mensajeBajaModal.textContent = "Debes indicar el motivo de la baja.";
+                    mensajeBajaModal.style.color = "red";
+                }
+                return;
+            }
+
+            const confirmado = confirm("¿Seguro que quieres dar de baja este animal? Se conservarán todos sus registros.");
+            if (!confirmado) {
+                return;
+            }
+
+            btnBajaAnimal.disabled = true;
+            if (mensajeBajaModal) {
+                mensajeBajaModal.textContent = "Dando de baja al animal...";
+                mensajeBajaModal.style.color = "#333";
+            }
+
+            try {
+                const res = await darDeBajaAnimal(animalSeleccionadoId, motivo, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = res.message;
+                    mensajeAnimal.style.color = "green";
+                }
+
+                modalDetalleAnimal.close();
+                await cargarAnimales();
+
+            } catch (error) {
+                if (mensajeBajaModal) {
+                    if (error.errores && error.errores.motivo_baja) {
+                        mensajeBajaModal.textContent = error.errores.motivo_baja[0];
+                    } else {
+                        mensajeBajaModal.textContent = error.message || "No se pudo dar de baja el animal.";
+                    }
+                    mensajeBajaModal.style.color = "red";
+                }
+            } finally {
+                btnBajaAnimal.disabled = false;
+            }
+        });
+    }
+
+    // EVENTO PARA ELIMINAR UN ANIMAL DEFINITIVAMENTE (T16)
+    if (btnEliminarAnimal) {
+        btnEliminarAnimal.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            const confirmado = confirm("¿Seguro que quieres eliminar este animal definitivamente? Esta acción no se puede deshacer.");
+            if (!confirmado) {
+                return;
+            }
+
+            btnEliminarAnimal.disabled = true;
+            if (mensajeBajaModal) {
+                mensajeBajaModal.textContent = "Comprobando registros del animal...";
+                mensajeBajaModal.style.color = "#333";
+            }
+
+            try {
+                const res = await eliminarAnimal(animalSeleccionadoId, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = res.message;
+                    mensajeAnimal.style.color = "green";
+                }
+
+                modalDetalleAnimal.close();
+                await cargarAnimales();
+
+            } catch (error) {
+                // Si tiene registros, el servidor rechaza y explica el motivo
+                if (mensajeBajaModal) {
+                    mensajeBajaModal.textContent = error.message || "No se pudo eliminar el animal.";
+                    mensajeBajaModal.style.color = "red";
+                }
+            } finally {
+                btnEliminarAnimal.disabled = false;
             }
         });
     }

@@ -33,6 +33,14 @@ class Animal extends Model
         'observaciones',
         'observaciones_clinicas',
         'user_id',
+        'activo',
+        'fecha_baja',
+        'motivo_baja',
+    ];
+
+    // Convertir el campo de baja lógica a booleano (T16)
+    protected $casts = [
+        'activo' => 'boolean',
     ];
 
     // Ocultar atributos sensibles/clínicos por defecto en serialización JSON
