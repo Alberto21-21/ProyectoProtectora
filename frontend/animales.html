@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta de Animal - Salvando Huellas</title>
+    <title>Animales - Salvando Huellas</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/style.css">
 </head>
@@ -29,14 +29,14 @@
     <main class="contenido-perfil">
 
         <div class="titulo-perfil">
-            <span>ADMINISTRACIÓN</span>
-            <h1>Alta de Animal</h1>
-            <p>Registra la llegada de un nuevo animal en la base de datos de la protectora.</p>
+            <span id="etiquetaSeccionAnimales">PROTECTORA</span>
+            <h1 id="tituloSeccionAnimales">Animales</h1>
+            <p id="subtituloAnimales">Consulta los animales disponibles para adopción en nuestra protectora.</p>
         </div>
 
         <p id="mensajeAnimal" role="status"></p>
 
-        <!-- SECCIÓN DE ALTA DE ANIMAL -->
+        <!-- SECCIÓN DE ALTA DE ANIMAL (SOLO PERSONAL AUTORIZADO) -->
         <div id="gestionAnimales" class="distribucion-perfil" hidden>
 
             <!-- TARJETA IZQUIERDA -->
@@ -184,7 +184,108 @@
             </section>
         </div>
 
+        <!-- CATÁLOGO, BÚSQUEDA Y ACTUALIZACIÓN DE ESTADO -->
+        <section class="informacion-perfil" style="margin-top: 30px; max-width: 100%;">
+            <h2>Catálogo y situación de animales</h2>
+
+            <form id="formularioFiltros" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="buscarTexto">Buscar</label>
+                    <input type="text" id="buscarTexto" placeholder="Nombre o raza...">
+                </div>
+
+                <div>
+                    <label for="filtroEspecie">Especie</label>
+                    <select id="filtroEspecie">
+                        <option value="">Todas las especies</option>
+                        <option value="Perro">Perros</option>
+                        <option value="Gato">Gatos</option>
+                        <option value="Otro">Otros</option>
+                    </select>
+                </div>
+
+                <div id="contenedorFiltroEstado">
+                    <label for="filtroEstado">Estado</label>
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="En acogida">En acogida</option>
+                        <option value="En tratamiento">En tratamiento</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Adoptado">Adoptado</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="botonBuscarAnimales">Buscar</button>
+                <button type="button" id="botonLimpiarFiltros">Limpiar filtros</button>
+            </form>
+
+            <!-- TABLA DE ANIMALES -->
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px;">Nombre</th>
+                        <th style="padding: 10px;">Especie</th>
+                        <th style="padding: 10px;">Raza</th>
+                        <th style="padding: 10px;">Estado</th>
+                        <th style="padding: 10px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCuerpoAnimales">
+                </tbody>
+            </table>
+        </section>
+
     </main>
+
+    <!-- MODAL PARA VER FICHA DETALLADA Y CAMBIAR ESTADO -->
+    <dialog id="modalDetalleAnimal" style="border: none; border-radius: 16px; padding: 25px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <div id="contenidoFichaAnimal">
+            <h2 id="fichaNombre"></h2>
+            <img id="fichaImagen" alt="" hidden style="width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:15px;">
+            <p><strong>Especie:</strong> <span id="fichaEspecie"></span></p>
+            <p><strong>Raza / Características:</strong> <span id="fichaRaza"></span></p>
+            <p><strong>Sexo:</strong> <span id="fichaSexo"></span></p>
+            <p><strong>Estado actual:</strong> <span id="fichaEstado"></span></p>
+
+            <!-- BLOQUE DE CAMBIO DE ESTADO (SOLO PERSONAL AUTORIZADO) -->
+            <div id="bloqueCambioEstado" hidden style="margin-top: 15px; padding: 12px; background-color: #f9f9f9; border-radius: 10px; border: 1px solid #e0e0e0;">
+                <div id="controlesTransicionEstado">
+                    <label for="selectNuevoEstado" style="display:block; font-weight:600; margin-bottom:6px;">
+                        Actualizar situación del animal:
+                    </label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <select id="selectNuevoEstado" style="flex:1; padding:8px; border-radius:8px;">
+                            <option value="">Selecciona nuevo estado...</option>
+                        </select>
+                        <button type="button" id="btnGuardarEstadoAnimal" style="padding:8px 14px;">
+                            Cambiar estado
+                        </button>
+                    </div>
+                    <p id="mensajeEstadoModal" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
+                    <small style="color:#666; display:block; margin-top:4px;">
+                        * La adopción formalizada se gestiona desde su proceso específico.
+                    </small>
+                </div>
+                <p id="avisoEstadoFinal" hidden style="margin:0; font-size:0.9rem; color:#555;">
+                    Este animal ya está adoptado y no admite cambios manuales de estado.
+                </p>
+            </div>
+
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #F5F5F5;">
+            <p><strong>Peso:</strong> <span id="fichaPeso"></span></p>
+            <p><strong>Fecha de entrada:</strong> <span id="fichaFechaEntrada"></span></p>
+            <p><strong>Motivo / Procedencia:</strong> <span id="fichaMotivo"></span></p>
+            <p><strong>Carácter:</strong> <span id="fichaCaracter"></span></p>
+            <p><strong>Necesidades especiales:</strong> <span id="fichaNecesidades"></span></p>
+            <p><strong>Observaciones del personal:</strong> <span id="fichaObservaciones"></span></p>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <a href="#" id="enlaceEditarAnimal" class="boton-portada" style="padding: 8px 15px; text-decoration: none;" hidden>Editar ficha</a>
+            <button type="button" id="cerrarDetalleAnimal">Cerrar</button>
+        </div>
+    </dialog>
 
     <script type="module" src="./src/animales.js"></script>
 </body>

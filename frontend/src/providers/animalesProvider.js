@@ -18,7 +18,6 @@ export async function crearAnimal(datos, token) {
         const error = new Error(
             resultado.message || "No se pudo registrar el animal."
         );
-        // Errores de validación devueltos por campo por Laravel
         error.errores = resultado.errors;
         throw error;
     }
@@ -98,6 +97,34 @@ export async function actualizarImagenAnimal(id, imagen, token) {
         throw new Error(
             resultado.message || "No se pudo actualizar la fotografía."
         );
+    }
+
+    return resultado;
+}
+
+// ACTUALIZAR EL ESTADO DE UN ANIMAL (T15)
+export async function actualizarEstadoAnimal(id, estado, token) {
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id + "/estado",
+        {
+            method: "PATCH",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ estado: estado })
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        const error = new Error(
+            resultado.message || "No se pudo actualizar el estado del animal."
+        );
+        error.errores = resultado.errors || null;
+        throw error;
     }
 
     return resultado;
