@@ -6,6 +6,8 @@ use App\Http\Requests\StoreAnimalRequest;
 use App\Http\Requests\UpdateEstadoAnimalRequest;
 use App\Models\Animal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -27,6 +29,13 @@ class AnimalController extends Controller
         }
 
         $esPersonalAutorizado = $usuario && in_array($usuario->rol, ['admin', 'personal', 'veterinario', 'empleado']);
+
+        // Los animales dados de baja no aparecen en el listado, salvo que el personal los pida
+        if (!$esPersonalAutorizado || !$request->boolean('bajas')) {
+            $query->where('activo', true);
+        } else {
+            $query->where('activo', false);
+        }
 
         // Si no es personal autorizado (visitante o adoptante), solo ve los disponibles
         if (!$esPersonalAutorizado) {
@@ -183,6 +192,14 @@ class AnimalController extends Controller
             ], 404);
         }
 
+        // Un animal dado de baja no admite cambios de estado
+        if (!$animal->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El animal está dado de baja y no admite cambios de estado.'
+            ], 422);
+        }
+
         $estadoActual = $animal->estado;
         $nuevoEstado = $request->validated()['estado'];
 
@@ -226,6 +243,135 @@ class AnimalController extends Controller
             'success' => true,
             'message' => "Estado actualizado a '{$nuevoEstado}' correctamente.",
             'data' => $animal
+        ], 200);
+    }
+
+    /**
+     * T16: Dar de baja un animal (baja lógica).
+     * El animal no se borra: se marca como inactivo y se conservan
+     * su historial, solicitudes y adopciones.
+     */
+    public function darDeBaja(Request $request, $id)
+    {
+        $animal = Animal::find($id);
+
+        if (!$animal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Animal no encontrado.'
+            ], 404);
+        }
+
+        $request->validate([
+            'motivo_baja' => 'required|string|max:255'
+        ], [
+            'motivo_baja.required' => 'Debes indicar el motivo de la baja.',
+            'motivo_baja.string' => 'El motivo debe ser un texto.',
+            'motivo_baja.max' => 'El motivo no puede superar los 255 caracteres.'
+        ]);
+
+        // RECHAZO: EL ANIMAL YA ESTÁ DADO DE BAJA
+        if (!$animal->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El animal ya está dado de baja desde el ' . $animal->fecha_baja . '.'
+            ], 422);
+        }
+
+        // RECHAZO: EL ANIMAL TIENE UNA RESERVA EN CURSO
+        if ($animal->estado === 'Reservado') {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede dar de baja: el animal está reservado por un proceso de adopción en curso. Cambia primero su estado.'
+            ], 422);
+        }
+
+        $animal->activo = false;
+        $animal->fecha_baja = now()->toDateString();
+        $animal->motivo_baja = $request->motivo_baja;
+        $animal->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'El animal se ha dado de baja correctamente. Sus registros se conservan.',
+            'data' => $animal
+        ], 200);
+    }
+
+    /**
+     * T16: Eliminar un animal definitivamente.
+     * Solo se permite si no tiene historial, solicitudes ni adopciones.
+     * Si los tiene, se rechaza para no perder su historia.
+     */
+    public function destroy($id)
+    {
+        $animal = Animal::find($id);
+
+        if (!$animal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Animal no encontrado.'
+            ], 404);
+        }
+
+        // COMPROBAR LOS REGISTROS ASOCIADOS AL ANIMAL
+        $historiales = 0;
+        $solicitudes = 0;
+        $adopciones = 0;
+
+        if (Schema::hasTable('historiales')) {
+            $historiales = DB::table('historiales')->where('animal_id', $animal->id)->count();
+        }
+
+        if (Schema::hasTable('solicitudes')) {
+            $solicitudes = DB::table('solicitudes')->where('animal_id', $animal->id)->count();
+        }
+
+        if (Schema::hasTable('adopciones')) {
+            $adopciones = DB::table('adopciones')->where('animal_id', $animal->id)->count();
+        }
+
+        // UN ANIMAL ADOPTADO SIEMPRE TIENE UNA ADOPCIÓN QUE CONSERVAR
+        if ($animal->estado === 'Adoptado' && $adopciones === 0) {
+            $adopciones = 1;
+        }
+
+        // RECHAZO: TIENE REGISTROS QUE NO SE PUEDEN PERDER
+        if ($historiales > 0 || $solicitudes > 0 || $adopciones > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar: el animal tiene registros asociados (historiales: ' . $historiales
+                    . ', solicitudes: ' . $solicitudes
+                    . ', adopciones: ' . $adopciones
+                    . '). Usa "Dar de baja" para conservar su historia.'
+            ], 422);
+        }
+
+        // RECHAZO: EL ANIMAL TIENE UNA RESERVA EN CURSO
+        if ($animal->estado === 'Reservado') {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar: el animal está reservado por un proceso de adopción en curso.'
+            ], 422);
+        }
+
+        // ELIMINACIÓN DEFINITIVA
+        $fotografia = $animal->fotografia;
+        $imagen = $animal->imagen;
+
+        $animal->delete();
+
+        if ($fotografia) {
+            Storage::disk('public')->delete($fotografia);
+        }
+
+        if ($imagen) {
+            Storage::disk('public')->delete($imagen);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'El animal no tenía registros asociados y se ha eliminado definitivamente.'
         ], 200);
     }
 

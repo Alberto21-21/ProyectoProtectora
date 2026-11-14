@@ -130,6 +130,58 @@ export async function actualizarEstadoAnimal(id, estado, token) {
     return resultado;
 }
 
+// DAR DE BAJA UN ANIMAL - BAJA LÓGICA (T16)
+export async function darDeBajaAnimal(id, motivo, token) {
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id + "/baja",
+        {
+            method: "PATCH",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ motivo_baja: motivo })
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        const error = new Error(
+            resultado.message || "No se pudo dar de baja el animal."
+        );
+        error.errores = resultado.errors || null;
+        throw error;
+    }
+
+    return resultado;
+}
+
+// ELIMINAR UN ANIMAL DEFINITIVAMENTE (T16)
+export async function eliminarAnimal(id, token) {
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id,
+        {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo eliminar el animal."
+        );
+    }
+
+    return resultado;
+}
+
 // CONSULTAR LOS DATOS CLÍNICOS DE UN ANIMAL
 export async function obtenerDatosClinicos(id, token) {
     const respuesta = await fetch(
