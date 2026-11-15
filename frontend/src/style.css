@@ -1726,3 +1726,46 @@ button:focus-visible {
     }
 
 }
+
+/* LOGO DE LA CABECERA */
+
+.marca {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.logo-protectora {
+    display: block;
+    width: 260px;
+    height: auto;
+}
+
+@media (max-width: 600px) {
+
+    .logo-protectora {
+        width: 220px;
+    }
+
+}
+
+/* CABECERA MÁS COMPACTA */
+
+.pagina-inicio .cabecera:has(.logo-protectora),
+.pagina-perfil .interior-cabecera:has(.logo-protectora) {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.marca .logo-protectora {
+    width: 200px;
+    height: auto;
+}
+
+@media (max-width: 600px) {
+
+    .marca .logo-protectora {
+        width: 190px;
+    }
+
+}
