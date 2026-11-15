@@ -14,7 +14,7 @@ const email = document.querySelector("#emailPerfil");
 const fechaNacimiento = document.querySelector("#fechaNacimientoPerfil");
 const rol = document.querySelector("#rolPerfil");
 
-// ELEMENTOS DEL FORMULARIO
+// FORMULARIO DE EDICIÓN
 const formulario = document.querySelector("#formularioEditarPerfil");
 const nombreEditar = document.querySelector("#nombreEditar");
 const emailEditar = document.querySelector("#emailEditar");
@@ -22,7 +22,12 @@ const fechaNacimientoEditar = document.querySelector("#fechaNacimientoEditar");
 const mensajeEditar = document.querySelector("#mensajeEditarPerfil");
 const botonGuardar = document.querySelector("#botonGuardarPerfil");
 
-// ELEMENTOS DEL FORMULARIO DE CONTRASEÑA
+// VENTANA DE EDICIÓN
+const modalEditarPerfil = document.querySelector("#modalEditarPerfil");
+const abrirEditarPerfil = document.querySelector("#abrirEditarPerfil");
+const cerrarEditarPerfil = document.querySelector("#cerrarEditarPerfil");
+
+// FORMULARIO DE CONTRASEÑA
 const formularioContrasena = document.querySelector("#formularioContrasena");
 const passwordActual = document.querySelector("#passwordActual");
 const passwordNueva = document.querySelector("#passwordNueva");
@@ -30,19 +35,28 @@ const confirmarPasswordNueva = document.querySelector("#confirmarPasswordNueva")
 const mensajeContrasena = document.querySelector("#mensajeContrasena");
 const botonGuardarContrasena = document.querySelector("#botonGuardarContrasena");
 
-// BOTÓN PARA CERRAR SESIÓN
+// VENTANA DE CONTRASEÑA
+const modalContrasena = document.querySelector("#modalContrasena");
+const abrirCambiarContrasena = document.querySelector("#abrirCambiarContrasena");
+const cerrarContrasena = document.querySelector("#cerrarContrasena");
+
+// CABECERA
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
-// ENLACE DE ADMINISTRACIÓN
 const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
 const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
 
-// ELEMENTOS DE LA FOTOGRAFÍA
+// FOTOGRAFÍA
 const formularioFotografia = document.querySelector("#formularioFotografia");
 const fotografiaEditar = document.querySelector("#fotografiaEditar");
 const fotografiaPerfil = document.querySelector("#fotografiaPerfil");
 const avatarPredeterminado = document.querySelector("#avatarPredeterminado");
 const mensajeFotografia = document.querySelector("#mensajeFotografia");
 const botonGuardarFotografia = document.querySelector("#botonGuardarFotografia");
+
+// ESTADO DE LOS FORMULARIOS
+let usuarioActual = null;
+let guardandoPerfil = false;
+let guardandoContrasena = false;
 
 // MOSTRAR LA FOTOGRAFÍA
 function mostrarFotografia(url) {
@@ -51,11 +65,17 @@ function mostrarFotografia(url) {
         fotografiaPerfil.src = url;
         fotografiaPerfil.hidden = false;
         avatarPredeterminado.hidden = true;
+    } else {
+        fotografiaPerfil.removeAttribute("src");
+        fotografiaPerfil.hidden = true;
+        avatarPredeterminado.hidden = false;
     }
 }
 
 // MOSTRAR LOS DATOS Y RELLENAR EL FORMULARIO
 function mostrarPerfil(usuario) {
+
+    usuarioActual = usuario;
 
     const fecha = usuario.fecha_nacimiento
         ? usuario.fecha_nacimiento.slice(0, 10)
@@ -88,8 +108,12 @@ async function cargarPerfil() {
 
     try {
         const usuario = await obtenerUsuario(token);
+
         enlaceUsuarios.hidden = usuario.rol !== "admin";
-        enlaceMisAnimales.hidden = usuario.rol !== "personal" && usuario.rol !== "veterinario";
+
+        enlaceMisAnimales.hidden =
+            usuario.rol !== "personal" &&
+            usuario.rol !== "veterinario";
 
         mostrarPerfil(usuario);
         mostrarFotografia(usuario.fotografia_url);
@@ -103,10 +127,29 @@ async function cargarPerfil() {
     }
 }
 
-// GUARDAR LOS CAMBIOS DEL PERFIL
+// ABRIR LA EDICIÓN CON LOS DATOS GUARDADOS
+function abrirEdicion() {
+
+    if (!usuarioActual) {
+        return;
+    }
+
+    mostrarPerfil(usuarioActual);
+
+    mensajeEditar.textContent = "";
+    estado.textContent = "";
+
+    modalEditarPerfil.showModal();
+}
+
+// GUARDAR LOS DATOS
 async function guardarPerfil(evento) {
 
     evento.preventDefault();
+
+    if (guardandoPerfil) {
+        return;
+    }
 
     const token = sessionStorage.getItem("token");
 
@@ -122,22 +165,128 @@ async function guardarPerfil(evento) {
         fecha_nacimiento: fechaNacimientoEditar.value
     };
 
-    mensajeEditar.textContent = "Guardando cambios...";
+    guardandoPerfil = true;
     botonGuardar.disabled = true;
+    cerrarEditarPerfil.disabled = true;
+
+    mensajeEditar.textContent = "Guardando cambios...";
 
     try {
         const resultado = await actualizarPerfil(datos, token);
 
         mostrarPerfil(resultado.data);
 
-        mensajeEditar.textContent = resultado.message;
+        mensajeEditar.textContent = "";
+        modalEditarPerfil.close();
+
+        estado.textContent = resultado.message;
 
     } catch (error) {
         mensajeEditar.textContent =
             `No se pudo actualizar el perfil: ${error.message}`;
 
     } finally {
+        guardandoPerfil = false;
         botonGuardar.disabled = false;
+        cerrarEditarPerfil.disabled = false;
+    }
+}
+
+// ABRIR EL CAMBIO DE CONTRASEÑA
+function abrirContrasena() {
+
+    formularioContrasena.reset();
+    mensajeContrasena.textContent = "";
+    estado.textContent = "";
+
+    modalContrasena.showModal();
+}
+
+// GUARDAR LA NUEVA CONTRASEÑA
+async function guardarContrasena(evento) {
+
+    evento.preventDefault();
+
+    if (guardandoContrasena) {
+        return;
+    }
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        mensajeContrasena.textContent =
+            "Debes iniciar sesión para cambiar la contraseña.";
+        return;
+    }
+
+    const datos = {
+        password_actual: passwordActual.value,
+        password: passwordNueva.value,
+        password_confirmation: confirmarPasswordNueva.value
+    };
+
+    guardandoContrasena = true;
+    botonGuardarContrasena.disabled = true;
+    cerrarContrasena.disabled = true;
+
+    mensajeContrasena.textContent = "Cambiando contraseña...";
+
+    try {
+        const resultado = await cambiarContrasena(datos, token);
+
+        formularioContrasena.reset();
+        mensajeContrasena.textContent = "";
+        modalContrasena.close();
+
+        estado.textContent = resultado.message;
+
+    } catch (error) {
+        mensajeContrasena.textContent =
+            `No se pudo cambiar la contraseña: ${error.message}`;
+
+    } finally {
+        guardandoContrasena = false;
+        botonGuardarContrasena.disabled = false;
+        cerrarContrasena.disabled = false;
+    }
+}
+
+// GUARDAR LA FOTOGRAFÍA
+async function guardarFotografia(evento) {
+
+    evento.preventDefault();
+
+    const token = sessionStorage.getItem("token");
+    const fotografia = fotografiaEditar.files[0];
+
+    if (!token) {
+        mensajeFotografia.textContent =
+            "Debes iniciar sesión para cambiar la fotografía.";
+        return;
+    }
+
+    if (!fotografia) {
+        mensajeFotografia.textContent = "Selecciona una fotografía.";
+        return;
+    }
+
+    mensajeFotografia.textContent = "Guardando fotografía...";
+    botonGuardarFotografia.disabled = true;
+
+    try {
+        const resultado = await actualizarFotografia(fotografia, token);
+
+        mostrarFotografia(resultado.data.fotografia_url);
+
+        mensajeFotografia.textContent = resultado.message;
+        formularioFotografia.reset();
+
+    } catch (error) {
+        mensajeFotografia.textContent =
+            `No se pudo guardar la fotografía: ${error.message}`;
+
+    } finally {
+        botonGuardarFotografia.disabled = false;
     }
 }
 
@@ -169,88 +318,49 @@ async function salirSesion() {
     }
 }
 
-// GUARDAR LA FOTOGRAFÍA
-async function guardarFotografia(evento) {
+// EVENTOS DE EDICIÓN
+abrirEditarPerfil.addEventListener("click", abrirEdicion);
 
-    evento.preventDefault();
-
-    const token = sessionStorage.getItem("token");
-    const fotografia = fotografiaEditar.files[0];
-
-    if (!token) {
-        mensajeFotografia.textContent =
-            "Debes iniciar sesión para cambiar la fotografía.";
-        return;
+cerrarEditarPerfil.addEventListener("click", function () {
+    if (!guardandoPerfil) {
+        modalEditarPerfil.close();
     }
+});
 
-    if (!fotografia) {
-        mensajeFotografia.textContent =
-            "Selecciona una fotografía.";
-        return;
+modalEditarPerfil.addEventListener("cancel", function (evento) {
+    if (guardandoPerfil) {
+        evento.preventDefault();
     }
+});
 
-    mensajeFotografia.textContent = "Guardando fotografía...";
-    botonGuardarFotografia.disabled = true;
-
-    try {
-        const resultado = await actualizarFotografia(fotografia, token);
-
-        mostrarFotografia(resultado.data.fotografia_url);
-
-        mensajeFotografia.textContent = resultado.message;
-        formularioFotografia.reset();
-
-    } catch (error) {
-        mensajeFotografia.textContent =
-            `No se pudo guardar la fotografía: ${error.message}`;
-
-    } finally {
-        botonGuardarFotografia.disabled = false;
-    }
-}
-
-// GUARDAR LA NUEVA CONTRASEÑA
-async function guardarContrasena(evento) {
-
-    evento.preventDefault();
-
-    const token = sessionStorage.getItem("token");
-
-    if (!token) {
-        mensajeContrasena.textContent =
-            "Debes iniciar sesión para cambiar la contraseña.";
-        return;
-    }
-
-    const datos = {
-        password_actual: passwordActual.value,
-        password: passwordNueva.value,
-        password_confirmation: confirmarPasswordNueva.value
-    };
-
-    mensajeContrasena.textContent = "Cambiando contraseña...";
-    botonGuardarContrasena.disabled = true;
-
-    try {
-        const resultado = await cambiarContrasena(datos, token);
-
-        formularioContrasena.reset();
-        mensajeContrasena.textContent = resultado.message;
-
-    } catch (error) {
-        mensajeContrasena.textContent =
-            `No se pudo cambiar la contraseña: ${error.message}`;
-
-    } finally {
-        botonGuardarContrasena.disabled = false;
-    }
-}
-
-// ESCUCHAR LOS EVENTOS
 formulario.addEventListener("submit", guardarPerfil);
-botonCerrarSesion.addEventListener("click", salirSesion);
-formularioFotografia.addEventListener("submit", guardarFotografia);
+
+// EVENTOS DE CONTRASEÑA
+abrirCambiarContrasena.addEventListener("click", abrirContrasena);
+
+cerrarContrasena.addEventListener("click", function () {
+    if (!guardandoContrasena) {
+        modalContrasena.close();
+    }
+});
+
+modalContrasena.addEventListener("cancel", function (evento) {
+    if (guardandoContrasena) {
+        evento.preventDefault();
+    }
+});
+
+// VACIAR LAS CONTRASEÑAS TAMBIÉN AL CERRAR SIN GUARDAR
+modalContrasena.addEventListener("close", function () {
+    formularioContrasena.reset();
+    mensajeContrasena.textContent = "";
+});
+
 formularioContrasena.addEventListener("submit", guardarContrasena);
 
-// CARGAR LOS DATOS AL ABRIR LA PÁGINA
+// FOTOGRAFÍA Y CIERRE DE SESIÓN
+formularioFotografia.addEventListener("submit", guardarFotografia);
+botonCerrarSesion.addEventListener("click", salirSesion);
+
+// CARGAR EL PERFIL
 cargarPerfil();

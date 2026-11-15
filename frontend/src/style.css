@@ -1658,3 +1658,71 @@ button:focus-visible {
     }
 
 }
+
+/* BOTONES DE ACCIÓN DEL PERFIL */
+
+.acciones-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.acciones-perfil button {
+    padding: 13px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.acciones-perfil button:hover {
+    background-color: #8B5C4A;
+}
+
+.acciones-perfil #abrirEditarPerfil {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-perfil #abrirEditarPerfil:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+
+/* FORMULARIOS DENTRO DE LAS VENTANAS DEL PERFIL */
+
+#modalEditarPerfil,
+#modalContrasena {
+    max-width: 460px;
+}
+
+#modalEditarPerfil #formularioEditarPerfil,
+#modalContrasena #formularioContrasena {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+#cerrarEditarPerfil:disabled,
+#cerrarContrasena:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+@media (max-width: 600px) {
+
+    .acciones-perfil {
+        flex-direction: column;
+    }
+
+    .acciones-perfil button {
+        width: 100%;
+    }
+
+}
