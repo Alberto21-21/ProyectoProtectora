@@ -8,7 +8,8 @@ export default defineConfig({
                 registro: "registro.html",
                 login: "login.html",
                 perfil: "perfil.html",
-                animales: "animales.html"
+                animales: "animales.html",
+                misAnimales: "misAnimales.html"
             }
         }
     }

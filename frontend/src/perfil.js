@@ -34,6 +34,7 @@ const botonGuardarContrasena = document.querySelector("#botonGuardarContrasena")
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 // ENLACE DE ADMINISTRACIÓN
 const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
+const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
 
 // ELEMENTOS DE LA FOTOGRAFÍA
 const formularioFotografia = document.querySelector("#formularioFotografia");
@@ -88,6 +89,7 @@ async function cargarPerfil() {
     try {
         const usuario = await obtenerUsuario(token);
         enlaceUsuarios.hidden = usuario.rol !== "admin";
+        enlaceMisAnimales.hidden = usuario.rol !== "personal" && usuario.rol !== "veterinario";
 
         mostrarPerfil(usuario);
         mostrarFotografia(usuario.fotografia_url);

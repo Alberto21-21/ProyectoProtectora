@@ -21,6 +21,7 @@ const datosAnimal = document.querySelector("#datosAnimal");
 const nombreAnimalTitulo = document.querySelector("#nombreAnimalTitulo");
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
+const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
 
 // ELEMENTOS DEL FORMULARIO DE DATOS GENERALES
 const formularioAnimal = document.querySelector("#formularioAnimal");
@@ -130,6 +131,7 @@ async function cargarFicha() {
     try {
         const usuario = await obtenerUsuario(token);
         enlaceUsuarios.hidden = usuario.rol !== "admin";
+        enlaceMisAnimales.hidden = usuario.rol !== "personal" && usuario.rol !== "veterinario";
 
         if (!esPersonalAutorizado(usuario.rol)) {
             mensajeFicha.textContent =

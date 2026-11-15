@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAnimalRequest;
 use App\Http\Requests\UpdateEstadoAnimalRequest;
 use App\Models\Animal;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -372,6 +373,96 @@ class AnimalController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'El animal no tenía registros asociados y se ha eliminado definitivamente.'
+        ], 200);
+    }
+
+    /**
+     * T17: Consultar los animales asignados al trabajador autenticado.
+     * Devuelve los datos de cuidado y necesidades, pero NO los datos clínicos.
+     */
+    public function misAnimales(Request $request)
+    {
+        $usuario = $request->user();
+
+        $animales = Animal::where('cuidador_id', $usuario->id)
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get();
+
+        // Las necesidades especiales están ocultas por defecto en el modelo,
+        // pero el cuidador necesita verlas para atender bien al animal.
+        // Las observaciones clínicas siguen ocultas ($hidden del modelo).
+        $animales->makeVisible('necesidades_especiales');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Animales asignados consultados correctamente.',
+            'data' => $animales
+        ], 200);
+    }
+
+    /**
+     * T17: Asignar un trabajador y sus instrucciones de cuidado a un animal (solo administrador).
+     */
+    public function asignarCuidador(Request $request, $id)
+    {
+        $animal = Animal::find($id);
+
+        if (!$animal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Animal no encontrado.'
+            ], 404);
+        }
+
+        if (!$animal->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede asignar un cuidador a un animal dado de baja.'
+            ], 422);
+        }
+
+        $request->validate([
+            'cuidador_id' => 'nullable|integer|exists:users,id',
+            'instrucciones_cuidado' => 'nullable|string|max:2000'
+        ], [
+            'cuidador_id.integer' => 'El trabajador seleccionado no es válido.',
+            'cuidador_id.exists' => 'El trabajador seleccionado no existe.',
+            'instrucciones_cuidado.string' => 'Las instrucciones deben ser un texto.',
+            'instrucciones_cuidado.max' => 'Las instrucciones no pueden superar los 2000 caracteres.'
+        ]);
+
+        // COMPROBAR QUE EL USUARIO ELEGIDO ES UN TRABAJADOR ACTIVO
+        if ($request->cuidador_id) {
+            $cuidador = User::find($request->cuidador_id);
+
+            if ($cuidador->rol !== 'personal' && $cuidador->rol !== 'veterinario') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo se puede asignar el animal a personal o veterinarios.'
+                ], 422);
+            }
+
+            if ($cuidador->estado !== 'activo') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede asignar el animal a una cuenta desactivada.'
+                ], 422);
+            }
+        }
+
+        $animal->cuidador_id = $request->cuidador_id;
+        $animal->instrucciones_cuidado = $request->instrucciones_cuidado;
+        $animal->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asignación del animal guardada correctamente.',
+            'data' => [
+                'id' => $animal->id,
+                'cuidador_id' => $animal->cuidador_id,
+                'instrucciones_cuidado' => $animal->instrucciones_cuidado
+            ]
         ], 200);
     }
 
