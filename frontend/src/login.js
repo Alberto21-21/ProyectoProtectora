@@ -14,6 +14,7 @@ const abrirLogin = document.querySelector("#abrirLogin");
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 const enlacePerfil = document.querySelector("#enlacePerfil");
 const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
+const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
 const mensajeSesion = document.querySelector("#mensajeSesion");
 const modalLogin = document.querySelector("#modalLogin");
 
@@ -30,6 +31,11 @@ function actualizarCabecera(sesionActiva, rol = "") {
 
     if (enlaceUsuarios) {
         enlaceUsuarios.hidden = !sesionActiva || rol !== "admin";
+    }
+
+    // MIS ANIMALES: SOLO PERSONAL Y VETERINARIOS (T17)
+    if (enlaceMisAnimales) {
+        enlaceMisAnimales.hidden = !sesionActiva || (rol !== "personal" && rol !== "veterinario");
     }
 
     botonCerrarSesion.hidden = !sesionActiva;

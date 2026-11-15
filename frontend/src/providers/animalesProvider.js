@@ -182,6 +182,58 @@ export async function eliminarAnimal(id, token) {
     return resultado;
 }
 
+// CONSULTAR LOS ANIMALES ASIGNADOS AL TRABAJADOR (T17)
+export async function obtenerMisAnimales(token) {
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/mis-animales",
+        {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudieron consultar tus animales asignados."
+        );
+    }
+
+    return resultado;
+}
+
+// ASIGNAR TRABAJADOR E INSTRUCCIONES DE CUIDADO A UN ANIMAL (T17)
+export async function asignarCuidadorAnimal(id, datos, token) {
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales/" + id + "/asignacion",
+        {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(datos)
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        const error = new Error(
+            resultado.message || "No se pudo guardar la asignación."
+        );
+        error.errores = resultado.errors || null;
+        throw error;
+    }
+
+    return resultado;
+}
+
 // CONSULTAR LOS DATOS CLÍNICOS DE UN ANIMAL
 export async function obtenerDatosClinicos(id, token) {
     const respuesta = await fetch(

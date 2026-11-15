@@ -252,6 +252,25 @@ Route::delete('/animales/{id}', [AnimalController::class, 'destroy'])
     ]);
 
 
+// CONSULTAR LOS ANIMALES ASIGNADOS AL TRABAJADOR (T17)
+Route::get('/mis-animales', [AnimalController::class, 'misAnimales'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);
+
+
+// ASIGNAR TRABAJADOR E INSTRUCCIONES DE CUIDADO A UN ANIMAL (T17)
+Route::put('/animales/{id}/asignacion', [AnimalController::class, 'asignarCuidador'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class
+    ]);
+
+
 // CONSULTAR LOS DATOS CLÍNICOS
 Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
     ->whereNumber('id')
@@ -265,7 +284,11 @@ Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClin
 // EDITAR LOS DATOS CLÍNICOS
 Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosClinicos'])
     ->whereNumber('id')
-    ->middleware(['auth:sanctum', EsVeterinario::class]);
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsVeterinario::class
+    ]);
 
     // CREAR PERFIL VETERINARIO
 Route::post('/veterinarios', [VeterinarioController::class, 'store'])
