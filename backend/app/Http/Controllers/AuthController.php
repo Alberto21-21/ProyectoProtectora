@@ -45,10 +45,10 @@ class AuthController extends Controller
         $usuario->rol = 'adoptante';
         $usuario->save();
 
-        // CREAR TOKEN CON LOS PERMISOS DEL USUARIO
+        // CREAR EL TOKEN CON LOS PERMISOS DEFINIDOS EN EL SERVIDOR
         $tokenResultado = $usuario->createToken(
             'LaravelSanctumAuth',
-            [$usuario->rol]
+            $usuario->obtenerPermisos()
         );
 
         return response()->json([
@@ -101,10 +101,10 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // CREAR TOKEN CON LOS PERMISOS DEL USUARIO
+        // CREAR EL TOKEN CON LOS PERMISOS DEFINIDOS EN EL SERVIDOR
         $tokenResultado = $usuario->createToken(
             'LaravelSanctumAuth',
-            [$usuario->rol]
+            $usuario->obtenerPermisos()
         );
 
         return response()->json([

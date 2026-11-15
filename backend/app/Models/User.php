@@ -31,4 +31,23 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // OBTENER LAS ABILITIES SEGÚN EL ROL ACTUAL
+    public function obtenerPermisos(): array
+    {
+        $permisosRol = config('permisos.roles.' . $this->rol);
+
+        // UN ROL NO RECONOCIDO NO RECIBE PERMISOS
+        if (!is_array($permisosRol)) {
+            return [];
+        }
+
+        $permisosComunes = config('permisos.comunes', []);
+
+        return array_values(
+            array_unique(
+                array_merge($permisosComunes, $permisosRol)
+            )
+        );
+    }
 }

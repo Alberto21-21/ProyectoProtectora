@@ -462,6 +462,53 @@
 
     </dialog>
 
+    <!-- CAMBIAR EL ROL DE UNA CUENTA -->
+    <dialog
+        id="modalRolUsuario"
+        class="modal-acceso"
+        aria-labelledby="tituloRolUsuario"
+    >
+
+        <button
+            type="button"
+            id="cerrarRolUsuario"
+            class="cerrar-modal"
+            aria-label="Cerrar cambio de rol"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloRolUsuario">Cambiar rol</h2>
+
+        <p id="nombreCuentaRol"></p>
+
+        <form id="formularioRolUsuario">
+
+            <label for="nuevoRolUsuario">Nuevo rol</label>
+
+            <select id="nuevoRolUsuario" name="rol" required>
+                <option value="">Selecciona un rol</option>
+                <option value="admin">Administrador</option>
+                <option value="adoptante">Adoptante</option>
+                <option value="personal">Personal</option>
+                <option value="veterinario">Veterinario</option>
+            </select>
+
+            <p>
+                Al guardar, se cerrarán los accesos actuales de esta cuenta.
+                La persona deberá iniciar sesión de nuevo.
+            </p>
+
+            <p id="mensajeRolUsuario" role="status"></p>
+
+            <button type="submit" id="botonGuardarRol">
+                Guardar rol
+            </button>
+
+        </form>
+
+    </dialog>
+
     </main>
 
 </body>

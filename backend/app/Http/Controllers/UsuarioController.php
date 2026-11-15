@@ -243,4 +243,57 @@ class UsuarioController extends Controller
         ], 200);
     }
 
+        // CAMBIAR EL ROL DE UNA CUENTA
+    public function cambiarRol(Request $request, $id)
+    {
+        $request->validate([
+            'rol' => 'required|in:admin,adoptante,personal,veterinario'
+        ], [
+            'rol.required' => 'Debes seleccionar un rol.',
+            'rol.in' => 'El rol seleccionado no es válido.'
+        ]);
+
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        // IMPEDIR QUE EL ADMINISTRADOR CAMBIE SU PROPIO ROL
+        if ($usuario->id === $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes cambiar tu propio rol.'
+            ], 422);
+        }
+
+        if ($usuario->rol === $request->rol) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La cuenta ya tiene ese rol.'
+            ], 422);
+        }
+
+        // GUARDAR EL NUEVO ROL Y REVOCAR LOS TOKENS ANTERIORES
+        $usuario->getConnection()->transaction(function () use ($usuario, $request) {
+            $usuario->rol = $request->rol;
+            $usuario->save();
+
+            $usuario->tokens()->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rol actualizado. El usuario debe iniciar sesión de nuevo.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado
+            ]
+        ], 200);
+    }
 }

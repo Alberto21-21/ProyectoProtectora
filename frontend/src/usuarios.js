@@ -14,7 +14,8 @@ import {
     obtenerDetalleUsuario,
     crearUsuarioInterno,
     actualizarUsuario,
-    desactivarUsuario
+    desactivarUsuario,
+    cambiarRolUsuario
 } from "./providers/usuariosProvider.js";
 
 import {obtenerPerfilVeterinario,crearPerfilVeterinario,actualizarPerfilVeterinario} from "./providers/veterinariosProvider.js";
@@ -60,6 +61,19 @@ const emailEditarUsuario = document.querySelector("#emailEditarUsuario");
 const fechaEditarUsuario = document.querySelector("#fechaEditarUsuario");
 const mensajeEditarUsuario = document.querySelector("#mensajeEditarUsuario");
 const botonActualizarUsuario = document.querySelector("#botonActualizarUsuario");
+
+// ELEMENTOS DEL CAMBIO DE ROL
+const modalRolUsuario = document.querySelector("#modalRolUsuario");
+const cerrarRolUsuario = document.querySelector("#cerrarRolUsuario");
+const formularioRolUsuario = document.querySelector("#formularioRolUsuario");
+const nombreCuentaRol = document.querySelector("#nombreCuentaRol");
+const nuevoRolUsuario = document.querySelector("#nuevoRolUsuario");
+const mensajeRolUsuario = document.querySelector("#mensajeRolUsuario");
+const botonGuardarRol = document.querySelector("#botonGuardarRol");
+
+let usuarioRolId = null;
+let rolAnterior = "";
+let guardandoRol = false;
 
 // ESTADO DE LA PÁGINA
 let paginaActual = 1;
@@ -237,6 +251,26 @@ function mostrarUsuarios(usuarios) {
         });
 
         acciones.appendChild(botonDetalle);
+
+                // CAMBIAR EL ROL DE OTRAS CUENTAS
+        if (usuario.id !== administradorActualId) {
+            const botonRol = document.createElement("button");
+
+            botonRol.type = "button";
+            botonRol.textContent = "Cambiar rol";
+            botonRol.className = "boton-detalle boton-rol-usuario";
+
+            botonRol.setAttribute(
+                "aria-label",
+                "Cambiar rol de " + usuario.name
+            );
+
+            botonRol.addEventListener("click", function () {
+                abrirCambioRol(usuario);
+            });
+
+            acciones.appendChild(botonRol);
+        }
 
         // BOTÓN DE EDICIÓN
         const botonEditar = document.createElement("button");
@@ -868,6 +902,83 @@ async function salirSesion() {
     }
 }
 
+// ABRIR EL CAMBIO DE ROL
+function abrirCambioRol(usuario) {
+
+    usuarioRolId = usuario.id;
+    rolAnterior = usuario.rol;
+
+    formularioRolUsuario.reset();
+
+    nombreCuentaRol.textContent =
+        usuario.name + " — Rol actual: " + usuario.rol;
+
+    nuevoRolUsuario.value = usuario.rol;
+    mensajeRolUsuario.textContent = "";
+
+    modalRolUsuario.showModal();
+}
+
+// GUARDAR EL NUEVO ROL
+async function guardarCambioRol(evento) {
+
+    evento.preventDefault();
+
+    if (guardandoRol || usuarioRolId === null) {
+        return;
+    }
+
+    if (nuevoRolUsuario.value === rolAnterior) {
+        mensajeRolUsuario.textContent =
+            "Selecciona un rol diferente del actual.";
+        return;
+    }
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        mensajeRolUsuario.textContent =
+            "Debes iniciar sesión para cambiar roles.";
+        return;
+    }
+
+    guardandoRol = true;
+    botonGuardarRol.disabled = true;
+    cerrarRolUsuario.disabled = true;
+    nuevoRolUsuario.disabled = true;
+
+    mensajeRolUsuario.textContent = "Guardando rol...";
+
+    try {
+        const resultado = await cambiarRolUsuario(
+            usuarioRolId,
+            nuevoRolUsuario.value,
+            token
+        );
+
+        modalRolUsuario.close();
+        formularioRolUsuario.reset();
+
+        usuarioRolId = null;
+        rolAnterior = "";
+
+        await cargarUsuarios(paginaActual);
+
+        mensaje.textContent =
+            resultado.message + " " + mensaje.textContent;
+
+    } catch (error) {
+        mensajeRolUsuario.textContent =
+            `No se pudo cambiar el rol: ${error.message}`;
+
+    } finally {
+        guardandoRol = false;
+        botonGuardarRol.disabled = false;
+        cerrarRolUsuario.disabled = false;
+        nuevoRolUsuario.disabled = false;
+    }
+}
+
 // EVENTOS DEL LISTADO
 formulario.addEventListener("submit", buscarUsuarios);
 
@@ -966,4 +1077,35 @@ document.querySelector("#cancelarPerfilVeterinario").addEventListener("click", f
     });
 
     botonCerrarSesion.addEventListener("click", salirSesion);
+
+    // EVENTOS DEL CAMBIO DE ROL
+    cerrarRolUsuario.addEventListener("click", function () {
+        if (!guardandoRol) {
+            modalRolUsuario.close();
+        }
+    });
+
+    modalRolUsuario.addEventListener("cancel", function (evento) {
+        if (guardandoRol) {
+            evento.preventDefault();
+        }
+    });
+
+    formularioRolUsuario.addEventListener("submit", guardarCambioRol);
+
+    // EVENTOS DEL CAMBIO DE ROL
+    cerrarRolUsuario.addEventListener("click", function () {
+        if (!guardandoRol) {
+            modalRolUsuario.close();
+        }
+    });
+
+    modalRolUsuario.addEventListener("cancel", function (evento) {
+        if (guardandoRol) {
+            evento.preventDefault();
+        }
+    });
+
+    formularioRolUsuario.addEventListener("submit", guardarCambioRol);
+
     comprobarAcceso();

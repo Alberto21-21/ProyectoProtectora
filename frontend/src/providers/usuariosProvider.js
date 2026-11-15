@@ -128,3 +128,32 @@ export async function desactivarUsuario(id, token) {
 
     return resultado;
 }
+
+// CAMBIAR EL ROL DE UNA CUENTA
+export async function cambiarRolUsuario(id, rol, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/usuarios/" + id + "/rol",
+        {
+            method: "PATCH",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                rol: rol
+            })
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo cambiar el rol."
+        );
+    }
+
+    return resultado;
+}
