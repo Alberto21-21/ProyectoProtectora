@@ -1564,3 +1564,97 @@ button:focus-visible {
     }
 
 }
+
+/* BOTÓN PARA CAMBIAR EL ROL */
+
+.acciones-cuenta .boton-rol-usuario {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-cuenta .boton-rol-usuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+
+/* VENTANA DE CAMBIO DE ROL */
+
+#modalRolUsuario {
+    max-width: 460px;
+}
+
+#nombreCuentaRol {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+#formularioRolUsuario {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#formularioRolUsuario label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#nuevoRolUsuario {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#nuevoRolUsuario:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#formularioRolUsuario p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#mensajeRolUsuario:empty {
+    display: none;
+}
+
+#botonGuardarRol {
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarRol:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarRol:disabled,
+#cerrarRolUsuario:disabled,
+#nuevoRolUsuario:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+@media (max-width: 480px) {
+
+    #nuevoRolUsuario {
+        font-size: 16px;
+    }
+
+}
