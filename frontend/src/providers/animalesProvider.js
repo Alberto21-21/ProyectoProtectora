@@ -26,14 +26,21 @@ export async function crearAnimal(datos, token) {
 }
 
 // CONSULTAR LA FICHA DE UN ANIMAL
-export async function obtenerAnimal(id) {
+export async function obtenerAnimal(id, token = null) {
+
+    const headers = {
+        "Accept": "application/json"
+    };
+
+    if (token) {
+        headers.Authorization = "Bearer " + token;
+    }
+
     const respuesta = await fetch(
         "http://127.0.0.1:8000/api/animales/" + id,
         {
             method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
+            headers: headers
         }
     );
 
@@ -278,6 +285,38 @@ export async function actualizarDatosClinicos(id, datos, token) {
     if (!respuesta.ok) {
         throw new Error(
             resultado.message || "No se pudieron actualizar los datos clínicos."
+        );
+    }
+
+    return resultado;
+}
+
+// CONSULTAR EL CATÁLOGO DE ANIMALES
+export async function obtenerAnimales(filtros = {}, token = null) {
+
+    const parametros = new URLSearchParams(filtros);
+
+    const headers = {
+        "Accept": "application/json"
+    };
+
+    if (token) {
+        headers.Authorization = "Bearer " + token;
+    }
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/animales?" + parametros.toString(),
+        {
+            method: "GET",
+            headers: headers
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudieron consultar los animales."
         );
     }
 

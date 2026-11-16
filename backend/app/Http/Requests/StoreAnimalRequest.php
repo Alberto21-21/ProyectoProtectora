@@ -46,7 +46,9 @@ class StoreAnimalRequest extends FormRequest
             'con_otros_animales' => 'required|in:Compatible,No compatible,Desconocido',
             'con_desconocidos' => 'required|in:Compatible,No compatible,Desconocido',
             'necesidades_especiales' => 'nullable|string|max:1000',
-            'observaciones' => 'nullable|string|max:1000'
+            'observaciones' => 'nullable|string|max:1000',
+            'historia_publica' => 'nullable|string|max:3000',
+            'cuidados_publicos' => 'nullable|string|max:3000'
         ];
     }
 
@@ -90,7 +92,11 @@ class StoreAnimalRequest extends FormRequest
             'con_desconocidos.required' => 'Indica la compatibilidad con desconocidos.',
             'con_desconocidos.in' => 'La compatibilidad con desconocidos no es válida.',
             'necesidades_especiales.max' => 'Las necesidades especiales no pueden superar los 1000 caracteres.',
-            'observaciones.max' => 'Las observaciones no pueden superar los 1000 caracteres.'
+            'observaciones.max' => 'Las observaciones no pueden superar los 1000 caracteres.',
+            'historia_publica.string' => 'La historia pública debe ser un texto.',
+            'historia_publica.max' => 'La historia pública no puede superar los 3000 caracteres.',
+            'cuidados_publicos.string' => 'Los cuidados públicos deben ser un texto.',
+            'cuidados_publicos.max' => 'Los cuidados públicos no pueden superar los 3000 caracteres.'
         ];
     }
 

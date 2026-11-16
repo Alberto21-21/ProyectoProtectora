@@ -33,13 +33,88 @@ button:focus-visible {
 }
 
 
-/* MARCA */
+/* MARCA Y LOGO */
 
 .marca {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
     color: #300E28;
     font-size: 20px;
     font-weight: 900;
     text-decoration: none;
+}
+
+.logo-protectora {
+    display: block;
+    width: 200px;
+    height: auto;
+}
+
+
+/* CABECERAS */
+
+.cabecera,
+.cabecera-perfil {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
+    background-color: #FFAC16;
+}
+
+.pagina-inicio .cabecera,
+.pagina-perfil .interior-cabecera {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.pagina-inicio .cabecera {
+    width: 100%;
+}
+
+.pagina-inicio .cabecera:has(.logo-protectora),
+.pagina-perfil .interior-cabecera:has(.logo-protectora) {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.pagina-inicio .cabecera nav,
+.pagina-perfil .cabecera-perfil nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.pagina-inicio .cabecera nav a,
+.pagina-inicio .cabecera nav button,
+.pagina-perfil .cabecera-perfil nav a {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagina-inicio .cabecera nav button {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.pagina-inicio .cabecera nav a:hover,
+.pagina-inicio .cabecera nav button:hover,
+.pagina-inicio .cabecera nav a[aria-current="page"],
+.pagina-perfil .cabecera-perfil nav a:hover,
+.pagina-perfil .cabecera-perfil nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
 }
 
 
@@ -58,59 +133,14 @@ button:focus-visible {
     display: flex;
 }
 
-
-/* CABECERA DEL INICIO */
-
-.pagina-inicio .cabecera {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 30px;
-}
-
-.pagina-inicio .cabecera nav {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 30px;
-}
-
-.pagina-inicio .cabecera nav a,
-.pagina-inicio .cabecera nav button {
-    padding: 0;
-    border: none;
-    background-color: transparent;
-    color: #300E28;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.pagina-inicio .cabecera nav a:hover,
-.pagina-inicio .cabecera nav button:hover,
-.pagina-inicio .cabecera nav a[aria-current="page"] {
-    text-decoration: underline;
-    text-underline-offset: 6px;
-}
-
 #mensajeSesion {
-    max-width: 1200px;
     width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 40px;
     font-size: 14px;
     line-height: 1.5;
     overflow-wrap: anywhere;
-}
-
-#mensajeSesion:empty {
-    display: none;
 }
 
 
@@ -164,7 +194,6 @@ button:focus-visible {
     border-radius: 25px;
     background-color: #300E28;
     color: #FFFFFF;
-    font-family: inherit;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
@@ -254,7 +283,6 @@ button:focus-visible {
     border: none;
     background-color: transparent;
     color: #300E28;
-    font-family: inherit;
     font-size: 28px;
     cursor: pointer;
 }
@@ -263,14 +291,30 @@ button:focus-visible {
     color: #8B5C4A;
 }
 
+#modalAltaUsuario,
+#modalEditarUsuario,
+#modalRolUsuario,
+#modalEditarPerfil,
+#modalContrasena {
+    max-width: 460px;
+}
 
-/* FORMULARIOS */
+#modalDetalleUsuario {
+    max-width: 600px;
+}
+
+
+/* FORMULARIOS COMUNES */
 
 #formularioRegistro,
 #formularioLogin,
 #formularioEditarPerfil,
 #formularioFotografia,
-#formularioContrasena {
+#formularioContrasena,
+#formularioAnimal,
+#formularioEditarUsuario,
+#formularioAltaUsuario,
+#formularioRolUsuario {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -280,7 +324,10 @@ button:focus-visible {
 #formularioLogin label,
 #formularioEditarPerfil label,
 #formularioFotografia label,
-#formularioContrasena label {
+#formularioContrasena label,
+#formularioAnimal label,
+#formularioEditarUsuario label,
+#formularioAltaUsuario label {
     margin-top: 8px;
     font-size: 13px;
     font-weight: 600;
@@ -290,7 +337,14 @@ button:focus-visible {
 #formularioLogin input,
 #formularioEditarPerfil input,
 #formularioFotografia input,
-#formularioContrasena input {
+#formularioContrasena input,
+#formularioAnimal input,
+#formularioAnimal select,
+#formularioAnimal textarea,
+#formularioEditarUsuario input,
+#formularioAltaUsuario input,
+#formularioAltaUsuario select,
+#nuevoRolUsuario {
     width: 100%;
     min-width: 0;
     padding: 12px;
@@ -298,7 +352,6 @@ button:focus-visible {
     border-radius: 8px;
     background-color: #FFFFFF;
     color: #300E28;
-    font-family: inherit;
     font-size: 14px;
 }
 
@@ -306,37 +359,66 @@ button:focus-visible {
 #formularioLogin input:focus,
 #formularioEditarPerfil input:focus,
 #formularioFotografia input:focus,
-#formularioContrasena input:focus {
+#formularioContrasena input:focus,
+#formularioAnimal input:focus,
+#formularioAnimal select:focus,
+#formularioAnimal textarea:focus,
+#formularioEditarUsuario input:focus,
+#formularioAltaUsuario input:focus,
+#formularioAltaUsuario select:focus,
+#nuevoRolUsuario:focus {
     outline: 2px solid #300E28;
     outline-offset: 2px;
 }
 
 
-/* MENSAJES */
+/* MENSAJES DE LOS FORMULARIOS */
 
 #mensajeRegistro,
 #mensajeLogin,
 #mensajePerfil,
 #mensajeEditarPerfil,
 #mensajeFotografia,
-#mensajeContrasena {
+#mensajeContrasena,
+#mensajeAltaUsuario,
+#mensajeEditarUsuario {
     margin: 5px 0;
     font-size: 13px;
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
+#mensajeAnimal,
+#mensajeUsuarios,
+#mensajeDetalleUsuario {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#mensajeUsuarios,
+#mensajeDetalleUsuario {
+    overflow-wrap: anywhere;
+}
+
+#mensajeSesion:empty,
 #mensajeRegistro:empty,
 #mensajeLogin:empty,
 #mensajePerfil:empty,
 #mensajeEditarPerfil:empty,
 #mensajeFotografia:empty,
-#mensajeContrasena:empty {
+#mensajeContrasena:empty,
+#mensajeAnimal:empty,
+#mensajeUsuarios:empty,
+#mensajeDetalleUsuario:empty,
+#mensajeAltaUsuario:empty,
+#mensajeEditarUsuario:empty,
+#mensajeRolUsuario:empty {
     display: none;
 }
 
 
-/* BOTONES DE LOS FORMULARIOS */
+/* BOTONES COMUNES DE LOS FORMULARIOS */
 
 #botonRegistro,
 #botonLogin,
@@ -344,13 +426,15 @@ button:focus-visible {
 #botonGuardarFotografia,
 #botonGuardarContrasena,
 #botonGuardarAnimal,
-#botonCerrarSesion {
+#botonCerrarSesion,
+#botonCrearUsuario,
+#botonActualizarUsuario,
+#botonGuardarRol {
     padding: 13px;
     border: none;
     border-radius: 25px;
     background-color: #300E28;
     color: #FFFFFF;
-    font-family: inherit;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -362,7 +446,10 @@ button:focus-visible {
 #botonGuardarFotografia:hover,
 #botonGuardarContrasena:hover,
 #botonGuardarAnimal:hover,
-#botonCerrarSesion:hover {
+#botonCerrarSesion:hover,
+#botonCrearUsuario:hover,
+#botonActualizarUsuario:hover,
+#botonGuardarRol:hover {
     background-color: #8B5C4A;
 }
 
@@ -372,14 +459,55 @@ button:focus-visible {
 #botonGuardarFotografia:disabled,
 #botonGuardarContrasena:disabled,
 #botonGuardarAnimal:disabled,
-#botonCerrarSesion:disabled {
+#botonCerrarSesion:disabled,
+#botonCrearUsuario:disabled,
+#botonActualizarUsuario:disabled,
+#botonGuardarRol:disabled,
+#cerrarRolUsuario:disabled,
+#nuevoRolUsuario:disabled,
+#cerrarEditarPerfil:disabled,
+#cerrarContrasena:disabled {
     opacity: 0.6;
     cursor: wait;
+}
+
+#botonCrearUsuario,
+#botonActualizarUsuario {
+    margin-top: 10px;
+}
+
+#botonCrearUsuario {
+    padding-right: 22px;
+    padding-left: 22px;
 }
 
 #botonCerrarSesion {
     width: 100%;
     margin-top: 15px;
+}
+
+
+/* CERRAR SESIÓN EN LAS CABECERAS */
+
+.pagina-inicio .cabecera #botonCerrarSesion,
+.pagina-perfil .cabecera-perfil #botonCerrarSesion {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pagina-inicio .cabecera #botonCerrarSesion:hover,
+.pagina-perfil .cabecera-perfil #botonCerrarSesion:hover {
+    background-color: transparent;
+    text-decoration: underline;
+    text-underline-offset: 6px;
 }
 
 
@@ -403,7 +531,6 @@ button:focus-visible {
     border: none;
     background-color: transparent;
     color: #300E28;
-    font-family: inherit;
     font-size: inherit;
     font-weight: 600;
     text-decoration: underline;
@@ -449,74 +576,12 @@ button:focus-visible {
 }
 
 
-/* PÁGINA MI PERFIL */
+/* PÁGINAS CON DISTRIBUCIÓN DE PERFIL */
 
 .pagina-perfil {
     min-height: 100vh;
     background-color: #F5F5F5;
 }
-
-.pagina-perfil .cabecera-perfil {
-    background-color: #FFAC16;
-}
-
-.pagina-perfil .interior-cabecera {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 30px;
-}
-
-.pagina-perfil .cabecera-perfil nav {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 30px;
-}
-
-.pagina-perfil .cabecera-perfil nav a {
-    color: #300E28;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.pagina-perfil .cabecera-perfil nav a:hover,
-.pagina-perfil .cabecera-perfil nav a[aria-current="page"] {
-    text-decoration: underline;
-    text-underline-offset: 6px;
-}
-
-
-/* CERRAR SESIÓN EN LAS CABECERAS */
-
-.pagina-inicio .cabecera #botonCerrarSesion,
-.pagina-perfil .cabecera-perfil #botonCerrarSesion {
-    width: auto;
-    margin: 0;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background-color: transparent;
-    color: #300E28;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.pagina-inicio .cabecera #botonCerrarSesion:hover,
-.pagina-perfil .cabecera-perfil #botonCerrarSesion:hover {
-    background-color: transparent;
-    text-decoration: underline;
-    text-underline-offset: 6px;
-}
-
-
-/* CONTENIDO DEL PERFIL */
 
 .pagina-perfil .contenido-perfil {
     max-width: 1200px;
@@ -561,7 +626,7 @@ button:focus-visible {
 }
 
 
-/* RESUMEN DE LA CUENTA */
+/* TARJETA LATERAL DEL PERFIL */
 
 .pagina-perfil .resumen-perfil {
     min-width: 0;
@@ -641,10 +706,58 @@ button:focus-visible {
 }
 
 
-/* EDITAR LOS DATOS PERSONALES */
+/* EDICIÓN Y CONTRASEÑA FUERA DE UN MODAL */
 
 #formularioEditarPerfil {
     margin-top: 30px;
+}
+
+#formularioContrasena {
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid #F5F5F5;
+}
+
+
+/* ACCIONES Y VENTANAS DEL PERFIL */
+
+.acciones-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.acciones-perfil button {
+    padding: 13px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.acciones-perfil button:hover {
+    background-color: #8B5C4A;
+}
+
+.acciones-perfil #abrirEditarPerfil {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-perfil #abrirEditarPerfil:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+#modalEditarPerfil #formularioEditarPerfil,
+#modalContrasena #formularioContrasena {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 
@@ -663,8 +776,6 @@ button:focus-visible {
     position: relative;
     margin-top: 20px;
 }
-
-/* OCULTAR EL CONTROL NATIVO CONSERVANDO SU FUNCIONAMIENTO */
 
 #formularioFotografia #fotografiaEditar {
     position: absolute;
@@ -702,330 +813,13 @@ button:focus-visible {
 }
 
 
-/* CAMBIAR CONTRASEÑA */
-
-#formularioContrasena {
-    margin-top: 35px;
-    padding-top: 30px;
-    border-top: 1px solid #F5F5F5;
-}
-
-
-/* ADAPTACIÓN A TABLETS */
-
-@media (max-width: 750px) {
-
-    .pagina-perfil .distribucion-perfil {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-@media (max-width: 700px) {
-
-    .portada {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .imagen-portada img {
-        max-width: 300px;
-        max-height: 35dvh;
-    }
-
-}
-
-
-/* ADAPTACIÓN A MÓVILES */
-
-@media (max-width: 600px) {
-
-    .pagina-inicio .cabecera {
-        padding: 25px 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
-    .pagina-inicio .cabecera nav {
-        gap: 20px;
-    }
-
-    #mensajeSesion {
-        padding: 0 20px;
-    }
-
-    .portada {
-        padding: 30px 20px;
-    }
-
-    .texto-portada h1 {
-        font-size: 56px;
-    }
-
-    .pagina-perfil .interior-cabecera {
-        padding: 25px 20px;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .pagina-perfil .cabecera-perfil nav {
-        gap: 20px;
-    }
-
-    .pagina-perfil .contenido-perfil {
-        padding: 35px 20px;
-    }
-
-    .pagina-perfil .titulo-perfil h1 {
-        font-size: 30px;
-    }
-
-    .pagina-perfil .informacion-perfil {
-        padding: 25px 20px;
-    }
-
-    .pagina-perfil .lista-datos-perfil {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-}
-
-@media (max-width: 480px) {
-
-    .ventana-registro {
-        padding: 25px 20px;
-    }
-
-    .ventana-registro h1 {
-        font-size: 24px;
-    }
-
-    .modal-acceso {
-        padding: 45px 20px 25px;
-    }
-
-    .modal-acceso h2 {
-        font-size: 24px;
-    }
-
-    #modalRegistro {
-        padding: 35px 20px 20px;
-    }
-
-    #formularioRegistro input,
-    #formularioLogin input,
-    #formularioEditarPerfil input,
-    #formularioFotografia input,
-    #formularioContrasena input {
-        font-size: 16px;
-    }
-
-}
-
-/* CABECERA FIJA AL DESPLAZARSE */
-
-.cabecera,
-.cabecera-perfil {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    flex-shrink: 0;
-    background-color: #FFAC16;
-}
-
-/* ==========================================================================
-   SECCIÓN DE ANIMALES Y TARJETAS (CATÁLOGO)
-   ========================================================================== */
-
-.seccion-animales {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 40px 80px;
-}
-
-.titulo-seccion {
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-.titulo-seccion h2 {
-    margin: 0 0 10px;
-    font-size: 36px;
-    font-weight: 900;
-    color: #300E28;
-}
-
-.titulo-seccion p {
-    margin: 0;
-    font-size: 15px;
-    color: #300E28;
-}
-
-/* GRID DE ANIMALES */
-
-.grid-animales {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 30px;
-}
-
-/* TARJETA DE ANIMAL */
-
-.tarjeta-animal {
-    display: flex;
-    flex-direction: column;
-    background-color: #FFFFFF;
-    border-radius: 20px;
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(48, 14, 40, 0.1);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.tarjeta-animal:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 25px rgba(48, 14, 40, 0.2);
-}
-
-.tarjeta-animal img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    display: block;
-}
-
-.info-tarjeta {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    gap: 8px;
-}
-
-.info-tarjeta h3 {
-    margin: 0 0 5px;
-    font-size: 22px;
-    font-weight: 900;
-    color: #300E28;
-}
-
-.info-tarjeta p {
-    margin: 0;
-    font-size: 14px;
-    color: #300E28;
-}
-
-.info-tarjeta p strong {
-    color: #8B5C4A;
-}
-
-.boton-ver-ficha {
-    margin-top: 15px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    background-color: #300E28;
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    align-self: flex-start;
-    transition: background-color 0.2s ease;
-}
-
-.boton-ver-ficha:hover {
-    background-color: #8B5C4A;
-}
-
-
-/* ==========================================================================
-   MODAL FICHA DE DETALLE DEL ANIMAL
-   ========================================================================== */
-
-.modal-detalle {
-    max-width: 520px;
-}
-
-.detalle-animal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.detalle-animal-body img {
-    width: 100%;
-    max-height: 280px;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
-.detalle-animal-body h2 {
-    margin: 0;
-    text-align: left;
-}
-
-.detalle-animal-body p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #300E28;
-}
-
-.detalle-animal-body p strong {
-    color: #8B5C4A;
-}
-
-.detalle-animal-body .boton-portada {
-    margin-top: 10px;
-    text-align: center;
-}
-
-
-/* FORMULARIO Y CAMPOS DE LA PÁGINA ANIMALES */
-
-#formularioAnimal {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#formularioAnimal label {
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#formularioAnimal input,
-#formularioAnimal select,
-#formularioAnimal textarea {
-    width: 100%;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid #FFAC16;
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    color: #300E28;
-    font-family: inherit;
-    font-size: 14px;
-}
+/* FORMULARIO DE ANIMALES */
 
 #formularioAnimal textarea {
     resize: vertical;
     min-height: 80px;
 }
 
-#formularioAnimal input:focus,
-#formularioAnimal select:focus,
-#formularioAnimal textarea:focus {
-    outline: 2px solid #300E28;
-    outline-offset: 2px;
-}
-
-/* ERRORES DE CADA CAMPO DEL ANIMAL */
 #formularioAnimal .error-campo {
     margin: 0;
     color: #B3261E;
@@ -1039,32 +833,6 @@ button:focus-visible {
 #botonGuardarAnimal {
     width: 100%;
     margin-top: 20px;
-}
-
-#mensajeAnimal {
-    margin: 0 0 20px;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-#mensajeAnimal:empty {
-    display: none;
-}
-
-
-/* PÁGINA DE ADMINISTRACIÓN DE USUARIOS */
-
-#mensajeUsuarios,
-#mensajeDetalleUsuario {
-    margin: 0 0 20px;
-    font-size: 14px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-}
-
-#mensajeUsuarios:empty,
-#mensajeDetalleUsuario:empty {
-    display: none;
 }
 
 
@@ -1115,9 +883,6 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-
-/* BOTONES DE ADMINISTRACIÓN */
-
 #formularioFiltros button,
 .paginacion-usuarios button,
 .boton-detalle {
@@ -1152,8 +917,12 @@ button:focus-visible {
     cursor: default;
 }
 
+.boton-detalle {
+    white-space: nowrap;
+}
 
-/* TABLA DE USUARIOS */
+
+/* TABLA Y CABECERA DEL LISTADO DE USUARIOS */
 
 .tabla-usuarios {
     overflow-x: auto;
@@ -1196,12 +965,92 @@ button:focus-visible {
     background-color: #F5F5F5;
 }
 
-.boton-detalle {
-    white-space: nowrap;
+.cabecera-listado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+}
+
+.cabecera-listado h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+#abrirAltaUsuario {
+    margin-bottom: 20px;
+    padding: 13px 22px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#abrirAltaUsuario:hover {
+    background-color: #8B5C4A;
+}
+
+.cabecera-listado #abrirAltaUsuario {
+    flex-shrink: 0;
+    margin: 0;
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.cabecera-listado #abrirAltaUsuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
 }
 
 
-/* PAGINACIÓN */
+/* ACCIONES DE LAS CUENTAS */
+
+.acciones-cuenta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.acciones-cuenta button {
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+.acciones-cuenta .boton-editar-usuario,
+.acciones-cuenta .boton-rol-usuario {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-cuenta .boton-editar-usuario:hover,
+.acciones-cuenta .boton-rol-usuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.acciones-cuenta .boton-desactivar-usuario {
+    border: 1px solid #8B5C4A;
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+.acciones-cuenta .boton-desactivar-usuario:hover {
+    background-color: #8B5C4A;
+    color: #FFFFFF;
+}
+
+.acciones-cuenta button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+
+/* PAGINACIÓN DE USUARIOS */
 
 .paginacion-usuarios {
     display: flex;
@@ -1219,10 +1068,6 @@ button:focus-visible {
 
 
 /* DETALLE DEL USUARIO */
-
-#modalDetalleUsuario {
-    max-width: 600px;
-}
 
 #fotografiaDetalleUsuario {
     display: block;
@@ -1242,22 +1087,419 @@ button:focus-visible {
 }
 
 
-/* ADMINISTRACIÓN EN MÓVILES Y RESPONSIVE */
+/* ALTA DE USUARIOS */
+
+#modalAltaUsuario {
+    padding: 40px 25px 25px;
+}
+
+#modalAltaUsuario h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+#formularioAltaUsuario {
+    gap: 8px;
+}
+
+#formularioAltaUsuario label {
+    margin-top: 5px;
+}
+
+#formularioAltaUsuario input,
+#formularioAltaUsuario select {
+    padding: 10px 12px;
+}
+
+
+/* CAMBIO DE ROL */
+
+#nombreCuentaRol {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+#formularioRolUsuario {
+    gap: 12px;
+}
+
+#formularioRolUsuario label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioRolUsuario p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* SECCIÓN Y TARJETAS GENERALES DE ANIMALES */
+
+.seccion-animales {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+}
+
+.titulo-seccion {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.titulo-seccion h2 {
+    margin: 0 0 10px;
+    color: #300E28;
+    font-size: 36px;
+    font-weight: 900;
+}
+
+.titulo-seccion p {
+    margin: 0;
+    color: #300E28;
+    font-size: 15px;
+}
+
+.grid-animales {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.tarjeta-animal {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 15px rgba(48, 14, 40, 0.1);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjeta-animal:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(48, 14, 40, 0.2);
+}
+
+.tarjeta-animal img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.info-tarjeta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+}
+
+.info-tarjeta h3 {
+    margin: 0 0 5px;
+    color: #300E28;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.info-tarjeta p {
+    margin: 0;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.info-tarjeta p strong {
+    color: #8B5C4A;
+}
+
+.boton-ver-ficha {
+    align-self: flex-start;
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.boton-ver-ficha:hover {
+    background-color: #8B5C4A;
+}
+
+
+/* MODAL GENERAL DE DETALLE DEL ANIMAL */
+
+.modal-detalle {
+    max-width: 520px;
+}
+
+.detalle-animal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.detalle-animal-body img {
+    width: 100%;
+    max-height: 280px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.detalle-animal-body h2 {
+    margin: 0;
+    text-align: left;
+}
+
+.detalle-animal-body p {
+    margin: 0;
+    color: #300E28;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.detalle-animal-body p strong {
+    color: #8B5C4A;
+}
+
+.detalle-animal-body .boton-portada {
+    margin-top: 10px;
+    text-align: center;
+}
+
+
+/* HISTORIA Y CUIDADOS PÚBLICOS */
+
+.informacion-publica-animal {
+    margin-top: 20px;
+}
+
+.informacion-publica-animal h3 {
+    margin: 20px 0 10px;
+    color: #300E28;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.texto-publico-animal {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+/* CATÁLOGO DE ADOPCIÓN */
+
+.catalogo-adopcion {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 25px;
+}
+
+.tarjeta-adopcion {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.imagen-tarjeta-adopcion,
+.imagen-predeterminada-adopcion {
+    width: 100%;
+    height: 220px;
+}
+
+.imagen-tarjeta-adopcion {
+    display: block;
+    object-fit: cover;
+}
+
+.imagen-predeterminada-adopcion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 60px;
+}
+
+.contenido-tarjeta-adopcion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.contenido-tarjeta-adopcion h3 {
+    margin: 0 0 10px;
+    color: #300E28;
+    font-size: 21px;
+    font-weight: 900;
+    overflow-wrap: anywhere;
+}
+
+.contenido-tarjeta-adopcion p {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.contenido-tarjeta-adopcion .caracter-tarjeta-adopcion {
+    margin-bottom: 20px;
+    color: #8B5C4A;
+}
+
+.boton-ficha-adopcion {
+    align-self: center;
+    margin-top: auto;
+    padding: 11px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-ficha-adopcion:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.aviso-catalogo {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 25px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+
+/* ADAPTACIÓN A TABLETS */
+
+@media (max-width: 1000px) {
+
+    .catalogo-adopcion {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 750px) {
+
+    .pagina-perfil .distribucion-perfil {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .portada {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .imagen-portada img {
+        max-width: 300px;
+        max-height: 35dvh;
+    }
+
+}
+
+
+/* ADAPTACIÓN A MÓVILES */
 
 @media (max-width: 600px) {
 
-    .seccion-animales {
-        padding: 30px 20px 60px;
+    /* CABECERAS */
+
+    .pagina-inicio .cabecera {
+        padding: 25px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
     }
 
-    .titulo-seccion h2 {
-        font-size: 28px;
+    .pagina-perfil .interior-cabecera {
+        padding: 25px 20px;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
-    .grid-animales {
+    .pagina-inicio .cabecera nav,
+    .pagina-perfil .cabecera-perfil nav {
+        gap: 20px;
+    }
+
+    .logo-protectora {
+        width: 190px;
+    }
+
+    /* INICIO */
+
+    #mensajeSesion {
+        padding: 0 20px;
+    }
+
+    .portada {
+        padding: 30px 20px;
+    }
+
+    .texto-portada h1 {
+        font-size: 56px;
+    }
+
+    /* PERFIL */
+
+    .pagina-perfil .contenido-perfil {
+        padding: 35px 20px;
+    }
+
+    .pagina-perfil .titulo-perfil h1 {
+        font-size: 30px;
+    }
+
+    .pagina-perfil .informacion-perfil {
+        padding: 25px 20px;
+    }
+
+    .pagina-perfil .lista-datos-perfil {
         grid-template-columns: 1fr;
         gap: 20px;
     }
+
+    .acciones-perfil {
+        flex-direction: column;
+    }
+
+    .acciones-perfil button {
+        width: 100%;
+    }
+
+    /* FILTROS */
 
     #formularioFiltros {
         padding: 20px;
@@ -1271,6 +1513,8 @@ button:focus-visible {
         flex: 1 1 130px;
     }
 
+    /* USUARIOS */
+
     .tabla-usuarios caption {
         padding: 20px;
     }
@@ -1279,151 +1523,6 @@ button:focus-visible {
     .tabla-usuarios td {
         padding: 12px 15px;
     }
-
-    .paginacion-usuarios {
-        gap: 12px;
-    }
-
-}
-
-@media (max-width: 480px) {
-
-    #formularioFiltros input,
-    #formularioFiltros select {
-        font-size: 16px;
-    }
-
-}
-
-/* BOTONES DEL ALTA DE USUARIOS */
-
-#abrirAltaUsuario,
-#botonCrearUsuario {
-    padding: 13px 22px;
-    border: none;
-    border-radius: 25px;
-    background-color: #300E28;
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#abrirAltaUsuario {
-    margin-bottom: 20px;
-}
-
-#abrirAltaUsuario:hover,
-#botonCrearUsuario:hover {
-    background-color: #8B5C4A;
-}
-
-#botonCrearUsuario:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-
-/* VENTANA DE ALTA DE USUARIOS */
-
-#modalAltaUsuario {
-    max-width: 460px;
-    padding: 40px 25px 25px;
-}
-
-#modalAltaUsuario h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-}
-
-
-/* FORMULARIO DE ALTA DE USUARIOS */
-
-#formularioAltaUsuario {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-#formularioAltaUsuario label {
-    margin-top: 5px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#formularioAltaUsuario input,
-#formularioAltaUsuario select {
-    width: 100%;
-    min-width: 0;
-    padding: 10px 12px;
-    border: 1px solid #FFAC16;
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    color: #300E28;
-    font-family: inherit;
-    font-size: 14px;
-}
-
-#formularioAltaUsuario input:focus,
-#formularioAltaUsuario select:focus {
-    outline: 2px solid #300E28;
-    outline-offset: 2px;
-}
-
-#botonCrearUsuario {
-    margin-top: 10px;
-}
-
-#mensajeAltaUsuario {
-    margin: 5px 0;
-    font-size: 13px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-#mensajeAltaUsuario:empty {
-    display: none;
-}
-
-
-/* ALTA DE USUARIOS EN MÓVILES */
-
-@media (max-width: 480px) {
-
-    #modalAltaUsuario {
-        padding: 40px 20px 25px;
-    }
-
-    #formularioAltaUsuario input,
-    #formularioAltaUsuario select {
-        font-size: 16px;
-    }
-
-}
-
-/* CABECERA DEL LISTADO DE USUARIOS */
-
-.cabecera-listado {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 25px;
-}
-
-.cabecera-listado h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 900;
-}
-
-.cabecera-listado #abrirAltaUsuario {
-    margin: 0;
-    flex-shrink: 0;
-}
-
-@media (max-width: 600px) {
 
     .cabecera-listado {
         padding: 20px;
@@ -1435,337 +1534,72 @@ button:focus-visible {
         width: 100%;
     }
 
-}
+    .paginacion-usuarios {
+        gap: 12px;
+    }
 
-/* BOTÓN DE ALTA EN NARANJA */
+    /* ANIMALES */
 
-.cabecera-listado #abrirAltaUsuario {
-    background-color: #FFAC16;
-    color: #300E28;
-}
+    .seccion-animales {
+        padding: 30px 20px 60px;
+    }
 
-.cabecera-listado #abrirAltaUsuario:hover {
-    background-color: #300E28;
-    color: #FFFFFF;
-}
+    .titulo-seccion h2 {
+        font-size: 28px;
+    }
 
-/* ACCIONES DE LAS CUENTAS */
+    .grid-animales,
+    .catalogo-adopcion {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 
-.acciones-cuenta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.acciones-cuenta button {
-    padding: 10px 15px;
-    white-space: nowrap;
-}
-
-.acciones-cuenta .boton-editar-usuario {
-    background-color: #FFAC16;
-    color: #300E28;
-}
-
-.acciones-cuenta .boton-editar-usuario:hover {
-    background-color: #300E28;
-    color: #FFFFFF;
-}
-
-.acciones-cuenta .boton-desactivar-usuario {
-    background-color: #F5F5F5;
-    color: #300E28;
-    border: 1px solid #8B5C4A;
-}
-
-.acciones-cuenta .boton-desactivar-usuario:hover {
-    background-color: #8B5C4A;
-    color: #FFFFFF;
-}
-
-.acciones-cuenta button:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-
-/* VENTANA DE EDICIÓN DE USUARIOS */
-
-#modalEditarUsuario {
-    max-width: 460px;
-}
-
-#formularioEditarUsuario {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#formularioEditarUsuario label {
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#formularioEditarUsuario input {
-    width: 100%;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid #FFAC16;
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    color: #300E28;
-    font-family: inherit;
-    font-size: 14px;
-}
-
-#formularioEditarUsuario input:focus {
-    outline: 2px solid #300E28;
-    outline-offset: 2px;
-}
-
-#mensajeEditarUsuario {
-    margin: 5px 0;
-    font-size: 13px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-#mensajeEditarUsuario:empty {
-    display: none;
-}
-
-#botonActualizarUsuario {
-    margin-top: 10px;
-    padding: 13px;
-    border: none;
-    border-radius: 25px;
-    background-color: #300E28;
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#botonActualizarUsuario:hover {
-    background-color: #8B5C4A;
-}
-
-#botonActualizarUsuario:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-@media (max-width: 480px) {
-
-    #formularioEditarUsuario input {
-        font-size: 16px;
+    .imagen-tarjeta-adopcion,
+    .imagen-predeterminada-adopcion {
+        height: 240px;
     }
 
 }
 
-/* BOTÓN PARA CAMBIAR EL ROL */
-
-.acciones-cuenta .boton-rol-usuario {
-    background-color: #FFAC16;
-    color: #300E28;
-}
-
-.acciones-cuenta .boton-rol-usuario:hover {
-    background-color: #300E28;
-    color: #FFFFFF;
-}
-
-
-/* VENTANA DE CAMBIO DE ROL */
-
-#modalRolUsuario {
-    max-width: 460px;
-}
-
-#nombreCuentaRol {
-    margin: 0 0 20px;
-    font-size: 14px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-}
-
-#formularioRolUsuario {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-#formularioRolUsuario label {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#nuevoRolUsuario {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #FFAC16;
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    color: #300E28;
-    font-family: inherit;
-    font-size: 14px;
-}
-
-#nuevoRolUsuario:focus {
-    outline: 2px solid #300E28;
-    outline-offset: 2px;
-}
-
-#formularioRolUsuario p {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-#mensajeRolUsuario:empty {
-    display: none;
-}
-
-#botonGuardarRol {
-    padding: 13px;
-    border: none;
-    border-radius: 25px;
-    background-color: #300E28;
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#botonGuardarRol:hover {
-    background-color: #8B5C4A;
-}
-
-#botonGuardarRol:disabled,
-#cerrarRolUsuario:disabled,
-#nuevoRolUsuario:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
 @media (max-width: 480px) {
 
+    /* VENTANAS */
+
+    .ventana-registro {
+        padding: 25px 20px;
+    }
+
+    .ventana-registro h1,
+    .modal-acceso h2 {
+        font-size: 24px;
+    }
+
+    .modal-acceso {
+        padding: 45px 20px 25px;
+    }
+
+    #modalRegistro {
+        padding: 35px 20px 20px;
+    }
+
+    #modalAltaUsuario {
+        padding: 40px 20px 25px;
+    }
+
+    /* CAMPOS */
+
+    #formularioRegistro input,
+    #formularioLogin input,
+    #formularioEditarPerfil input,
+    #formularioFotografia input,
+    #formularioContrasena input,
+    #formularioFiltros input,
+    #formularioFiltros select,
+    #formularioAltaUsuario input,
+    #formularioAltaUsuario select,
+    #formularioEditarUsuario input,
     #nuevoRolUsuario {
         font-size: 16px;
-    }
-
-}
-
-/* BOTONES DE ACCIÓN DEL PERFIL */
-
-.acciones-perfil {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.acciones-perfil button {
-    padding: 13px 24px;
-    border: none;
-    border-radius: 25px;
-    background-color: #300E28;
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.acciones-perfil button:hover {
-    background-color: #8B5C4A;
-}
-
-.acciones-perfil #abrirEditarPerfil {
-    background-color: #FFAC16;
-    color: #300E28;
-}
-
-.acciones-perfil #abrirEditarPerfil:hover {
-    background-color: #300E28;
-    color: #FFFFFF;
-}
-
-
-/* FORMULARIOS DENTRO DE LAS VENTANAS DEL PERFIL */
-
-#modalEditarPerfil,
-#modalContrasena {
-    max-width: 460px;
-}
-
-#modalEditarPerfil #formularioEditarPerfil,
-#modalContrasena #formularioContrasena {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
-}
-
-#cerrarEditarPerfil:disabled,
-#cerrarContrasena:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-@media (max-width: 600px) {
-
-    .acciones-perfil {
-        flex-direction: column;
-    }
-
-    .acciones-perfil button {
-        width: 100%;
-    }
-
-}
-
-/* LOGO DE LA CABECERA */
-
-.marca {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.logo-protectora {
-    display: block;
-    width: 260px;
-    height: auto;
-}
-
-@media (max-width: 600px) {
-
-    .logo-protectora {
-        width: 220px;
-    }
-
-}
-
-/* CABECERA MÁS COMPACTA */
-
-.pagina-inicio .cabecera:has(.logo-protectora),
-.pagina-perfil .interior-cabecera:has(.logo-protectora) {
-    padding-top: 16px;
-    padding-bottom: 16px;
-}
-
-.marca .logo-protectora {
-    width: 200px;
-    height: auto;
-}
-
-@media (max-width: 600px) {
-
-    .marca .logo-protectora {
-        width: 190px;
     }
 
 }

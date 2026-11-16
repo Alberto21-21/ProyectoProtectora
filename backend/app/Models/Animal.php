@@ -38,6 +38,8 @@ class Animal extends Model
         'motivo_baja',
         'cuidador_id',
         'instrucciones_cuidado',
+        'historia_publica',
+        'cuidados_publicos',
     ];
 
     // Convertir el campo de baja lógica a booleano (T16)
