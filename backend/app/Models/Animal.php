@@ -36,6 +36,8 @@ class Animal extends Model
         'activo',
         'fecha_baja',
         'motivo_baja',
+        'cuidador_id',
+        'instrucciones_cuidado',
     ];
 
     // Convertir el campo de baja lógica a booleano (T16)
@@ -53,5 +55,11 @@ class Animal extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relación con el trabajador asignado para cuidar al animal (T17)
+    public function cuidador()
+    {
+        return $this->belongsTo(User::class, 'cuidador_id');
     }
 }

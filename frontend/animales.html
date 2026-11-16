@@ -14,10 +14,20 @@
     <!-- CABECERA -->
     <header class="cabecera-perfil">
         <div class="interior-cabecera">
-            <a href="index.html" class="marca">Salvando Huellas</a>
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
+            </a>
+            
             <nav aria-label="Navegación principal">
                 <a href="index.html">Inicio</a>
                 <a href="animales.html" aria-current="page">Animales</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
                 <a href="perfil.html">Mi perfil</a>
                 <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
                 <button type="button" id="botonCerrarSesion">Cerrar sesión</button>
@@ -286,6 +296,26 @@
             <p><strong>Carácter:</strong> <span id="fichaCaracter"></span></p>
             <p><strong>Necesidades especiales:</strong> <span id="fichaNecesidades"></span></p>
             <p><strong>Observaciones del personal:</strong> <span id="fichaObservaciones"></span></p>
+
+            <!-- BLOQUE DE ASIGNACIÓN DE CUIDADOR (SOLO ADMINISTRADOR) (T17) -->
+            <div id="bloqueAsignacion" hidden style="margin-top: 15px; padding: 12px; background-color: #f4f8ff; border-radius: 10px; border: 1px solid #c9d8f0;">
+                <label for="selectCuidador" style="display:block; font-weight:600; margin-bottom:6px;">
+                    Trabajador asignado:
+                </label>
+                <select id="selectCuidador" style="width:100%; padding:8px; border-radius:8px;">
+                    <option value="">Sin asignar</option>
+                </select>
+
+                <label for="instruccionesCuidado" style="display:block; font-weight:600; margin:10px 0 6px;">
+                    Instrucciones de cuidado:
+                </label>
+                <textarea id="instruccionesCuidado" rows="3" maxlength="2000" placeholder="Paseos, alimentación, medicación diaria..." style="width:100%;"></textarea>
+
+                <button type="button" id="btnGuardarAsignacion" style="margin-top:8px; padding:8px 14px;">
+                    Guardar asignación
+                </button>
+                <p id="mensajeAsignacion" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
+            </div>
 
             <!-- AVISO DE ANIMAL DADO DE BAJA (T16) -->
             <p id="avisoAnimalBaja" hidden style="margin-top: 15px; padding: 12px; background-color: #fdecea; border-radius: 10px; color: #8a1c1c;">

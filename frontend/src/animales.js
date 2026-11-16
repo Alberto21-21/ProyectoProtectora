@@ -7,8 +7,13 @@ import {
     crearAnimal,
     actualizarEstadoAnimal,
     darDeBajaAnimal,
-    eliminarAnimal
+    eliminarAnimal,
+    asignarCuidadorAnimal
 } from "./providers/animalesProvider.js";
+
+import {
+    obtenerEmpleadosParaDisponibilidad
+} from "./providers/disponibilidadProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     // -------------------------------------------------------------
@@ -72,6 +77,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const avisoAnimalBaja = document.querySelector("#avisoAnimalBaja");
     const fichaFechaBaja = document.querySelector("#fichaFechaBaja");
     const fichaMotivoBaja = document.querySelector("#fichaMotivoBaja");
+
+    // Elementos de asignación de cuidador (T17)
+    const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
+    const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
+    const selectCuidador = document.querySelector("#selectCuidador");
+    const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
+    const btnGuardarAsignacion = document.querySelector("#btnGuardarAsignacion");
+    const mensajeAsignacion = document.querySelector("#mensajeAsignacion");
 
     const rolesAutorizados = ["admin", "personal", "veterinario", "empleado"];
     let usuarioActual = null;
@@ -138,6 +151,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (gestionAnimales) gestionAnimales.hidden = false;
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = false;
         if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = false;
+        if (enlaceMisAnimales) {
+            // Solo el personal y los veterinarios pueden tener animales asignados
+            enlaceMisAnimales.hidden = usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
+        }
         if (botonCerrarSesion) botonCerrarSesion.hidden = false;
 
         if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADMINISTRACIÓN";
@@ -161,6 +178,11 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const usuario = await obtenerUsuario(token);
             usuarioActual = usuario;
+
+            // El administrador necesita la lista de trabajadores para asignar animales (T17)
+            if (usuario.rol === "admin") {
+                cargarTrabajadores(token);
+            }
 
             if (rolesAutorizados.includes(usuario.rol)) {
                 activarVistaPersonal();
@@ -488,6 +510,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 enlaceEditarAnimal.hidden = !esAutorizado;
             }
 
+            // Bloque de asignación: solo el administrador y si el animal no está de baja (T17)
+            if (bloqueAsignacion) {
+                const esAdmin = usuarioActual && usuarioActual.rol === "admin";
+                bloqueAsignacion.hidden = !esAdmin || estaDeBaja;
+
+                if (selectCuidador) selectCuidador.value = animal.cuidador_id || "";
+                if (instruccionesCuidado) instruccionesCuidado.value = animal.instrucciones_cuidado || "";
+                if (mensajeAsignacion) mensajeAsignacion.textContent = "";
+            }
+
             if (!modalDetalleAnimal.open) {
                 modalDetalleAnimal.showModal();
             }
@@ -631,6 +663,71 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } finally {
                 btnEliminarAnimal.disabled = false;
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // ASIGNACIÓN DE CUIDADOR E INSTRUCCIONES (T17)
+    // -------------------------------------------------------------
+
+    // CARGAR LOS TRABAJADORES ACTIVOS EN EL DESPLEGABLE
+    async function cargarTrabajadores(token) {
+        if (!selectCuidador) return;
+
+        try {
+            const resultado = await obtenerEmpleadosParaDisponibilidad(token);
+            const empleados = resultado.data;
+
+            for (let i = 0; i < empleados.length; i++) {
+                const opcion = document.createElement("option");
+                opcion.value = empleados[i].user.id;
+                opcion.textContent = empleados[i].user.name + " (" + empleados[i].puesto + ")";
+                selectCuidador.appendChild(opcion);
+            }
+
+        } catch (error) {
+            console.error("Error al cargar los trabajadores:", error);
+        }
+    }
+
+    // GUARDAR LA ASIGNACIÓN DEL ANIMAL
+    if (btnGuardarAsignacion && selectCuidador && instruccionesCuidado) {
+        btnGuardarAsignacion.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            const datos = {
+                cuidador_id: selectCuidador.value === "" ? null : Number(selectCuidador.value),
+                instrucciones_cuidado: instruccionesCuidado.value.trim()
+            };
+
+            btnGuardarAsignacion.disabled = true;
+            if (mensajeAsignacion) {
+                mensajeAsignacion.textContent = "Guardando asignación...";
+                mensajeAsignacion.style.color = "#333";
+            }
+
+            try {
+                const res = await asignarCuidadorAnimal(animalSeleccionadoId, datos, token);
+
+                if (mensajeAsignacion) {
+                    mensajeAsignacion.textContent = res.message;
+                    mensajeAsignacion.style.color = "green";
+                }
+
+            } catch (error) {
+                if (mensajeAsignacion) {
+                    if (error.errores && error.errores.cuidador_id) {
+                        mensajeAsignacion.textContent = error.errores.cuidador_id[0];
+                    } else if (error.errores && error.errores.instrucciones_cuidado) {
+                        mensajeAsignacion.textContent = error.errores.instrucciones_cuidado[0];
+                    } else {
+                        mensajeAsignacion.textContent = error.message;
+                    }
+                    mensajeAsignacion.style.color = "red";
+                }
+            } finally {
+                btnGuardarAsignacion.disabled = false;
             }
         });
     }

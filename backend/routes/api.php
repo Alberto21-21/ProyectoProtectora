@@ -7,17 +7,29 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\VeterinarioController;
+use App\Http\Controllers\DisponibilidadController;
+use App\Http\Controllers\AusenciaController;
+use App\Http\Controllers\HistorialController;
 
 use App\Http\Middleware\CuentaActiva;
 use App\Http\Middleware\EsAdministrador;
 use App\Http\Middleware\EsPersonalAutorizado;
 use App\Http\Middleware\EsVeterinario;
-use App\Http\Controllers\VeterinarioController;
+use App\Http\Middleware\TienePermiso;
 
-use App\Http\Controllers\DisponibilidadController;
-use App\Http\Controllers\AusenciaController;
-use App\Http\Controllers\HistorialController;
 
+// AUTENTICACIÓN Y PERFIL
+
+// REGISTRAR USUARIOS
+Route::post('/register', [AuthController::class, 'register']);
+
+// INICIAR SESIÓN
+Route::post('/login', [AuthController::class, 'login']);
+
+// CERRAR SESIÓN
+Route::post('/logout', [AuthController::class, 'cerrarSesion'])
+    ->middleware('auth:sanctum');
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
 Route::get('/user', function (Request $request) {
@@ -33,49 +45,47 @@ Route::get('/user', function (Request $request) {
             ? asset('storage/' . $usuario->fotografia)
             : null
     ]);
-})->middleware(['auth:sanctum', CuentaActiva::class]);
+})->middleware([
+    'auth:sanctum',
+    CuentaActiva::class,
+    TienePermiso::class . ':perfil:consultar'
+]);
 
-
-// REGISTRAR USUARIOS
-Route::post('/register', [AuthController::class, 'register']);
-
-
-// INICIAR SESION
-Route::post('/login', [AuthController::class, 'login']);
-
-
-// CERRAR SESION
-Route::post('/logout', [AuthController::class, 'cerrarSesion'])
-    ->middleware('auth:sanctum');
-
-
-// ACTUALIZAR EL PERFIL DEL USUARIO AUTENTICADO
+// ACTUALIZAR EL PERFIL
 Route::put('/user', [AuthController::class, 'actualizarPerfil'])
-    ->middleware(['auth:sanctum', CuentaActiva::class]);
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        TienePermiso::class . ':perfil:editar'
+    ]);
 
-
-// ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO AUTENTICADO
+// ACTUALIZAR LA FOTOGRAFÍA
 Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])
-    ->middleware(['auth:sanctum', CuentaActiva::class]);
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        TienePermiso::class . ':perfil:editar'
+    ]);
 
-
-// CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
+// CAMBIAR LA CONTRASEÑA
 Route::put('/user/password', [AuthController::class, 'cambiarContrasena'])
-    ->middleware(['auth:sanctum', CuentaActiva::class]);
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        TienePermiso::class . ':password:cambiar'
+    ]);
 
 
-// ==========================================================================
 // ADMINISTRACIÓN DE CUENTAS
-// ==========================================================================
 
 // CONSULTAR Y BUSCAR USUARIOS
 Route::get('/usuarios', [UsuarioController::class, 'index'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':usuarios:consultar'
     ]);
-
 
 // CONSULTAR EL DETALLE DE UN USUARIO
 Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])
@@ -83,16 +93,17 @@ Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':usuarios:consultar'
     ]);
-
 
 // CREAR CUENTAS INTERNAS
 Route::post('/usuarios', [UsuarioController::class, 'store'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':usuarios:crear'
     ]);
 
 // EDITAR LOS DATOS DE UNA CUENTA
@@ -101,7 +112,18 @@ Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':usuarios:editar'
+    ]);
+
+// CAMBIAR EL ROL DE UNA CUENTA
+Route::patch('/usuarios/{id}/rol', [UsuarioController::class, 'cambiarRol'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+        TienePermiso::class . ':usuarios:roles'
     ]);
 
 // DESACTIVAR UNA CUENTA
@@ -110,22 +132,21 @@ Route::patch('/usuarios/{id}/desactivar', [UsuarioController::class, 'desactivar
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':usuarios:desactivar'
     ]);
 
 
-// ==========================================================================
 // FICHAS LABORALES
-// ==========================================================================
 
 // CREAR FICHA LABORAL
 Route::post('/empleados', [EmpleadoController::class, 'store'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':personal:gestionar'
     ]);
-
 
 // CONSULTAR FICHA POR CUENTA
 Route::get('/empleados/usuario/{userId}', [EmpleadoController::class, 'mostrarPorUsuario'])
@@ -133,9 +154,9 @@ Route::get('/empleados/usuario/{userId}', [EmpleadoController::class, 'mostrarPo
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':personal:gestionar'
     ]);
-
 
 // EDITAR FICHA POR CUENTA
 Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualizarPorUsuario'])
@@ -143,115 +164,180 @@ Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualiza
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class
+        EsAdministrador::class,
+        TienePermiso::class . ':personal:gestionar'
     ]);
 
 
+// PERFILES VETERINARIOS
 
+// CREAR PERFIL VETERINARIO
+Route::post('/veterinarios', [VeterinarioController::class, 'store'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+        TienePermiso::class . ':personal:gestionar'
+    ]);
+
+// CONSULTAR PERFIL POR CUENTA
+Route::get('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'mostrarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+        TienePermiso::class . ':personal:gestionar'
+    ]);
+
+// EDITAR PERFIL POR CUENTA
+Route::put('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'actualizarPorUsuario'])
+    ->whereNumber('userId')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+        TienePermiso::class . ':personal:gestionar'
+    ]);
+
+
+// DISPONIBILIDAD Y AUSENCIAS
+
+// CONSULTAR EMPLEADOS PARA GESTIONAR SU DISPONIBILIDAD
 Route::get('/disponibilidades/empleados', [DisponibilidadController::class, 'empleados'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
         EsAdministrador::class,
+        TienePermiso::class . ':disponibilidad:gestionar'
     ]);
-    
+
+// CONSULTAR DISPONIBILIDAD
 Route::get('/disponibilidades', [DisponibilidadController::class, 'index'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
         EsPersonalAutorizado::class,
+        TienePermiso::class . ':disponibilidad:consultar'
     ]);
 
-
+// REGISTRAR DISPONIBILIDAD
 Route::post('/disponibilidades', [DisponibilidadController::class, 'store'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
         EsAdministrador::class,
+        TienePermiso::class . ':disponibilidad:gestionar'
     ]);
 
-
+// CONSULTAR AUSENCIAS
 Route::get('/ausencias', [AusenciaController::class, 'index'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
         EsPersonalAutorizado::class,
+        TienePermiso::class . ':disponibilidad:consultar'
     ]);
 
-
+// REGISTRAR AUSENCIAS
 Route::post('/ausencias', [AusenciaController::class, 'store'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
         EsAdministrador::class,
+        TienePermiso::class . ':disponibilidad:gestionar'
     ]);
-// ==========================================================================
-// RUTAS DE ANIMALES
-// ==========================================================================
 
-// LISTAR TODOS LOS ANIMALES
+
+// ANIMALES
+
+// CONSULTAR EL CATÁLOGO PÚBLICO
 Route::get('/animales', [AnimalController::class, 'index']);
 
-
-// CONSULTAR EL DETALLE DE UN ANIMAL
+// CONSULTAR LA FICHA PÚBLICA
 Route::get('/animales/{id}', [AnimalController::class, 'show'])
     ->whereNumber('id');
 
-
 // DAR DE ALTA UN ANIMAL
 Route::post('/animales', [AnimalController::class, 'store'])
-    ->middleware(['auth:sanctum', CuentaActiva::class]);
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:gestionar'
+    ]);
 
-
-// EDITAR LOS DATOS GENERALES DE UN ANIMAL
+// EDITAR LOS DATOS GENERALES
 Route::put('/animales/{id}', [AnimalController::class, 'update'])
     ->whereNumber('id')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:gestionar'
     ]);
 
-
-// CAMBIAR LA FOTOGRAFÍA DE UN ANIMAL
+// CAMBIAR LA FOTOGRAFÍA
 Route::post('/animales/{id}/imagen', [AnimalController::class, 'actualizarImagen'])
     ->whereNumber('id')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:gestionar'
     ]);
 
-
-// ACTUALIZAR EL ESTADO DE UN ANIMAL
+// ACTUALIZAR EL ESTADO
 Route::patch('/animales/{id}/estado', [AnimalController::class, 'actualizarEstado'])
     ->whereNumber('id')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:gestionar'
     ]);
-    
 
-// DAR DE BAJA UN ANIMAL - BAJA LÓGICA (T16)
+// DAR DE BAJA UN ANIMAL
 Route::patch('/animales/{id}/baja', [AnimalController::class, 'darDeBaja'])
     ->whereNumber('id')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:gestionar'
     ]);
 
-
-// ELIMINAR UN ANIMAL DEFINITIVAMENTE SI NO TIENE REGISTROS (T16)
+// ELIMINAR UN ANIMAL SI NO TIENE REGISTROS
 Route::delete('/animales/{id}', [AnimalController::class, 'destroy'])
     ->whereNumber('id')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:gestionar'
     ]);
 
+// CONSULTAR LOS ANIMALES ASIGNADOS
+Route::get('/mis-animales', [AnimalController::class, 'misAnimales'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+        TienePermiso::class . ':animales:consultar'
+    ]);
+
+// ASIGNAR CUIDADOR E INSTRUCCIONES
+Route::put('/animales/{id}/asignacion', [AnimalController::class, 'asignarCuidador'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsAdministrador::class,
+        TienePermiso::class . ':animales:asignar'
+    ]);
+
+
+// INFORMACIÓN CLÍNICA
 
 // CONSULTAR LOS DATOS CLÍNICOS
 Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
@@ -259,33 +345,22 @@ Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClin
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsVeterinario::class
+        EsVeterinario::class,
+        TienePermiso::class . ':clinica:consultar'
     ]);
-
 
 // EDITAR LOS DATOS CLÍNICOS
 Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosClinicos'])
     ->whereNumber('id')
-    ->middleware(['auth:sanctum', EsVeterinario::class]);
-
-    // CREAR PERFIL VETERINARIO
-Route::post('/veterinarios', [VeterinarioController::class, 'store'])
-    ->middleware(['auth:sanctum', EsAdministrador::class]);
-
-// CONSULTAR PERFIL POR CUENTA
-Route::get('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'mostrarPorUsuario'])
-    ->whereNumber('userId')
-    ->middleware(['auth:sanctum', EsAdministrador::class]);
-
-// EDITAR PERFIL POR CUENTA
-Route::put('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'actualizarPorUsuario'])
-    ->whereNumber('userId')
-    ->middleware(['auth:sanctum', EsAdministrador::class]);
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsVeterinario::class,
+        TienePermiso::class . ':clinica:gestionar'
+    ]);
 
 
-// ==========================================================================
 // HISTORIAL DEL ANIMAL (T18)
-// ==========================================================================
 
 // CONSULTAR EL HISTORIAL GENERAL DE UN ANIMAL
 Route::get('/animales/{id}/historial', [HistorialController::class, 'index'])
@@ -295,7 +370,6 @@ Route::get('/animales/{id}/historial', [HistorialController::class, 'index'])
         CuentaActiva::class,
         EsPersonalAutorizado::class
     ]);
-
 
 // REGISTRAR UNA OBSERVACIÓN GENERAL
 Route::post('/animales/{id}/observaciones', [HistorialController::class, 'guardarObservacion'])

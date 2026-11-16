@@ -7,31 +7,39 @@
 
     <title>Mi perfil - Salvando Huellas</title>
 
-    <!-- TIPOGRAFIA CORPORATIVA -->
+    <!-- TIPOGRAFÍA CORPORATIVA -->
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="src/style.css">
+    <link rel="stylesheet" href="/src/style.css">
 </head>
 
 <body class="pagina-perfil">
 
     <!-- CABECERA -->
     <header class="cabecera-perfil">
-
         <div class="interior-cabecera">
 
             <a href="index.html" class="marca">
-                Salvando Huellas
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
             </a>
 
             <nav aria-label="Navegación principal">
+
                 <a href="index.html">Inicio</a>
 
-                <a href="animales.html">
-                    Animales
+                <a href="animales.html">Animales</a>
+
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>
+                    Mis animales
                 </a>
 
                 <a href="perfil.html" aria-current="page">
@@ -45,36 +53,32 @@
                 <button type="button" id="botonCerrarSesion">
                     Cerrar sesión
                 </button>
+
             </nav>
-
         </div>
-
     </header>
 
     <!-- CONTENIDO DEL PERFIL -->
     <main class="contenido-perfil">
 
-        <!-- PRESENTACION -->
         <div class="titulo-perfil">
-
             <span>MI CUENTA</span>
-
             <h1>Mi perfil</h1>
-
-            <p>Consulta los datos de tu cuenta en Patas y Bigotes.</p>
-
+            <p>Consulta los datos de tu cuenta en Salvando Huellas.</p>
         </div>
 
-        <!-- MENSAJES -->
         <p id="mensajePerfil" role="status"></p>
 
-        <!-- INFORMACION AUTORIZADA DEL USUARIO -->
         <div id="datosPerfil" class="distribucion-perfil" hidden>
 
-            <!-- RESUMEN LATERAL -->
+            <!-- RESUMEN Y FOTOGRAFÍA -->
             <aside class="resumen-perfil">
 
-                <div class="avatar-perfil" id="avatarPredeterminado" aria-hidden="true">
+                <div
+                    class="avatar-perfil"
+                    id="avatarPredeterminado"
+                    aria-hidden="true"
+                >
                     🐾
                 </div>
 
@@ -90,10 +94,12 @@
                     Un espacio para consultar tu información personal.
                 </span>
 
-                <!-- CAMBIAR LA FOTOGRAFÍA DEL PERFIL -->
                 <form id="formularioFotografia">
 
-                    <label for="fotografiaEditar" class="seleccionar-fotografia">
+                    <label
+                        for="fotografiaEditar"
+                        class="seleccionar-fotografia"
+                    >
                         Seleccionar fotografía
                     </label>
 
@@ -115,7 +121,7 @@
 
             </aside>
 
-            <!-- DATOS PERSONALES -->
+            <!-- INFORMACIÓN PERSONAL -->
             <section class="informacion-perfil">
 
                 <h2>Información personal</h2>
@@ -144,94 +150,144 @@
 
                 </dl>
 
-                <!-- FORMULARIO PARA EDITAR EL PERFIL -->
-                <form id="formularioEditarPerfil">
+                <!-- ACCIONES DEL PERFIL -->
+                <div class="acciones-perfil">
 
-                    <h2>Editar mis datos</h2>
-
-                    <label for="nombreEditar">Nombre</label>
-                    <input
-                        type="text"
-                        id="nombreEditar"
-                        name="name"
-                        autocomplete="name"
-                        maxlength="255"
-                        required
-                    >
-
-                    <label for="emailEditar">Correo electrónico</label>
-                    <input
-                        type="email"
-                        id="emailEditar"
-                        name="email"
-                        autocomplete="email"
-                        maxlength="255"
-                        required
-                    >
-
-                    <label for="fechaNacimientoEditar">Fecha de nacimiento</label>
-                    <input
-                        type="date"
-                        id="fechaNacimientoEditar"
-                        name="fecha_nacimiento"
-                        autocomplete="bday"
-                        required
-                    >
-
-                    <p id="mensajeEditarPerfil" role="status"></p>
-
-                    <button type="submit" id="botonGuardarPerfil">
-                        Guardar cambios
+                    <button type="button" id="abrirEditarPerfil">
+                        Editar mis datos
                     </button>
 
-                </form>
-
-                <!-- FORMULARIO PARA CAMBIAR LA CONTRASEÑA -->
-                <form id="formularioContrasena">
-
-                    <h2>Cambiar contraseña</h2>
-
-                    <label for="passwordActual">Contraseña actual</label>
-                    <input
-                        type="password"
-                        id="passwordActual"
-                        name="password_actual"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                    <label for="passwordNueva">Nueva contraseña</label>
-                    <input
-                        type="password"
-                        id="passwordNueva"
-                        name="password"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required
-                    >
-
-                    <label for="confirmarPasswordNueva">
-                        Repite la nueva contraseña
-                    </label>
-                    <input
-                        type="password"
-                        id="confirmarPasswordNueva"
-                        name="password_confirmation"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required
-                    >
-
-                    <p id="mensajeContrasena" role="status"></p>
-
-                    <button type="submit" id="botonGuardarContrasena">
+                    <button type="button" id="abrirCambiarContrasena">
                         Cambiar contraseña
                     </button>
 
-                </form>
+                </div>
+
             </section>
 
         </div>
+
+        <!-- VENTANA PARA EDITAR LOS DATOS -->
+        <dialog
+            id="modalEditarPerfil"
+            class="modal-acceso"
+            aria-labelledby="tituloEditarPerfil"
+        >
+
+            <button
+                type="button"
+                id="cerrarEditarPerfil"
+                class="cerrar-modal"
+                aria-label="Cerrar edición del perfil"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloEditarPerfil">Editar mis datos</h2>
+
+            <form id="formularioEditarPerfil">
+
+                <label for="nombreEditar">Nombre</label>
+                <input
+                    type="text"
+                    id="nombreEditar"
+                    name="name"
+                    autocomplete="name"
+                    maxlength="255"
+                    required
+                >
+
+                <label for="emailEditar">Correo electrónico</label>
+                <input
+                    type="email"
+                    id="emailEditar"
+                    name="email"
+                    autocomplete="email"
+                    maxlength="255"
+                    required
+                >
+
+                <label for="fechaNacimientoEditar">
+                    Fecha de nacimiento
+                </label>
+                <input
+                    type="date"
+                    id="fechaNacimientoEditar"
+                    name="fecha_nacimiento"
+                    autocomplete="bday"
+                    required
+                >
+
+                <p id="mensajeEditarPerfil" role="status"></p>
+
+                <button type="submit" id="botonGuardarPerfil">
+                    Guardar cambios
+                </button>
+
+            </form>
+
+        </dialog>
+
+        <!-- VENTANA PARA CAMBIAR LA CONTRASEÑA -->
+        <dialog
+            id="modalContrasena"
+            class="modal-acceso"
+            aria-labelledby="tituloContrasena"
+        >
+
+            <button
+                type="button"
+                id="cerrarContrasena"
+                class="cerrar-modal"
+                aria-label="Cerrar cambio de contraseña"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloContrasena">Cambiar contraseña</h2>
+
+            <form id="formularioContrasena">
+
+                <label for="passwordActual">Contraseña actual</label>
+                <input
+                    type="password"
+                    id="passwordActual"
+                    name="password_actual"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <label for="passwordNueva">Nueva contraseña</label>
+                <input
+                    type="password"
+                    id="passwordNueva"
+                    name="password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+
+                <label for="confirmarPasswordNueva">
+                    Repite la nueva contraseña
+                </label>
+                <input
+                    type="password"
+                    id="confirmarPasswordNueva"
+                    name="password_confirmation"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+
+                <p id="mensajeContrasena" role="status"></p>
+
+                <button type="submit" id="botonGuardarContrasena">
+                    Cambiar contraseña
+                </button>
+
+            </form>
+
+        </dialog>
 
     </main>
 

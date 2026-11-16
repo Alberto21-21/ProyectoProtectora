@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAnimalRequest;
 use App\Http\Requests\UpdateEstadoAnimalRequest;
 use App\Models\Animal;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AnimalController extends Controller
 {
@@ -17,58 +17,70 @@ class AnimalController extends Controller
      * Obtener listado de animales con búsqueda y filtros.
      * El catálogo público muestra únicamente los animales disponibles.
      */
+    
+        // CONSULTAR EL LISTADO SEGÚN LOS PERMISOS DEL USUARIO
     public function index(Request $request)
     {
-        $query = Animal::query();
+        $consulta = Animal::query();
 
-        // Detectar usuario autenticado mediante token Bearer en ruta pública
-        $usuario = $request->user('sanctum');
-        if (!$usuario && $request->bearerToken()) {
-            $accessToken = PersonalAccessToken::findToken($request->bearerToken());
-            $usuario = $accessToken?->tokenable;
-        }
+        $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
 
-        $esPersonalAutorizado = $usuario && in_array($usuario->rol, ['admin', 'personal', 'veterinario', 'empleado']);
-
-        // Los animales dados de baja no aparecen en el listado, salvo que el personal los pida
-        if (!$esPersonalAutorizado || !$request->boolean('bajas')) {
-            $query->where('activo', true);
+        // SOLO EL PERSONAL AUTORIZADO PUEDE CONSULTAR LAS BAJAS
+        if ($puedeVerInternos && $request->boolean('bajas')) {
+            $consulta->where('activo', false);
         } else {
-            $query->where('activo', false);
+            $consulta->where('activo', true);
         }
 
-        // Si no es personal autorizado (visitante o adoptante), solo ve los disponibles
-        if (!$esPersonalAutorizado) {
-            $query->where('estado', 'Disponible');
+        // EL CATÁLOGO PÚBLICO SOLO MUESTRA ANIMALES DISPONIBLES
+        if (!$puedeVerInternos) {
+            $consulta->where('estado', 'Disponible');
         } elseif ($request->filled('estado')) {
-            // El personal autorizado sí puede filtrar por cualquier estado
-            $query->where('estado', $request->input('estado'));
+            $consulta->where('estado', $request->estado);
         }
 
-        // Filtro por término de búsqueda (nombre o raza)
+        // BUSCAR POR NOMBRE O RAZA
         if ($request->filled('buscar')) {
             $buscar = $request->input('buscar');
-            $query->where(function ($q) use ($buscar) {
-                $q->where('nombre', 'like', "%{$buscar}%")
-                  ->orWhere('raza', 'like', "%{$buscar}%");
+
+            $consulta->where(function ($consultaBusqueda) use ($buscar) {
+                $consultaBusqueda->where('nombre', 'like', '%' . $buscar . '%')
+                    ->orWhere('raza', 'like', '%' . $buscar . '%');
             });
         }
 
-        // Filtro por Especie (Perro, Gato, Otro)
+        // FILTRAR POR ESPECIE
         if ($request->filled('especie')) {
-            $query->where('especie', $request->input('especie'));
+            $consulta->where('especie', $request->especie);
         }
 
-        // Devolver la lista ordenada por fecha de creación reciente
-        return response()->json($query->orderBy('created_at', 'desc')->get(), 200);
+        $animales = $consulta->orderBy('created_at', 'desc')->get();
+
+        if ($puedeVerInternos) {
+            return response()->json($animales, 200);
+        }
+
+        // DEVOLVER SOLO LOS CAMPOS PUBLICABLES
+        $datosPublicos = $animales->map(function ($animal) {
+            return $this->datosPublicosAnimal($animal);
+        });
+
+        return response()->json($datosPublicos, 200);
     }
 
-    /**
-     * Obtener el detalle individual de un animal (para la ficha).
-     */
-    public function show($id)
+    // CONSULTAR LA FICHA SEGÚN LOS PERMISOS DEL USUARIO
+    public function show(Request $request, $id)
     {
-        $animal = Animal::find($id);
+        $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
+
+        $consulta = Animal::query();
+
+        if (!$puedeVerInternos) {
+            $consulta->where('activo', true)
+                ->where('estado', 'Disponible');
+        }
+
+        $animal = $consulta->find($id);
 
         if (!$animal) {
             return response()->json([
@@ -77,12 +89,16 @@ class AnimalController extends Controller
             ], 404);
         }
 
-        return response()->json($animal, 200);
+        if ($puedeVerInternos) {
+            return response()->json($animal, 200);
+        }
+
+        return response()->json(
+            $this->datosPublicosAnimal($animal),
+            200
+        );
     }
 
-    /**
-     * Registrar un nuevo animal (Dar de alta).
-     */
     public function store(StoreAnimalRequest $request)
     {
         // Datos validados por el FormRequest
@@ -376,6 +392,96 @@ class AnimalController extends Controller
     }
 
     /**
+     * T17: Consultar los animales asignados al trabajador autenticado.
+     * Devuelve los datos de cuidado y necesidades, pero NO los datos clínicos.
+     */
+    public function misAnimales(Request $request)
+    {
+        $usuario = $request->user();
+
+        $animales = Animal::where('cuidador_id', $usuario->id)
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get();
+
+        // Las necesidades especiales están ocultas por defecto en el modelo,
+        // pero el cuidador necesita verlas para atender bien al animal.
+        // Las observaciones clínicas siguen ocultas ($hidden del modelo).
+        $animales->makeVisible('necesidades_especiales');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Animales asignados consultados correctamente.',
+            'data' => $animales
+        ], 200);
+    }
+
+    /**
+     * T17: Asignar un trabajador y sus instrucciones de cuidado a un animal (solo administrador).
+     */
+    public function asignarCuidador(Request $request, $id)
+    {
+        $animal = Animal::find($id);
+
+        if (!$animal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Animal no encontrado.'
+            ], 404);
+        }
+
+        if (!$animal->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede asignar un cuidador a un animal dado de baja.'
+            ], 422);
+        }
+
+        $request->validate([
+            'cuidador_id' => 'nullable|integer|exists:users,id',
+            'instrucciones_cuidado' => 'nullable|string|max:2000'
+        ], [
+            'cuidador_id.integer' => 'El trabajador seleccionado no es válido.',
+            'cuidador_id.exists' => 'El trabajador seleccionado no existe.',
+            'instrucciones_cuidado.string' => 'Las instrucciones deben ser un texto.',
+            'instrucciones_cuidado.max' => 'Las instrucciones no pueden superar los 2000 caracteres.'
+        ]);
+
+        // COMPROBAR QUE EL USUARIO ELEGIDO ES UN TRABAJADOR ACTIVO
+        if ($request->cuidador_id) {
+            $cuidador = User::find($request->cuidador_id);
+
+            if ($cuidador->rol !== 'personal' && $cuidador->rol !== 'veterinario') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo se puede asignar el animal a personal o veterinarios.'
+                ], 422);
+            }
+
+            if ($cuidador->estado !== 'activo') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede asignar el animal a una cuenta desactivada.'
+                ], 422);
+            }
+        }
+
+        $animal->cuidador_id = $request->cuidador_id;
+        $animal->instrucciones_cuidado = $request->instrucciones_cuidado;
+        $animal->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asignación del animal guardada correctamente.',
+            'data' => [
+                'id' => $animal->id,
+                'cuidador_id' => $animal->cuidador_id,
+                'instrucciones_cuidado' => $animal->instrucciones_cuidado
+            ]
+        ], 200);
+    }
+
+    /**
      * Actualizar la fotografía de un animal.
      */
     public function actualizarImagen(Request $request, $id)
@@ -481,5 +587,61 @@ class AnimalController extends Controller
                 'observaciones_clinicas' => $animal->observaciones_clinicas
             ]
         ], 200);
+    }
+
+        // COMPROBAR EL ACCESO A LA INFORMACIÓN INTERNA
+    private function puedeConsultarDatosInternos(Request $request): bool
+    {
+        $usuario = $request->user('sanctum');
+
+        if (!$usuario || $usuario->estado !== 'activo') {
+            return false;
+        }
+
+        if (!in_array(
+            $usuario->rol,
+            ['admin', 'personal', 'veterinario'],
+            true
+        )) {
+            return false;
+        }
+
+        return in_array(
+            'animales:consultar',
+            $usuario->obtenerPermisos(),
+            true
+        ) && $usuario->tokenCan('animales:consultar');
+    }
+
+    // CAMPOS PERMITIDOS EN EL CATÁLOGO PÚBLICO
+    private function datosPublicosAnimal(Animal $animal): array
+    {
+        $datos = $animal->only([
+            'id',
+            'nombre',
+            'fotografia',
+            'imagen',
+            'especie',
+            'raza',
+            'fecha_nacimiento',
+            'sexo',
+            'tamano',
+            'peso',
+            'estado',
+            'caracter',
+            'con_ninos',
+            'con_otros_animales',
+            'con_desconocidos',
+        ]);
+
+        $datos['fotografia_url'] = $animal->fotografia
+            ? asset('storage/' . $animal->fotografia)
+            : null;
+
+        $datos['imagen_url'] = $animal->imagen
+            ? asset('storage/' . $animal->imagen)
+            : null;
+
+        return $datos;
     }
 }
