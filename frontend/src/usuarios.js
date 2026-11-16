@@ -34,8 +34,10 @@ const botonAnterior = document.querySelector("#paginaAnterior");
 const botonSiguiente = document.querySelector("#paginaSiguiente");
 const informacionPagina = document.querySelector("#informacionPagina");
 
-// BOTÓN PARA CERRAR SESIÓN
+// BOTÓN PARA CERRAR SESIÓN Y ENLACES DEL MENÚ
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
+const enlaceAnimales = document.querySelector('nav a[href="animales.html"]');
+const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
 
 // ELEMENTOS DEL DETALLE
 const modalDetalle = document.querySelector("#modalDetalleUsuario");
@@ -128,6 +130,8 @@ async function comprobarAcceso() {
 
         administradorActualId = usuario.id;
         gestionUsuarios.hidden = false;
+        if (enlaceAnimales) enlaceAnimales.hidden = false;
+        if (enlaceUsuarios) enlaceUsuarios.hidden = false;
 
         await cargarUsuarios(1);
 
@@ -252,7 +256,7 @@ function mostrarUsuarios(usuarios) {
 
         acciones.appendChild(botonDetalle);
 
-                // CAMBIAR EL ROL DE OTRAS CUENTAS
+        // CAMBIAR EL ROL DE OTRAS CUENTAS
         if (usuario.id !== administradorActualId) {
             const botonRol = document.createElement("button");
 
@@ -355,9 +359,6 @@ function limpiarFiltros() {
     cargarUsuarios(1);
 }
 
-
-
-
 async function cargarPerfilVeterinario(usuario) {
     const seccion = document.querySelector("#seccionPerfilVeterinario");
     const mensaje = document.querySelector("#mensajePerfilVeterinario");
@@ -376,8 +377,6 @@ async function cargarPerfilVeterinario(usuario) {
     if (usuario.rol !== "veterinario") {
         return;
     }
-    mensaje.textContent = "Cargando información veterinaria...";
- 
 
     mensaje.textContent = "Cargando información veterinaria...";
 
@@ -458,17 +457,16 @@ async function guardarPerfilVeterinario(evento) {
 
         document.querySelector("#formularioPerfilVeterinario").hidden = true;
 
-    await cargarFichaLaboral({
-    id: usuarioVeterinarioActualId,
-    rol: "veterinario"
-});
+        await cargarFichaLaboral({
+            id: usuarioVeterinarioActualId,
+            rol: "veterinario"
+        });
 
-    await cargarPerfilVeterinario({
-    id: usuarioVeterinarioActualId,
-    rol: "veterinario"
-});
+        await cargarPerfilVeterinario({
+            id: usuarioVeterinarioActualId,
+            rol: "veterinario"
+        });
 
-     
     } catch (error) {
         mensaje.textContent = error.message;
     } finally {
@@ -476,8 +474,6 @@ async function guardarPerfilVeterinario(evento) {
         botonGuardar.disabled = false;
     }
 }
-
-
 
 // CONSULTAR EL DETALLE
 async function consultarDetalle(id) {
@@ -1070,42 +1066,27 @@ document.querySelector("#botonEditarPerfilVeterinario").addEventListener("click"
 document.querySelector("#formularioPerfilVeterinario").addEventListener("submit", guardarPerfilVeterinario);
 
 document.querySelector("#cancelarPerfilVeterinario").addEventListener("click", function () {
-        const formulario = document.querySelector("#formularioPerfilVeterinario");
-        formulario.reset();
-        formulario.hidden = true;
-        document.querySelector("#mensajePerfilVeterinario").textContent = "";
-    });
+    const formulario = document.querySelector("#formularioPerfilVeterinario");
+    formulario.reset();
+    formulario.hidden = true;
+    document.querySelector("#mensajePerfilVeterinario").textContent = "";
+});
 
-    botonCerrarSesion.addEventListener("click", salirSesion);
+botonCerrarSesion.addEventListener("click", salirSesion);
 
-    // EVENTOS DEL CAMBIO DE ROL
-    cerrarRolUsuario.addEventListener("click", function () {
-        if (!guardandoRol) {
-            modalRolUsuario.close();
-        }
-    });
+// EVENTOS DEL CAMBIO DE ROL
+cerrarRolUsuario.addEventListener("click", function () {
+    if (!guardandoRol) {
+        modalRolUsuario.close();
+    }
+});
 
-    modalRolUsuario.addEventListener("cancel", function (evento) {
-        if (guardandoRol) {
-            evento.preventDefault();
-        }
-    });
+modalRolUsuario.addEventListener("cancel", function (evento) {
+    if (guardandoRol) {
+        evento.preventDefault();
+    }
+});
 
-    formularioRolUsuario.addEventListener("submit", guardarCambioRol);
+formularioRolUsuario.addEventListener("submit", guardarCambioRol);
 
-    // EVENTOS DEL CAMBIO DE ROL
-    cerrarRolUsuario.addEventListener("click", function () {
-        if (!guardandoRol) {
-            modalRolUsuario.close();
-        }
-    });
-
-    modalRolUsuario.addEventListener("cancel", function (evento) {
-        if (guardandoRol) {
-            evento.preventDefault();
-        }
-    });
-
-    formularioRolUsuario.addEventListener("submit", guardarCambioRol);
-
-    comprobarAcceso();
+comprobarAcceso();
