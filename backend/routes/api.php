@@ -16,6 +16,7 @@ use App\Http\Controllers\VeterinarioController;
 
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\AusenciaController;
+use App\Http\Controllers\HistorialController;
 
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
@@ -280,3 +281,27 @@ Route::get('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'mos
 Route::put('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'actualizarPorUsuario'])
     ->whereNumber('userId')
     ->middleware(['auth:sanctum', EsAdministrador::class]);
+
+
+// ==========================================================================
+// HISTORIAL DEL ANIMAL (T18)
+// ==========================================================================
+
+// CONSULTAR EL HISTORIAL GENERAL DE UN ANIMAL
+Route::get('/animales/{id}/historial', [HistorialController::class, 'index'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);
+
+
+// REGISTRAR UNA OBSERVACIÓN GENERAL
+Route::post('/animales/{id}/observaciones', [HistorialController::class, 'guardarObservacion'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);

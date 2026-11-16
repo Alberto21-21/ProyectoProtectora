@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalDetalleAnimal = document.querySelector("#modalDetalleAnimal");
     const cerrarDetalleAnimal = document.querySelector("#cerrarDetalleAnimal");
     const enlaceEditarAnimal = document.querySelector("#enlaceEditarAnimal");
+    const enlaceHistorialAnimal = document.querySelector("#enlaceHistorialAnimal");
 
     // Elementos de la ficha modal
     const fichaNombre = document.querySelector("#fichaNombre");
@@ -376,6 +377,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
         animalSeleccionadoId = id;
+
+        // Enlace al historial del animal: solo para personal autorizado (T18)
+        if (enlaceHistorialAnimal) {
+            enlaceHistorialAnimal.href = "historial.html?id=" + id;
+            enlaceHistorialAnimal.hidden = !(usuarioActual && rolesAutorizados.includes(usuarioActual.rol));
+        }
 
         try {
             const respuesta = await fetch(`http://127.0.0.1:8000/api/animales/${id}`, {

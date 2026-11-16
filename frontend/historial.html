@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial del animal - Salvando Huellas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+            <a href="index.html" class="marca">Salvando Huellas</a>
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html" aria-current="page">Animales</a>
+                <a href="perfil.html">Mi perfil</a>
+                <button type="button" id="botonCerrarSesion">Cerrar sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>HISTORIAL</span>
+            <h1 id="tituloHistorial">Historial del animal</h1>
+            <p id="subtituloHistorial">Registros cronológicos del animal en la protectora.</p>
+        </div>
+
+        <p id="mensajeHistorial" role="status"></p>
+
+        <div id="contenidoHistorial" hidden>
+
+            <!-- FORMULARIO DE NUEVA OBSERVACIÓN GENERAL -->
+            <section id="seccionObservacion" class="informacion-perfil" style="max-width: 100%;">
+                <h2>Nueva observación general</h2>
+
+                <form id="formularioObservacion">
+                    <label for="descripcionObservacion">Observación *</label>
+                    <textarea id="descripcionObservacion" name="descripcion" rows="4" maxlength="2000" required
+                        placeholder="Cambios de comportamiento, apetito, cuidados realizados..."></textarea>
+                    <p class="error-campo" id="error-descripcion"></p>
+
+                    <button type="submit" id="botonGuardarObservacion">Guardar observación</button>
+                    <p id="mensajeObservacion" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
+                </form>
+
+                <small style="color:#666; display:block; margin-top:10px;">
+                    * La fecha y el autor se guardan automáticamente.
+                    Las observaciones generales no son diagnósticos: los diagnósticos los registra el veterinario.
+                </small>
+            </section>
+
+            <p id="avisoHistorialBaja" hidden style="margin-top: 15px; padding: 12px; background-color: #fdecea; border-radius: 10px; color: #8a1c1c;">
+                Este animal está dado de baja: se puede consultar su historial, pero no añadir observaciones.
+            </p>
+
+            <!-- HISTORIAL GENERAL -->
+            <section class="informacion-perfil" style="margin-top: 30px; max-width: 100%;">
+                <h2>Historial general</h2>
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="text-align: left; border-bottom: 2px solid #ddd;">
+                            <th style="padding: 10px;">Fecha</th>
+                            <th style="padding: 10px;">Tipo</th>
+                            <th style="padding: 10px;">Descripción</th>
+                            <th style="padding: 10px;">Autor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaHistorial">
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+
+        <p style="margin-top: 20px;"><a href="animales.html">Volver al listado de animales</a></p>
+
+    </main>
+
+    <script type="module" src="./src/historial.js"></script>
+</body>
+
+</html>
