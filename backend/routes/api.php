@@ -19,6 +19,13 @@ use App\Http\Middleware\EsVeterinario;
 use App\Http\Middleware\TienePermiso;
 
 
+
+
+
+use App\Http\Controllers\AnimalAsignacionController;
+use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
+
+
 // AUTENTICACIÓN Y PERFIL
 
 // REGISTRAR USUARIOS
@@ -343,6 +350,7 @@ Route::put('/animales/{id}/asignacion', [AnimalController::class, 'asignarCuidad
 
 // INFORMACIÓN CLÍNICA
 
+
 // CONSULTAR LOS DATOS CLÍNICOS
 Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
     ->whereNumber('id')
@@ -350,7 +358,8 @@ Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClin
         'auth:sanctum',
         CuentaActiva::class,
         EsVeterinario::class,
-        TienePermiso::class . ':clinica:consultar'
+        TienePermiso::class . ':clinica:consultar',
+        VeterinarioAutorizadoParaAnimal::class
     ]);
 
 // EDITAR LOS DATOS CLÍNICOS
@@ -360,7 +369,39 @@ Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosC
         'auth:sanctum',
         CuentaActiva::class,
         EsVeterinario::class,
-        TienePermiso::class . ':clinica:gestionar'
+        TienePermiso::class . ':clinica:gestionar',
+        VeterinarioAutorizadoParaAnimal::class
+    ]);
+
+// CONSULTAR ASIGNACIONES
+Route::get('/animal-asignaciones', [AnimalAsignacionController::class, 'index'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+    ]);
+
+// CREAR ASIGNACIONES
+Route::post('/animal-asignaciones', [AnimalAsignacionController::class, 'store'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+    ]);
+
+// ELIMINAR ASIGNACIONES
+Route::delete('/animal-asignaciones/{id}', [AnimalAsignacionController::class, 'retirarasignaciones'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+    ]);
+
+// CONSULTAR VETERINARIOS DISPONIBLES
+Route::get('/animal-asignaciones/veterinarios', [AnimalAsignacionController::class, 'veterinariosDisponibles'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
     ]);
 
 

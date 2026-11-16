@@ -44,7 +44,7 @@ class Animal extends Model
         'imagen_public_id',
     ];
 
-    // Convertir el campo de baja lógica a booleano (T16)
+    
     protected $casts = [
         'activo' => 'boolean',
     ];

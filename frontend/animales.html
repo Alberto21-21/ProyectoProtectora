@@ -422,6 +422,36 @@
                     * Eliminar definitivamente: solo se permite si el animal no tiene ningún registro asociado.
                 </small>
             </div>
+
+<section id="bloqueAsignacionesAnimal" hidden>
+    <hr>
+    <h3>Responsables y veterinarios asignados</h3>
+
+    <ul id="listaAsignacionesAnimal"></ul>
+
+    <form id="formularioAsignacionAnimal">
+        <div id="campoTipoAsignacion" hidden>
+            <label for="tipoAsignacionAnimal">Tipo de asignación</label>
+            <select id="tipoAsignacionAnimal">
+                <option value="responsable">Empleado responsable</option>
+                <option value="veterinario">Veterinario</option>
+            </select>
+        </div>
+
+        <label for="empleadoAsignacionAnimal">Persona que se asignará</label>
+        <select id="empleadoAsignacionAnimal" required>
+            <option value="">Selecciona una persona</option>
+        </select>
+
+        <button type="submit">Guardar asignación</button>
+    </form>
+
+    <p id="mensajeAsignacionAnimal" role="status"></p>
+</section>
+
+
+
+
         </div>
 
         <div class="acciones-modal-animal">
