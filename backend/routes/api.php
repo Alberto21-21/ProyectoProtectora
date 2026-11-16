@@ -10,6 +10,7 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\VeterinarioController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\AusenciaController;
+use App\Http\Controllers\HistorialController;
 
 use App\Http\Middleware\CuentaActiva;
 use App\Http\Middleware\EsAdministrador;
@@ -18,9 +19,7 @@ use App\Http\Middleware\EsVeterinario;
 use App\Http\Middleware\TienePermiso;
 
 
-// ==========================================================================
 // AUTENTICACIÓN Y PERFIL
-// ==========================================================================
 
 // REGISTRAR USUARIOS
 Route::post('/register', [AuthController::class, 'register']);
@@ -77,9 +76,7 @@ Route::put('/user/password', [AuthController::class, 'cambiarContrasena'])
     ]);
 
 
-// ==========================================================================
 // ADMINISTRACIÓN DE CUENTAS
-// ==========================================================================
 
 // CONSULTAR Y BUSCAR USUARIOS
 Route::get('/usuarios', [UsuarioController::class, 'index'])
@@ -140,9 +137,7 @@ Route::patch('/usuarios/{id}/desactivar', [UsuarioController::class, 'desactivar
     ]);
 
 
-// ==========================================================================
 // FICHAS LABORALES
-// ==========================================================================
 
 // CREAR FICHA LABORAL
 Route::post('/empleados', [EmpleadoController::class, 'store'])
@@ -174,9 +169,7 @@ Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualiza
     ]);
 
 
-// ==========================================================================
 // PERFILES VETERINARIOS
-// ==========================================================================
 
 // CREAR PERFIL VETERINARIO
 Route::post('/veterinarios', [VeterinarioController::class, 'store'])
@@ -208,9 +201,7 @@ Route::put('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'act
     ]);
 
 
-// ==========================================================================
 // DISPONIBILIDAD Y AUSENCIAS
-// ==========================================================================
 
 // CONSULTAR EMPLEADOS PARA GESTIONAR SU DISPONIBILIDAD
 Route::get('/disponibilidades/empleados', [DisponibilidadController::class, 'empleados'])
@@ -258,9 +249,7 @@ Route::post('/ausencias', [AusenciaController::class, 'store'])
     ]);
 
 
-// ==========================================================================
 // ANIMALES
-// ==========================================================================
 
 // CONSULTAR EL CATÁLOGO PÚBLICO
 Route::get('/animales', [AnimalController::class, 'index']);
@@ -348,9 +337,7 @@ Route::put('/animales/{id}/asignacion', [AnimalController::class, 'asignarCuidad
     ]);
 
 
-// ==========================================================================
 // INFORMACIÓN CLÍNICA
-// ==========================================================================
 
 // CONSULTAR LOS DATOS CLÍNICOS
 Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
@@ -370,4 +357,25 @@ Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosC
         CuentaActiva::class,
         EsVeterinario::class,
         TienePermiso::class . ':clinica:gestionar'
+    ]);
+
+
+// HISTORIAL DEL ANIMAL (T18)
+
+// CONSULTAR EL HISTORIAL GENERAL DE UN ANIMAL
+Route::get('/animales/{id}/historial', [HistorialController::class, 'index'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
+    ]);
+
+// REGISTRAR UNA OBSERVACIÓN GENERAL
+Route::post('/animales/{id}/observaciones', [HistorialController::class, 'guardarObservacion'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class
     ]);
