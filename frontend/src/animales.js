@@ -5,6 +5,8 @@ import {
 
 import {
     crearAnimal,
+    obtenerAnimales,
+    obtenerAnimal,
     actualizarEstadoAnimal,
     darDeBajaAnimal,
     eliminarAnimal,
@@ -37,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const contenedorFiltroEstado = document.querySelector("#contenedorFiltroEstado");
     const botonLimpiarFiltros = document.querySelector("#botonLimpiarFiltros");
     const tablaCuerpoAnimales = document.querySelector("#tablaCuerpoAnimales");
+    const tablaGestionAnimales = document.querySelector("#tablaGestionAnimales");
+    const catalogoAdopcion = document.querySelector("#catalogoAdopcion");
 
     const modalDetalleAnimal = document.querySelector("#modalDetalleAnimal");
     const cerrarDetalleAnimal = document.querySelector("#cerrarDetalleAnimal");
@@ -55,6 +59,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const fichaCaracter = document.querySelector("#fichaCaracter");
     const fichaNecesidades = document.querySelector("#fichaNecesidades");
     const fichaObservaciones = document.querySelector("#fichaObservaciones");
+    const fichaHistoriaPublica = document.querySelector("#fichaHistoriaPublica");
+    const fichaCuidadosPublicos = document.querySelector("#fichaCuidadosPublicos");
+    const datosEntradaInternos = document.querySelector("#datosEntradaInternos");
+    const datosCuidadosInternos = document.querySelector("#datosCuidadosInternos");
 
     // Elementos de transición de estado (T15)
     const bloqueCambioEstado = document.querySelector("#bloqueCambioEstado");
@@ -106,7 +114,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "con_otros_animales",
         "con_desconocidos",
         "necesidades_especiales",
-        "observaciones"
+        "observaciones",
+        "historia_publica",
+        "cuidados_publicos"
     ];
 
     // TRANSICIONES PERMITIDAS SEGÚN EL ESTADO ACTUAL (T15)
@@ -131,6 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // CONFIGURAR VISTA PARA ADOPTANTE O VISITANTE (SOLO CONSULTA Y FILTROS)
     function activarVistaAdoptante(haySesion) {
+        tablaGestionAnimales.hidden = true;
+        catalogoAdopcion.hidden = false;
         if (gestionAnimales) gestionAnimales.hidden = true;
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = true;
         if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = true;
@@ -146,6 +158,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // CONFIGURAR VISTA PARA PERSONAL AUTORIZADO (ALTA + GESTIÓN + ESTADOS)
     function activarVistaPersonal() {
+        tablaGestionAnimales.hidden = false;
+        catalogoAdopcion.hidden = true;
         if (fechaEntrada) fechaEntrada.value = fechaDeHoy();
         if (gestionAnimales) gestionAnimales.hidden = false;
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = false;
@@ -321,23 +335,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const respuesta = await fetch(`http://127.0.0.1:8000/api/animales?${params.toString()}`, {
-                headers: {
-                    "Accept": "application/json",
-                    ...(token && { "Authorization": `Bearer ${token}` })
-                }
-            });
+            
+            const filtros = Object.fromEntries(params);
 
-            const animales = await respuesta.json();
+            const animales = await obtenerAnimales(filtros, token);
+
             tablaCuerpoAnimales.replaceChildren();
+            catalogoAdopcion.replaceChildren();
 
-            if (!respuesta.ok) {
-                if (mensajeAnimal) {
-                    mensajeAnimal.textContent = animales.message || "Error al consultar los animales.";
-                    mensajeAnimal.style.color = "red";
-                }
+            // VISITANTES Y ADOPTANTES VEN LAS TARJETAS
+            if (!catalogoAdopcion.hidden) {
+                mostrarTarjetasAdopcion(animales);
                 return;
             }
+
 
             if (animales.length === 0) {
                 const filaVacia = document.createElement("tr");
@@ -390,6 +401,137 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // CALCULAR LA EDAD DESDE EL NACIMIENTO APROXIMADO
+    function calcularEdadAnimal(fechaNacimiento) {
+
+        if (!fechaNacimiento) {
+            return "Edad no indicada";
+        }
+
+        const fecha = fechaNacimiento.slice(0, 10);
+        const nacimiento = new Date(fecha + "T00:00:00");
+        const hoy = new Date();
+
+        if (
+            Number.isNaN(nacimiento.getTime()) ||
+            nacimiento > hoy
+        ) {
+            return "Edad no indicada";
+        }
+
+        let meses =
+            (hoy.getFullYear() - nacimiento.getFullYear()) * 12 +
+            hoy.getMonth() - nacimiento.getMonth();
+
+        if (hoy.getDate() < nacimiento.getDate()) {
+            meses--;
+        }
+
+        if (meses <= 0) {
+            return "Menos de 1 mes";
+        }
+
+        if (meses < 12) {
+            return meses + (meses === 1 ? " mes" : " meses");
+        }
+
+        const anos = Math.floor(meses / 12);
+
+        return anos + (anos === 1 ? " año" : " años");
+    }
+
+    // MOSTRAR LAS TARJETAS DEL CATÁLOGO
+    function mostrarTarjetasAdopcion(animales) {
+
+        if (animales.length === 0) {
+            const aviso = document.createElement("p");
+
+            aviso.className = "aviso-catalogo";
+            aviso.textContent =
+                "No hay animales disponibles con esos filtros.";
+
+            catalogoAdopcion.appendChild(aviso);
+            return;
+        }
+
+        animales.forEach(function (animal) {
+
+            const tarjeta = document.createElement("article");
+            tarjeta.className = "tarjeta-adopcion";
+
+            // FOTOGRAFÍA
+            const rutaImagen = animal.imagen || animal.fotografia;
+
+            if (rutaImagen) {
+                const imagen = document.createElement("img");
+
+                imagen.src =
+                    "http://127.0.0.1:8000/storage/" + rutaImagen;
+
+                imagen.alt = "Fotografía de " + animal.nombre;
+                imagen.loading = "lazy";
+                imagen.className = "imagen-tarjeta-adopcion";
+
+                tarjeta.appendChild(imagen);
+
+            } else {
+                const imagenPredeterminada = document.createElement("div");
+
+                imagenPredeterminada.className =
+                    "imagen-predeterminada-adopcion";
+
+                imagenPredeterminada.textContent = "🐾";
+                imagenPredeterminada.setAttribute("aria-hidden", "true");
+
+                tarjeta.appendChild(imagenPredeterminada);
+            }
+
+            // INFORMACIÓN
+            const contenido = document.createElement("div");
+            contenido.className = "contenido-tarjeta-adopcion";
+
+            const nombre = document.createElement("h3");
+            nombre.textContent = animal.nombre;
+
+            const descripcion = document.createElement("p");
+                descripcion.textContent =
+                   (animal.sexo || "Sexo no indicado") + " · " +
+                   (animal.raza || "Raza no indicada") + " · " +
+                    calcularEdadAnimal(animal.fecha_nacimiento);
+
+            const caracter = document.createElement("p");
+            caracter.className = "caracter-tarjeta-adopcion";
+            caracter.textContent =
+                animal.caracter || "Conoce su carácter en la protectora.";
+
+            // ABRIR LA FICHA
+            const botonFicha = document.createElement("button");
+
+            botonFicha.type = "button";
+            botonFicha.className = "boton-ficha-adopcion";
+            botonFicha.textContent = "Conóceme";
+
+            botonFicha.setAttribute(
+                "aria-label",
+                "Conocer a " + animal.nombre
+            );
+
+            botonFicha.addEventListener("click", function () {
+                verFichaAnimal(animal.id);
+            });
+
+            contenido.append(
+                nombre,
+                descripcion,
+                caracter,
+                botonFicha
+            );
+
+            tarjeta.appendChild(contenido);
+            catalogoAdopcion.appendChild(tarjeta);
+        });
+    }
+
     // -------------------------------------------------------------
     // CONSULTA DE FICHA DETALLADA Y CAMBIO DE ESTADO (T15)
     // -------------------------------------------------------------
@@ -400,19 +542,30 @@ document.addEventListener("DOMContentLoaded", function () {
         animalSeleccionadoId = id;
 
         try {
-            const respuesta = await fetch(`http://127.0.0.1:8000/api/animales/${id}`, {
-                headers: {
-                    "Accept": "application/json",
-                    ...(token && { "Authorization": `Bearer ${token}` })
-                }
-            });
 
-            const animal = await respuesta.json();
+            const animal = await obtenerAnimal(id, token);
 
-            if (!respuesta.ok) {
-                alert(animal.message || "No se pudo obtener la información de la ficha.");
-                return;
-            }
+            document.querySelector("#fichaTamano").textContent =
+                animal.tamano || "No indicado";
+
+            document.querySelector("#fichaNacimiento").textContent =
+                animal.fecha_nacimiento
+                    ? animal.fecha_nacimiento.slice(0, 10)
+                    : "No indicado";
+
+            document.querySelector("#fichaConNinos").textContent =
+                animal.con_ninos || "Desconocido";
+
+            document.querySelector("#fichaConOtrosAnimales").textContent =
+                animal.con_otros_animales || "Desconocido";
+
+            fichaHistoriaPublica.textContent =
+                animal.historia_publica ||
+                "Todavía no se ha publicado su historia.";
+
+            fichaCuidadosPublicos.textContent =
+                animal.cuidados_publicos ||
+                "Consulta con la protectora los cuidados que necesita.";
 
             const imgUrl = animal.fotografia || animal.imagen;
 
@@ -441,6 +594,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Configurar bloque de cambio de estado (solo para personal autorizado)
             const esAutorizado = usuarioActual && rolesAutorizados.includes(usuarioActual.rol);
+            datosEntradaInternos.hidden = !esAutorizado;
+            datosCuidadosInternos.hidden = !esAutorizado;
 
             // Comprobar si el animal está dado de baja (T16)
             const estaDeBaja = animal.activo === false || animal.activo === 0;

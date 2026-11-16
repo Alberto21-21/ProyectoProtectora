@@ -34,6 +34,8 @@ const estadoEditar = document.querySelector("#estadoEditar");
 const pesoEditar = document.querySelector("#pesoEditar");
 const caracterEditar = document.querySelector("#caracterEditar");
 const descripcionEditar = document.querySelector("#descripcionEditar");
+const historiaPublicaEditar = document.querySelector("#historiaPublicaEditar");
+const cuidadosPublicosEditar = document.querySelector("#cuidadosPublicosEditar");
 const mensajeAnimal = document.querySelector("#mensajeAnimal");
 const botonGuardarAnimal = document.querySelector("#botonGuardarAnimal");
 
@@ -85,6 +87,8 @@ function mostrarAnimal(animal) {
     estadoEditar.value = animal.estado;
     caracterEditar.value = animal.caracter || "";
     descripcionEditar.value = animal.descripcion || "";
+    historiaPublicaEditar.value = animal.historia_publica || "";
+    cuidadosPublicosEditar.value = animal.cuidados_publicos || "";
 
     // LA EDAD Y EL PESO PUEDEN SER 0, POR ESO SE COMPRUEBA NULL
     if (animal.edad !== null) {
@@ -139,7 +143,7 @@ async function cargarFicha() {
             return;
         }
 
-        const animal = await obtenerAnimal(idAnimal);
+        const animal = await obtenerAnimal(idAnimal, token);
 
         mostrarAnimal(animal);
 
@@ -188,7 +192,9 @@ async function guardarAnimal(evento) {
         estado: estadoEditar.value,
         peso: pesoEditar.value,
         caracter: caracterEditar.value.trim(),
-        descripcion: descripcionEditar.value.trim()
+        descripcion: descripcionEditar.value.trim(),
+        historia_publica: historiaPublicaEditar.value.trim(),
+        cuidados_publicos: cuidadosPublicosEditar.value.trim()
     };
 
     mensajeAnimal.textContent = "Guardando cambios...";

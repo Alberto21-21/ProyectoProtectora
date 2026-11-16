@@ -186,6 +186,27 @@
                     <textarea id="observacionesAnimal" name="observaciones" rows="3" maxlength="1000" placeholder="Notas internas del personal..."></textarea>
                     <p class="error-campo" id="error-observaciones"></p>
 
+                    <!-- INFORMACIÓN VISIBLE PARA LOS ADOPTANTES -->
+                    <label for="historiaPublicaAnimal">Historia pública</label>
+                    <textarea
+                        id="historiaPublicaAnimal"
+                        name="historia_publica"
+                        rows="4"
+                        maxlength="3000"
+                        placeholder="Cuenta su historia sin incluir datos privados."
+                    ></textarea>
+                    <p class="error-campo" id="error-historia_publica"></p>
+
+                    <label for="cuidadosPublicosAnimal">Cuidados para el adoptante</label>
+                    <textarea
+                        id="cuidadosPublicosAnimal"
+                        name="cuidados_publicos"
+                        rows="4"
+                        maxlength="3000"
+                        placeholder="Explica los cuidados que necesita conocer su futura familia."
+                    ></textarea>
+                    <p class="error-campo" id="error-cuidados_publicos"></p>
+
                     <!-- BOTÓN GUARDAR -->
                     <button type="submit" id="botonGuardarAnimal">Guardar animal</button>
 
@@ -237,8 +258,18 @@
                 <button type="button" id="botonLimpiarFiltros">Limpiar filtros</button>
             </form>
 
+            <!-- TARJETAS DEL CATÁLOGO DE ADOPCIÓN -->
+            <div
+                id="catalogoAdopcion"
+                class="catalogo-adopcion"
+                hidden
+            ></div>
+
             <!-- TABLA DE ANIMALES -->
-            <table style="width: 100%; border-collapse: collapse;">
+            <table
+                id="tablaGestionAnimales"
+                style="width: 100%; border-collapse: collapse;"
+            >                
                 <thead>
                     <tr style="text-align: left; border-bottom: 2px solid #ddd;">
                         <th style="padding: 10px;">Nombre</th>
@@ -263,6 +294,25 @@
             <p><strong>Especie:</strong> <span id="fichaEspecie"></span></p>
             <p><strong>Raza / Características:</strong> <span id="fichaRaza"></span></p>
             <p><strong>Sexo:</strong> <span id="fichaSexo"></span></p>
+            <p>
+                <strong>Tamaño:</strong>
+                <span id="fichaTamano"></span>
+            </p>
+
+            <p>
+                <strong>Nacimiento aproximado:</strong>
+                <span id="fichaNacimiento"></span>
+            </p>
+
+            <p>
+                <strong>Compatibilidad con niños:</strong>
+                <span id="fichaConNinos"></span>
+            </p>
+
+            <p>
+                <strong>Compatibilidad con otros animales:</strong>
+                <span id="fichaConOtrosAnimales"></span>
+            </p>
             <p><strong>Estado actual:</strong> <span id="fichaEstado"></span></p>
 
             <!-- BLOQUE DE CAMBIO DE ESTADO (SOLO PERSONAL AUTORIZADO) -->
@@ -291,11 +341,42 @@
 
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #F5F5F5;">
             <p><strong>Peso:</strong> <span id="fichaPeso"></span></p>
-            <p><strong>Fecha de entrada:</strong> <span id="fichaFechaEntrada"></span></p>
-            <p><strong>Motivo / Procedencia:</strong> <span id="fichaMotivo"></span></p>
+        
+            <div id="datosEntradaInternos" hidden>
+                <p>
+                    <strong>Fecha de entrada:</strong>
+                    <span id="fichaFechaEntrada"></span>
+                </p>
+
+                <p>
+                    <strong>Motivo / Procedencia:</strong>
+                    <span id="fichaMotivo"></span>
+                </p>
+            </div>
+            
             <p><strong>Carácter:</strong> <span id="fichaCaracter"></span></p>
-            <p><strong>Necesidades especiales:</strong> <span id="fichaNecesidades"></span></p>
-            <p><strong>Observaciones del personal:</strong> <span id="fichaObservaciones"></span></p>
+            <!-- INFORMACIÓN PÚBLICA PARA LA ADOPCIÓN -->
+            <section class="informacion-publica-animal">
+
+                <h3>Su historia</h3>
+                <p id="fichaHistoriaPublica" class="texto-publico-animal"></p>
+
+                <h3>Cuidados que necesita</h3>
+                <p id="fichaCuidadosPublicos" class="texto-publico-animal"></p>
+
+            </section>
+
+            <div id="datosCuidadosInternos" hidden>
+                <p>
+                    <strong>Necesidades especiales:</strong>
+                    <span id="fichaNecesidades"></span>
+                </p>
+
+                <p>
+                    <strong>Observaciones del personal:</strong>
+                    <span id="fichaObservaciones"></span>
+                </p>
+            </div>
 
             <!-- BLOQUE DE ASIGNACIÓN DE CUIDADOR (SOLO ADMINISTRADOR) (T17) -->
             <div id="bloqueAsignacion" hidden style="margin-top: 15px; padding: 12px; background-color: #f4f8ff; border-radius: 10px; border: 1px solid #c9d8f0;">

@@ -155,7 +155,9 @@ class AnimalController extends Controller
             'sexo' => 'required|in:Macho,Hembra',
             'peso' => 'nullable|numeric|min:0|max:200',
             'caracter' => 'nullable|string|max:255',
-            'descripcion' => 'nullable|string'
+            'descripcion' => 'nullable|string',
+            'historia_publica' => 'sometimes|nullable|string|max:3000',
+            'cuidados_publicos' => 'sometimes|nullable|string|max:3000'
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.string' => 'El nombre debe ser un texto.',
@@ -174,7 +176,11 @@ class AnimalController extends Controller
             'peso.max' => 'El peso no puede ser mayor de 200 kg.',
             'caracter.string' => 'El carácter debe ser un texto.',
             'caracter.max' => 'El carácter no puede superar los 255 caracteres.',
-            'descripcion.string' => 'La descripción debe ser un texto.'
+            'descripcion.string' => 'La descripción debe ser un texto.',
+            'historia_publica.string' => 'La historia pública debe ser un texto.',
+            'historia_publica.max' => 'La historia pública no puede superar los 3000 caracteres.',
+            'cuidados_publicos.string' => 'Los cuidados públicos deben ser un texto.',
+            'cuidados_publicos.max' => 'Los cuidados públicos no pueden superar los 3000 caracteres.'
         ]);
 
         $animal->nombre = $request->nombre;
@@ -185,6 +191,16 @@ class AnimalController extends Controller
         $animal->peso = $request->peso;
         $animal->caracter = $request->caracter;
         $animal->descripcion = $request->descripcion;
+
+        // ACTUALIZAR LOS TEXTOS PÚBLICOS SOLO SI SE ENVÍAN
+        if ($request->exists('historia_publica')) {
+            $animal->historia_publica = $request->historia_publica;
+        }
+
+        if ($request->exists('cuidados_publicos')) {
+            $animal->cuidados_publicos = $request->cuidados_publicos;
+        }
+        
         $animal->save();
 
         return response()->json([
@@ -632,6 +648,8 @@ class AnimalController extends Controller
             'con_ninos',
             'con_otros_animales',
             'con_desconocidos',
+            'historia_publica',
+            'cuidados_publicos',
         ]);
 
         $datos['fotografia_url'] = $animal->fotografia
