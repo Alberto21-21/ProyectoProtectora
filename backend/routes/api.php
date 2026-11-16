@@ -16,6 +16,8 @@ use App\Http\Controllers\VeterinarioController;
 
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\AusenciaController;
+use App\Http\Controllers\AnimalAsignacionController;
+use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
 
 
 // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
@@ -258,14 +260,45 @@ Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClin
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsVeterinario::class
+        EsVeterinario::class,
+        VeterinarioAutorizadoParaAnimal::class
     ]);
 
 
 // EDITAR LOS DATOS CLÍNICOS
 Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosClinicos'])
     ->whereNumber('id')
-    ->middleware(['auth:sanctum', EsVeterinario::class]);
+    ->middleware(['auth:sanctum',
+        CuentaActiva::class,
+        EsVeterinario::class,
+        VeterinarioAutorizadoParaAnimal::class]);
+
+Route::get('/animal-asignaciones', [AnimalAsignacionController::class, 'index'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+    ]);
+
+Route::post('/animal-asignaciones', [AnimalAsignacionController::class, 'store'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+    ]);
+
+Route::delete('/animal-asignaciones/{id}', [AnimalAsignacionController::class, 'retirarasignaciones'])
+    ->whereNumber('id')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+    ]);
+
+Route::get('/animal-asignaciones/veterinarios', [AnimalAsignacionController::class, 'veterinariosDisponibles'])
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        EsPersonalAutorizado::class,
+    ]);
 
     // CREAR PERFIL VETERINARIO
 Route::post('/veterinarios', [VeterinarioController::class, 'store'])

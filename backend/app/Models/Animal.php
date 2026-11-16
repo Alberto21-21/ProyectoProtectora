@@ -38,7 +38,7 @@ class Animal extends Model
         'motivo_baja',
     ];
 
-    // Convertir el campo de baja lógica a booleano (T16)
+    
     protected $casts = [
         'activo' => 'boolean',
     ];

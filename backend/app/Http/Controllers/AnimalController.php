@@ -13,15 +13,12 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AnimalController extends Controller
 {
-    /**
-     * Obtener listado de animales con búsqueda y filtros.
-     * El catálogo público muestra únicamente los animales disponibles.
-     */
+ 
     public function index(Request $request)
     {
         $query = Animal::query();
 
-        // Detectar usuario autenticado mediante token Bearer en ruta pública
+        
         $usuario = $request->user('sanctum');
         if (!$usuario && $request->bearerToken()) {
             $accessToken = PersonalAccessToken::findToken($request->bearerToken());
@@ -37,7 +34,7 @@ class AnimalController extends Controller
             $query->where('activo', false);
         }
 
-        // Si no es personal autorizado (visitante o adoptante), solo ve los disponibles
+      
         if (!$esPersonalAutorizado) {
             $query->where('estado', 'Disponible');
         } elseif ($request->filled('estado')) {
@@ -45,7 +42,6 @@ class AnimalController extends Controller
             $query->where('estado', $request->input('estado'));
         }
 
-        // Filtro por término de búsqueda (nombre o raza)
         if ($request->filled('buscar')) {
             $buscar = $request->input('buscar');
             $query->where(function ($q) use ($buscar) {
@@ -54,7 +50,7 @@ class AnimalController extends Controller
             });
         }
 
-        // Filtro por Especie (Perro, Gato, Otro)
+     
         if ($request->filled('especie')) {
             $query->where('especie', $request->input('especie'));
         }
@@ -63,9 +59,7 @@ class AnimalController extends Controller
         return response()->json($query->orderBy('created_at', 'desc')->get(), 200);
     }
 
-    /**
-     * Obtener el detalle individual de un animal (para la ficha).
-     */
+   
     public function show($id)
     {
         $animal = Animal::find($id);
@@ -80,15 +74,12 @@ class AnimalController extends Controller
         return response()->json($animal, 200);
     }
 
-    /**
-     * Registrar un nuevo animal (Dar de alta).
-     */
+   
     public function store(StoreAnimalRequest $request)
     {
-        // Datos validados por el FormRequest
         $datos = $request->validated();
 
-        // Guardar la fotografía si se ha subido
+       
         if ($request->hasFile('fotografia')) {
             $datos['fotografia'] = $request->file('fotografia')->store('animales', 'public');
         } elseif ($request->hasFile('imagen')) {
@@ -117,9 +108,7 @@ class AnimalController extends Controller
         ], 201);
     }
 
-    /**
-     * Actualizar los datos generales de un animal (sin saltar las transiciones de estado).
-     */
+  
     public function update(Request $request, $id)
     {
         $animal = Animal::find($id);
@@ -178,9 +167,7 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    /**
-     * T15: Actualizar el estado de un animal aplicando solo transiciones permitidas.
-     */
+   
     public function actualizarEstado(UpdateEstadoAnimalRequest $request, $id)
     {
         $animal = Animal::find($id);
@@ -218,7 +205,6 @@ class AnimalController extends Controller
             ], 422);
         }
 
-        // Definición de transiciones permitidas
         $transicionesPermitidas = [
             'En acogida'     => ['En tratamiento', 'Disponible'],
             'En tratamiento' => ['En acogida', 'Disponible'],
@@ -246,9 +232,8 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    /**
-     * T16: Dar de baja un animal (baja lógica).
-     * El animal no se borra: se marca como inactivo y se conservan
+  
+     /* El animal no se borra: se marca como inactivo y se conservan
      * su historial, solicitudes y adopciones.
      */
     public function darDeBaja(Request $request, $id)
@@ -270,7 +255,7 @@ class AnimalController extends Controller
             'motivo_baja.max' => 'El motivo no puede superar los 255 caracteres.'
         ]);
 
-        // RECHAZO: EL ANIMAL YA ESTÁ DADO DE BAJA
+      
         if (!$animal->activo) {
             return response()->json([
                 'success' => false,
@@ -278,7 +263,7 @@ class AnimalController extends Controller
             ], 422);
         }
 
-        // RECHAZO: EL ANIMAL TIENE UNA RESERVA EN CURSO
+       
         if ($animal->estado === 'Reservado') {
             return response()->json([
                 'success' => false,
@@ -299,7 +284,7 @@ class AnimalController extends Controller
     }
 
     /**
-     * T16: Eliminar un animal definitivamente.
+     *  Eliminar un animal definitivamente.
      * Solo se permite si no tiene historial, solicitudes ni adopciones.
      * Si los tiene, se rechaza para no perder su historia.
      */
