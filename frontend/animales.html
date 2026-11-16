@@ -216,11 +216,11 @@
         </div>
 
         <!-- CATÁLOGO, BÚSQUEDA Y ACTUALIZACIÓN DE ESTADO -->
-        <section class="informacion-perfil" style="margin-top: 30px; max-width: 100%;">
+        <section class="informacion-perfil seccion-catalogo-animales">
             <h2>Catálogo y situación de animales</h2>
 
-            <form id="formularioFiltros" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end;">
-                <div style="flex: 1; min-width: 200px;">
+            <form id="formularioFiltros">
+                <div>
                     <label for="buscarTexto">Buscar</label>
                     <input type="text" id="buscarTexto" placeholder="Nombre o raza...">
                 </div>
@@ -247,7 +247,7 @@
                     </select>
                 </div>
 
-                <div id="contenedorFiltroBajas" hidden>
+                <div id="contenedorFiltroBajas" class="filtro-bajas" hidden>
                     <label for="filtroBajas">
                         <input type="checkbox" id="filtroBajas">
                         Ver dados de baja
@@ -266,31 +266,30 @@
             ></div>
 
             <!-- TABLA DE ANIMALES -->
-            <table
-                id="tablaGestionAnimales"
-                style="width: 100%; border-collapse: collapse;"
-            >                
-                <thead>
-                    <tr style="text-align: left; border-bottom: 2px solid #ddd;">
-                        <th style="padding: 10px;">Nombre</th>
-                        <th style="padding: 10px;">Especie</th>
-                        <th style="padding: 10px;">Raza</th>
-                        <th style="padding: 10px;">Estado</th>
-                        <th style="padding: 10px;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaCuerpoAnimales">
-                </tbody>
-            </table>
+            <div class="tabla-usuarios">
+                <table id="tablaGestionAnimales">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Raza</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCuerpoAnimales">
+                    </tbody>
+                </table>
+            </div>
         </section>
 
     </main>
 
     <!-- MODAL PARA VER FICHA DETALLADA Y CAMBIAR ESTADO -->
-    <dialog id="modalDetalleAnimal" style="border: none; border-radius: 16px; padding: 25px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-        <div id="contenidoFichaAnimal">
+    <dialog id="modalDetalleAnimal" class="modal-acceso modal-detalle">
+        <div id="contenidoFichaAnimal" class="detalle-animal-body">
             <h2 id="fichaNombre"></h2>
-            <img id="fichaImagen" alt="" hidden style="width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:15px;">
+            <img id="fichaImagen" alt="" hidden>
             <p><strong>Especie:</strong> <span id="fichaEspecie"></span></p>
             <p><strong>Raza / Características:</strong> <span id="fichaRaza"></span></p>
             <p><strong>Sexo:</strong> <span id="fichaSexo"></span></p>
@@ -316,30 +315,30 @@
             <p><strong>Estado actual:</strong> <span id="fichaEstado"></span></p>
 
             <!-- BLOQUE DE CAMBIO DE ESTADO (SOLO PERSONAL AUTORIZADO) -->
-            <div id="bloqueCambioEstado" hidden style="margin-top: 15px; padding: 12px; background-color: #f9f9f9; border-radius: 10px; border: 1px solid #e0e0e0;">
+            <div id="bloqueCambioEstado" class="bloque-gestion-modal" hidden>
                 <div id="controlesTransicionEstado">
-                    <label for="selectNuevoEstado" style="display:block; font-weight:600; margin-bottom:6px;">
+                    <label for="selectNuevoEstado">
                         Actualizar situación del animal:
                     </label>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <select id="selectNuevoEstado" style="flex:1; padding:8px; border-radius:8px;">
+                    <div class="fila-control-modal">
+                        <select id="selectNuevoEstado">
                             <option value="">Selecciona nuevo estado...</option>
                         </select>
-                        <button type="button" id="btnGuardarEstadoAnimal" style="padding:8px 14px;">
+                        <button type="button" id="btnGuardarEstadoAnimal" class="boton-detalle">
                             Cambiar estado
                         </button>
                     </div>
-                    <p id="mensajeEstadoModal" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
-                    <small style="color:#666; display:block; margin-top:4px;">
+                    <p id="mensajeEstadoModal" role="status"></p>
+                    <small>
                         * La adopción formalizada se gestiona desde su proceso específico.
                     </small>
                 </div>
-                <p id="avisoEstadoFinal" hidden style="margin:0; font-size:0.9rem; color:#555;">
+                <p id="avisoEstadoFinal" hidden>
                     Este animal ya está adoptado y no admite cambios manuales de estado.
                 </p>
             </div>
 
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #F5F5F5;">
+            <hr class="separador-ficha">
             <p><strong>Peso:</strong> <span id="fichaPeso"></span></p>
         
             <div id="datosEntradaInternos" hidden>
@@ -355,15 +354,14 @@
             </div>
             
             <p><strong>Carácter:</strong> <span id="fichaCaracter"></span></p>
+
             <!-- INFORMACIÓN PÚBLICA PARA LA ADOPCIÓN -->
             <section class="informacion-publica-animal">
-
                 <h3>Su historia</h3>
                 <p id="fichaHistoriaPublica" class="texto-publico-animal"></p>
 
                 <h3>Cuidados que necesita</h3>
                 <p id="fichaCuidadosPublicos" class="texto-publico-animal"></p>
-
             </section>
 
             <div id="datosCuidadosInternos" hidden>
@@ -379,57 +377,57 @@
             </div>
 
             <!-- BLOQUE DE ASIGNACIÓN DE CUIDADOR (SOLO ADMINISTRADOR) (T17) -->
-            <div id="bloqueAsignacion" hidden style="margin-top: 15px; padding: 12px; background-color: #f4f8ff; border-radius: 10px; border: 1px solid #c9d8f0;">
-                <label for="selectCuidador" style="display:block; font-weight:600; margin-bottom:6px;">
+            <div id="bloqueAsignacion" class="bloque-gestion-modal bloque-asignacion-modal" hidden>
+                <label for="selectCuidador">
                     Trabajador asignado:
                 </label>
-                <select id="selectCuidador" style="width:100%; padding:8px; border-radius:8px;">
+                <select id="selectCuidador">
                     <option value="">Sin asignar</option>
                 </select>
 
-                <label for="instruccionesCuidado" style="display:block; font-weight:600; margin:10px 0 6px;">
+                <label for="instruccionesCuidado">
                     Instrucciones de cuidado:
                 </label>
-                <textarea id="instruccionesCuidado" rows="3" maxlength="2000" placeholder="Paseos, alimentación, medicación diaria..." style="width:100%;"></textarea>
+                <textarea id="instruccionesCuidado" rows="3" maxlength="2000" placeholder="Paseos, alimentación, medicación diaria..."></textarea>
 
-                <button type="button" id="btnGuardarAsignacion" style="margin-top:8px; padding:8px 14px;">
+                <button type="button" id="btnGuardarAsignacion" class="boton-detalle">
                     Guardar asignación
                 </button>
-                <p id="mensajeAsignacion" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
+                <p id="mensajeAsignacion" role="status"></p>
             </div>
 
             <!-- AVISO DE ANIMAL DADO DE BAJA (T16) -->
-            <p id="avisoAnimalBaja" hidden style="margin-top: 15px; padding: 12px; background-color: #fdecea; border-radius: 10px; color: #8a1c1c;">
+            <p id="avisoAnimalBaja" class="aviso-baja-modal" hidden>
                 Animal dado de baja el <span id="fichaFechaBaja"></span>.
                 Motivo: <span id="fichaMotivoBaja"></span>
             </p>
 
             <!-- BLOQUE DE BAJA / ELIMINACIÓN (SOLO PERSONAL AUTORIZADO) (T16) -->
-            <div id="bloqueBajaAnimal" hidden style="margin-top: 15px; padding: 12px; background-color: #fff5f5; border-radius: 10px; border: 1px solid #f3c2c2;">
-                <label for="motivoBajaAnimal" id="etiquetaMotivoBaja" style="display:block; font-weight:600; margin-bottom:6px;">
+            <div id="bloqueBajaAnimal" class="bloque-gestion-modal bloque-baja-modal" hidden>
+                <label for="motivoBajaAnimal" id="etiquetaMotivoBaja">
                     Dar de baja o eliminar el animal:
                 </label>
-                <textarea id="motivoBajaAnimal" rows="2" maxlength="255" placeholder="Motivo de la baja (fallecimiento, traslado, error de registro...)" style="width:100%;"></textarea>
-                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-                    <button type="button" id="btnBajaAnimal" style="padding:8px 14px;">
+                <textarea id="motivoBajaAnimal" rows="2" maxlength="255" placeholder="Motivo de la baja (fallecimiento, traslado, error de registro...)"></textarea>
+                <div class="fila-botones-baja">
+                    <button type="button" id="btnBajaAnimal" class="boton-detalle">
                         Dar de baja
                     </button>
-                    <button type="button" id="btnEliminarAnimal" style="padding:8px 14px;">
+                    <button type="button" id="btnEliminarAnimal" class="boton-detalle boton-eliminar-animal">
                         Eliminar definitivamente
                     </button>
                 </div>
-                <p id="mensajeBajaModal" role="status" style="margin-top:8px; font-size:0.9rem;"></p>
-                <small style="color:#666; display:block; margin-top:4px;">
+                <p id="mensajeBajaModal" role="status"></p>
+                <small>
                     * Dar de baja: el animal deja de aparecer pero se conservan su historial, solicitudes y adopciones.<br>
                     * Eliminar definitivamente: solo se permite si el animal no tiene ningún registro asociado.
                 </small>
             </div>
         </div>
 
-        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-            <a href="#" id="enlaceHistorialAnimal" class="boton-portada" style="padding: 8px 15px; text-decoration: none;" hidden>Ver historial</a>
-            <a href="#" id="enlaceEditarAnimal" class="boton-portada" style="padding: 8px 15px; text-decoration: none;" hidden>Editar ficha</a>
-            <button type="button" id="cerrarDetalleAnimal">Cerrar</button>
+        <div class="acciones-modal-animal">
+            <a href="#" id="enlaceHistorialAnimal" class="boton-portada" hidden>Ver historial</a>
+            <a href="#" id="enlaceEditarAnimal" class="boton-portada" hidden>Editar ficha</a>
+            <button type="button" id="cerrarDetalleAnimal" class="boton-detalle">Cerrar</button>
         </div>
     </dialog>
 

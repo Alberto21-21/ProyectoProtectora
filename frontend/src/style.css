@@ -1603,3 +1603,462 @@ button:focus-visible {
     }
 
 }
+
+
+/* CATÁLOGO Y GESTIÓN DE ANIMALES */
+
+.seccion-catalogo-animales {
+    margin-top: 30px;
+}
+
+#formularioFiltros .filtro-bajas label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+#formularioFiltros .filtro-bajas input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.detalle-animal-body {
+    gap: 12px;
+}
+
+.detalle-animal-body > p,
+#datosEntradaInternos p,
+#datosCuidadosInternos p {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+#datosEntradaInternos,
+#datosCuidadosInternos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.separador-ficha {
+    margin: 8px 0;
+    border: 0;
+    border-top: 2px solid #F5F5F5;
+}
+
+.bloque-gestion-modal,
+#controlesTransicionEstado {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bloque-gestion-modal {
+    margin-top: 8px;
+    padding: 18px;
+    border: none;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.bloque-gestion-modal label {
+    display: block;
+    margin: 0;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bloque-gestion-modal select,
+.bloque-gestion-modal textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.bloque-gestion-modal select:focus,
+.bloque-gestion-modal textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.bloque-gestion-modal textarea {
+    resize: vertical;
+}
+
+.bloque-gestion-modal small {
+    color: #8B5C4A;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.bloque-gestion-modal .boton-detalle {
+    align-self: flex-start;
+    padding: 11px 22px;
+}
+
+.fila-control-modal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fila-control-modal select {
+    flex: 1;
+}
+
+.fila-control-modal .boton-detalle {
+    align-self: center;
+    white-space: nowrap;
+}
+
+.fila-botones-baja {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bloque-baja-modal {
+    border-left-color: #B3261E;
+}
+
+.aviso-baja-modal {
+    padding: 14px 18px;
+    border-left: 4px solid #B3261E;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    color: #B3261E;
+    font-weight: 600;
+}
+
+.boton-eliminar-animal {
+    background-color: #B3261E;
+}
+
+.boton-eliminar-animal:hover {
+    background-color: #8B5C4A;
+}
+
+.informacion-publica-animal {
+    margin-top: 8px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.informacion-publica-animal h3:first-child {
+    margin-top: 0;
+}
+
+.acciones-modal-animal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #F5F5F5;
+}
+
+.acciones-modal-animal .boton-portada {
+    padding: 11px 20px;
+    color: #FFFFFF;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.acciones-modal-animal .boton-portada:hover {
+    color: #FFFFFF;
+}
+
+
+/* EDICIÓN DE FICHA DE ANIMAL */
+
+#imagenAnimal {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#formularioImagen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#formularioImagen #imagenEditar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: none;
+}
+
+#formularioImagen .seleccionar-fotografia {
+    display: block;
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+
+#formularioImagen .seleccionar-fotografia:hover {
+    background-color: #F5F5F5;
+}
+
+#formularioImagen:has(#imagenEditar:focus-visible) .seleccionar-fotografia {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
+}
+
+#mensajeFicha,
+#mensajeImagen,
+#mensajeClinico {
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeFicha:empty,
+#mensajeImagen:empty,
+#mensajeClinico:empty {
+    display: none;
+}
+
+#formularioClinico {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid #F5F5F5;
+}
+
+#formularioClinico label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioClinico textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+    resize: vertical;
+}
+
+#formularioClinico textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#botonGuardarImagen,
+#botonGuardarClinico {
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarImagen:hover,
+#botonGuardarClinico:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarImagen:disabled,
+#botonGuardarClinico:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#avisoClinico {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.informacion-perfil > a[href="animales.html"] {
+    display: inline-block;
+    margin-top: 25px;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.informacion-perfil > a[href="animales.html"]:hover {
+    color: #8B5C4A;
+}
+
+
+/* HISTORIAL DEL ANIMAL */
+
+#mensajeHistorial,
+#mensajeObservacion {
+    margin: 5px 0 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeHistorial:empty,
+#mensajeObservacion:empty {
+    display: none;
+}
+
+#formularioObservacion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formularioObservacion label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioObservacion textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 90px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+    resize: vertical;
+}
+
+#formularioObservacion textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#formularioObservacion .error-campo {
+    margin: 0;
+    color: #B3261E;
+    font-size: 13px;
+}
+
+#formularioObservacion .error-campo:empty {
+    display: none;
+}
+
+#botonGuardarObservacion {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarObservacion:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarObservacion:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.nota-observacion {
+    display: block;
+    margin-top: 12px;
+    color: #8B5C4A;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.aviso-historial-baja {
+    margin: 20px 0 0;
+}
+
+.seccion-tabla-historial {
+    margin-top: 30px;
+}
+
+.enlace-volver-animales {
+    margin-top: 25px;
+}
+
+.enlace-volver-animales a {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.enlace-volver-animales a:hover {
+    color: #8B5C4A;
+}
+
+@media (max-width: 600px) {
+
+    .fila-control-modal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acciones-modal-animal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acciones-modal-animal a,
+    .acciones-modal-animal button {
+        width: 100%;
+        text-align: center;
+    }
+
+}

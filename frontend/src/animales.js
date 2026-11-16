@@ -86,8 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const fichaFechaBaja = document.querySelector("#fichaFechaBaja");
     const fichaMotivoBaja = document.querySelector("#fichaMotivoBaja");
 
-    // Elementos de asignación de cuidador (T17)
+    // Elementos de asignación de cuidador (T17) y enlaces de navegación
     const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
+    const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
     const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
     const selectCuidador = document.querySelector("#selectCuidador");
     const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
@@ -147,6 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (gestionAnimales) gestionAnimales.hidden = true;
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = true;
         if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = true;
+        if (enlaceUsuarios) enlaceUsuarios.hidden = true;
         if (botonCerrarSesion) botonCerrarSesion.hidden = !haySesion;
 
         if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADOPCIÓN";
@@ -168,6 +170,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (enlaceMisAnimales) {
             // Solo el personal y los veterinarios pueden tener animales asignados
             enlaceMisAnimales.hidden = usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
+        }
+        if (enlaceUsuarios) {
+            enlaceUsuarios.hidden = usuarioActual.rol !== "admin";
         }
         if (botonCerrarSesion) botonCerrarSesion.hidden = false;
 
