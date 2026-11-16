@@ -42,7 +42,11 @@ Route::get('/user', function (Request $request) {
         'fecha_nacimiento' => $usuario->fecha_nacimiento,
         'rol' => $usuario->rol,
         'fotografia_url' => $usuario->fotografia
-            ? asset('storage/' . $usuario->fotografia)
+            ? (
+                $usuario->fotografia_public_id
+                    ? $usuario->fotografia
+                    : asset('storage/' . $usuario->fotografia)
+            )
             : null
     ]);
 })->middleware([

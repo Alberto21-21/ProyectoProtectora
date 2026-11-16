@@ -463,11 +463,18 @@ document.addEventListener("DOMContentLoaded", function () {
             // FOTOGRAFÍA
             const rutaImagen = animal.imagen || animal.fotografia;
 
-            if (rutaImagen) {
+            const urlImagen = animal.imagen_url
+                || animal.fotografia_url
+                || (rutaImagen
+                    ? (rutaImagen.startsWith("https://")
+                        ? rutaImagen
+                        : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                    : null);
+
+            if (urlImagen) {
                 const imagen = document.createElement("img");
 
-                imagen.src =
-                    "http://127.0.0.1:8000/storage/" + rutaImagen;
+                imagen.src = urlImagen;
 
                 imagen.alt = "Fotografía de " + animal.nombre;
                 imagen.loading = "lazy";
@@ -574,14 +581,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 animal.cuidados_publicos ||
                 "Consulta con la protectora los cuidados que necesita.";
 
-            const imgUrl = animal.fotografia || animal.imagen;
+            // PRIORIZAR LA IMAGEN MÁS RECIENTE
+            const rutaImagen = animal.imagen || animal.fotografia;
 
-            if (fichaNombre) fichaNombre.textContent = `Ficha de ${animal.nombre}`;
+            const urlImagen = animal.imagen_url
+                || animal.fotografia_url
+                || (rutaImagen
+                    ? (rutaImagen.startsWith("https://")
+                        ? rutaImagen
+                        : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                    : null);
+
+            if (fichaNombre) {
+                fichaNombre.textContent = "Ficha de " + animal.nombre;
+            }
+
             if (fichaImagen) {
-                if (imgUrl) {
-                    fichaImagen.src = `http://127.0.0.1:8000/storage/${imgUrl}`;
-                    fichaImagen.alt = animal.nombre;
+                if (urlImagen) {
+                    fichaImagen.src = urlImagen;
+                    fichaImagen.alt = "Fotografía de " + animal.nombre;
                     fichaImagen.hidden = false;
+
                 } else {
                     fichaImagen.removeAttribute("src");
                     fichaImagen.hidden = true;

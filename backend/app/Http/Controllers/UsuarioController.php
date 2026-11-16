@@ -61,9 +61,9 @@ class UsuarioController extends Controller
             'data' => $usuarios
         ], 200);
     }
-
     
     // CONSULTAR EL DETALLE DE UN USUARIO
+
     public function show($id)
     {
         $usuario = User::select(
@@ -74,6 +74,7 @@ class UsuarioController extends Controller
             'rol',
             'estado',
             'fotografia',
+            'fotografia_public_id',
             'created_at'
         )->find($id);
 
@@ -82,6 +83,18 @@ class UsuarioController extends Controller
                 'success' => false,
                 'message' => 'El usuario no existe.'
             ], 404);
+        }
+
+        // OBTENER LA URL DE CLOUDINARY O DE LA FOTOGRAFÍA LOCAL
+        $fotografiaUrl = null;
+
+        if ($usuario->fotografia) {
+            $fotografiaUrl = str_starts_with(
+                $usuario->fotografia,
+                'https://'
+            )
+                ? $usuario->fotografia
+                : asset('storage/' . $usuario->fotografia);
         }
 
         return response()->json([
@@ -94,13 +107,13 @@ class UsuarioController extends Controller
                 'fecha_nacimiento' => $usuario->fecha_nacimiento,
                 'rol' => $usuario->rol,
                 'estado' => $usuario->estado,
-                'fotografia_url' => $usuario->fotografia
-                    ? asset('storage/' . $usuario->fotografia)
-                    : null,
+                'fotografia_url' => $fotografiaUrl,
                 'created_at' => $usuario->created_at
             ]
         ], 200);
-    }    // DAR DE ALTA PERSONAL Y VETERINARIOS
+    }
+    
+    // DAR DE ALTA PERSONAL Y VETERINARIOS
     public function store(Request $request)
     {
         $request->validate([
