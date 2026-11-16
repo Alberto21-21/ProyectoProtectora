@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
 
 class AnimalController extends Controller
 {
@@ -99,24 +100,48 @@ class AnimalController extends Controller
         );
     }
 
-    public function store(StoreAnimalRequest $request)
-    {
-        // Datos validados por el FormRequest
+    public function store(
+        StoreAnimalRequest $request,
+        CloudinaryService $cloudinary
+    ) {
         $datos = $request->validated();
 
-        // Guardar la fotografía si se ha subido
-        if ($request->hasFile('fotografia')) {
-            $datos['fotografia'] = $request->file('fotografia')->store('animales', 'public');
-        } elseif ($request->hasFile('imagen')) {
-            $datos['fotografia'] = $request->file('imagen')->store('animales', 'public');
+        // SEPARAR LOS ARCHIVOS DE LOS DATOS DEL ANIMAL
+        unset($datos['fotografia'], $datos['imagen']);
+
+        $resultado = null;
+
+        $archivo = $request->file('fotografia');
+
+        // SUBIR LA FOTOGRAFÍA A CLOUDINARY
+        if ($archivo) {
+            $resultado = $cloudinary->upload(
+                $archivo,
+                'protectora/animales'
+            );
+
+            $datos['fotografia'] = $resultado['secure_url'];
+            $datos['fotografia_public_id'] = $resultado['public_id'];
         }
 
-        // Registrar el usuario que da de alta (si hay autenticación activa)
-        if ($request->user()) {
-            $datos['user_id'] = $request->user()->id;
-        }
+        $datos['user_id'] = $request->user()->id;
 
-        $animal = Animal::create($datos);
+        try {
+            $animal = Animal::create($datos);
+
+        } catch (\Throwable $error) {
+            // EVITAR DEJAR UNA IMAGEN SIN ANIMAL ASOCIADO
+            if ($resultado) {
+                try {
+                    $cloudinary->eliminar($resultado['public_id']);
+
+                } catch (\Throwable $errorLimpieza) {
+                    report($errorLimpieza);
+                }
+            }
+
+            throw $error;
+        }
 
         return response()->json([
             'success' => true,
@@ -127,8 +152,6 @@ class AnimalController extends Controller
                 'especie' => $animal->especie,
                 'estado' => $animal->estado,
                 'fotografia_url' => $animal->fotografia
-                    ? asset('storage/' . $animal->fotografia)
-                    : null
             ]
         ], 201);
     }
@@ -335,8 +358,8 @@ class AnimalController extends Controller
      * Solo se permite si no tiene historial, solicitudes ni adopciones.
      * Si los tiene, se rechaza para no perder su historia.
      */
-    public function destroy($id)
-    {
+    
+    public function destroy($id, CloudinaryService $cloudinary)    {
         $animal = Animal::find($id);
 
         if (!$animal) {
@@ -387,18 +410,45 @@ class AnimalController extends Controller
             ], 422);
         }
 
-        // ELIMINACIÓN DEFINITIVA
-        $fotografia = $animal->fotografia;
-        $imagen = $animal->imagen;
+               // GUARDAR LAS REFERENCIAS ANTES DE ELIMINAR EL ANIMAL
+        $imagenes = [
+            [
+                'ruta' => $animal->fotografia,
+                'public_id' => $animal->fotografia_public_id
+            ],
+            [
+                'ruta' => $animal->imagen,
+                'public_id' => $animal->imagen_public_id
+            ]
+        ];
 
         $animal->delete();
 
-        if ($fotografia) {
-            Storage::disk('public')->delete($fotografia);
-        }
+        // ELIMINAR LAS IMÁGENES DE CLOUDINARY O DEL ALMACENAMIENTO LOCAL
+        $imagenesEliminadas = [];
 
-        if ($imagen) {
-            Storage::disk('public')->delete($imagen);
+        foreach ($imagenes as $imagen) {
+            try {
+                if ($imagen['public_id']) {
+                    if (!in_array(
+                        $imagen['public_id'],
+                        $imagenesEliminadas,
+                        true
+                    )) {
+                        $cloudinary->eliminar($imagen['public_id']);
+                        $imagenesEliminadas[] = $imagen['public_id'];
+                    }
+
+                } elseif (
+                    $imagen['ruta']
+                    && str_starts_with($imagen['ruta'], 'animales/')
+                ) {
+                    Storage::disk('public')->delete($imagen['ruta']);
+                }
+
+            } catch (\Throwable $errorLimpieza) {
+                report($errorLimpieza);
+            }
         }
 
         return response()->json([
@@ -500,8 +550,11 @@ class AnimalController extends Controller
     /**
      * Actualizar la fotografía de un animal.
      */
-    public function actualizarImagen(Request $request, $id)
-    {
+    public function actualizarImagen(
+        Request $request,
+        $id,
+        CloudinaryService $cloudinary
+    ) {
         $animal = Animal::find($id);
 
         if (!$animal) {
@@ -521,27 +574,54 @@ class AnimalController extends Controller
         ]);
 
         $imagenAnterior = $animal->imagen;
+        $publicIdAnterior = $animal->imagen_public_id;
 
-        // Guardar la nueva imagen
-        $ruta = $request->file('imagen')->store('animales', 'public');
+        // SUBIR LA NUEVA IMAGEN
+        $resultado = $cloudinary->upload(
+            $request->file('imagen'),
+            'protectora/animales'
+        );
 
-        $animal->imagen = $ruta;
-        $animal->save();
+        try {
+            $animal->imagen = $resultado['secure_url'];
+            $animal->imagen_public_id = $resultado['public_id'];
+            $animal->save();
 
-        // Eliminar la imagen anterior si existía
-        if ($imagenAnterior) {
-            Storage::disk('public')->delete($imagenAnterior);
+        } catch (\Throwable $error) {
+            try {
+                $cloudinary->eliminar($resultado['public_id']);
+
+            } catch (\Throwable $errorLimpieza) {
+                report($errorLimpieza);
+            }
+
+            throw $error;
+        }
+
+        // ELIMINAR LA IMAGEN ANTERIOR TRAS GUARDAR LA NUEVA
+        try {
+            if ($publicIdAnterior) {
+                $cloudinary->eliminar($publicIdAnterior);
+
+            } elseif (
+                $imagenAnterior
+                && str_starts_with($imagenAnterior, 'animales/')
+            ) {
+                Storage::disk('public')->delete($imagenAnterior);
+            }
+
+        } catch (\Throwable $errorLimpieza) {
+            report($errorLimpieza);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Fotografía del animal actualizada correctamente.',
             'data' => [
-                'imagen_url' => asset('storage/' . $ruta)
+                'imagen_url' => $animal->imagen
             ]
         ], 200);
     }
-
     /**
      * Consultar los datos clínicos de un animal.
      */
@@ -630,6 +710,7 @@ class AnimalController extends Controller
     }
 
     // CAMPOS PERMITIDOS EN EL CATÁLOGO PÚBLICO
+
     private function datosPublicosAnimal(Animal $animal): array
     {
         $datos = $animal->only([
@@ -652,14 +733,28 @@ class AnimalController extends Controller
             'cuidados_publicos',
         ]);
 
-        $datos['fotografia_url'] = $animal->fotografia
-            ? asset('storage/' . $animal->fotografia)
-            : null;
+        $datos['fotografia_url'] = $this->obtenerUrlImagen(
+            $animal->fotografia
+        );
 
-        $datos['imagen_url'] = $animal->imagen
-            ? asset('storage/' . $animal->imagen)
-            : null;
+        $datos['imagen_url'] = $this->obtenerUrlImagen(
+            $animal->imagen
+        );
 
         return $datos;
     }
-}
+
+    // OBTENER LA URL DE UNA IMAGEN LOCAL O DE CLOUDINARY
+    private function obtenerUrlImagen(?string $ruta): ?string
+    {
+        if (!$ruta) {
+            return null;
+        }
+
+        if (str_starts_with($ruta, 'https://')) {
+            return $ruta;
+        }
+
+        return asset('storage/' . $ruta);
+    }
+ }
