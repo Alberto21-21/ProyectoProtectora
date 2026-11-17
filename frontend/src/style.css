@@ -2062,3 +2062,68 @@ button:focus-visible {
     }
 
 }
+
+/* MODAL DE LA FICHA DEL ANIMAL */
+#modalDetalleAnimal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    transform: none;
+
+    width: min(600px, calc(100% - 32px));
+    height: fit-content;
+    max-height: calc(100dvh - 40px);
+
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    border: none;
+    border-radius: 24px;
+}
+
+/* MODAL DE LA FICHA DEL ANIMAL */
+#modalDetalleAnimal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    transform: none;
+
+    width: min(520px, calc(100% - 32px));
+    height: fit-content;
+    max-height: 75dvh;
+    padding: 24px;
+
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    border: none;
+    border-radius: 24px;
+}
+
+#modalDetalleAnimal h2 {
+    margin: 0 0 16px;
+    font-size: 24px;
+}
+
+#fichaImagen {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 16px;
+}
+
+#fichaImagen[hidden] {
+    display: none;
+}
+
+#fichaImagen {
+    display: block;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 14px;
+    margin-bottom: 16px;
+}
