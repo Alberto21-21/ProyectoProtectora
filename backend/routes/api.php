@@ -10,6 +10,8 @@ use App\Http\Controllers\VeterinarioController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\AusenciaController;
 use App\Http\Controllers\HistorialController;
+use App\Http\Controllers\ZonaController;
+use App\Http\Controllers\HabitaculoController;
 
 use App\Http\Middleware\CuentaActiva;
 
@@ -282,7 +284,6 @@ Route::prefix('animal-asignaciones')
 
     });
 
-
 // HISTORIAL DE ANIMALES
 Route::prefix('animales')
     ->middleware([
@@ -302,6 +303,58 @@ Route::prefix('animales')
         Route::post('/{id}/observaciones', [
             HistorialController::class,
             'guardarObservacion'
+        ])->whereNumber('id');
+
+    });
+
+// INSTALACIONES: ZONAS
+Route::prefix('zonas')
+    ->middleware([
+        'auth:sanctum',
+        'activa',
+        'alguna:instalaciones:gestionar'
+    ])
+    ->group(function () {
+
+        Route::get('/', [ZonaController::class, 'index']);
+
+        Route::post('/', [ZonaController::class, 'store']);
+
+        Route::get('/{id}', [ZonaController::class, 'show'])
+            ->whereNumber('id');
+
+        Route::put('/{id}', [ZonaController::class, 'update'])
+            ->whereNumber('id');
+
+        Route::patch('/{id}/activo', [
+            ZonaController::class,
+            'toggleActivo'
+        ])->whereNumber('id');
+
+    });
+
+// INSTALACIONES: HABITÁCULOS
+Route::prefix('habitaculos')
+    ->middleware([
+        'auth:sanctum',
+        'activa',
+        'alguna:instalaciones:gestionar'
+    ])
+    ->group(function () {
+
+        Route::get('/', [HabitaculoController::class, 'index']);
+
+        Route::post('/', [HabitaculoController::class, 'store']);
+
+        Route::get('/{id}', [HabitaculoController::class, 'show'])
+            ->whereNumber('id');
+
+        Route::put('/{id}', [HabitaculoController::class, 'update'])
+            ->whereNumber('id');
+
+        Route::patch('/{id}/activo', [
+            HabitaculoController::class,
+            'toggleActivo'
         ])->whereNumber('id');
 
     });

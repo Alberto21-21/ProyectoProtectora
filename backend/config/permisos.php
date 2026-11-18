@@ -30,6 +30,7 @@ return [
             'asignaciones:gestionar',
             'clinica:consultar-todas',
             'asignaciones:administrar',
+            'instalaciones:gestionar',
         ],
 
         'adoptante' => [
