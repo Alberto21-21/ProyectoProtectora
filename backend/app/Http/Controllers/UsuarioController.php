@@ -15,9 +15,6 @@ class UsuarioController extends Controller
             'buscar' => 'nullable|string|max:255',
             'rol' => 'nullable|in:admin,adoptante,personal,veterinario',
             'estado' => 'nullable|in:activo,inactivo',
-            'buscar' => 'nullable|string|max:255',
-            'rol' => 'nullable|in:admin,adoptante,personal,veterinario',
-            'estado' => 'nullable|in:activo,inactivo',
             'page' => 'sometimes|integer|min:1'
         ], [
             'buscar.string' => 'La búsqueda debe ser un texto.',
@@ -56,8 +53,18 @@ class UsuarioController extends Controller
         if (isset($datos['estado'])) {
             $consulta->where('estado', $datos['estado']);
         }
+
+        $usuarios = $consulta->orderBy('name')
+            ->orderBy('id')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuarios consultados correctamente.',
+            'data' => $usuarios
+        ], 200);
     }
-    
+
     // CONSULTAR EL DETALLE DE UN USUARIO
 
     public function show($id)
