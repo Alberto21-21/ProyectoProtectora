@@ -26,6 +26,7 @@ return [
             'animales:asignar',
             'clinica:consultar',
             'clinica:gestionar',
+            'instalaciones:gestionar',
         ],
 
         'adoptante' => [
