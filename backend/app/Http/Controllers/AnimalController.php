@@ -21,12 +21,14 @@ public function index(Request $request)
     $datos = $request->validate([
         'buscar' => 'nullable|string|max:255',
         'especie' => 'nullable|in:Perro,Gato,Otro',
-        'bajas' => 'nullable|boolean'
+        'bajas' => 'nullable|boolean',
+        'estado' => 'nullable|in:En acogida,En tratamiento,Disponible,Reservado,Adoptado',
     ], [
         'buscar.string' => 'La búsqueda debe ser un texto.',
         'buscar.max' => 'La búsqueda no puede superar los 255 caracteres.',
         'especie.in' => 'La especie seleccionada no es válida.',
-        'bajas.boolean' => 'El filtro de bajas no es válido.'
+        'bajas.boolean' => 'El filtro de bajas no es válido.',
+        'estado.in' => 'El estado seleccionado no es válido.',
     ]);
 
     $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
@@ -43,6 +45,11 @@ public function index(Request $request)
     // EL CATÁLOGO PÚBLICO SOLO MUESTRA ANIMALES DISPONIBLES
     if (!$puedeVerInternos) {
         $consulta->where('estado', 'Disponible');
+    }
+
+        // EL PERSONAL AUTORIZADO PUEDE FILTRAR POR ESTADO
+    if ($puedeVerInternos && isset($datos['estado'])) {
+        $consulta->where('estado', $datos['estado']);
     }
 
     // BUSCAR POR NOMBRE O RAZA
