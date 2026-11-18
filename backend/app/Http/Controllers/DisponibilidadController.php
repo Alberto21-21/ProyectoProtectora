@@ -9,12 +9,6 @@ use App\Models\Empleado;
 class DisponibilidadController extends Controller
 {
 
-
-
-
-
-
-
 public function empleados()
 {
     $empleados = Empleado::with('user:id,name,email,rol,estado')
