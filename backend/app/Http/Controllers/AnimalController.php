@@ -377,13 +377,9 @@ public function index(Request $request)
         }
 
         // COMPROBAR LOS REGISTROS ASOCIADOS AL ANIMAL
-        $historiales = 0;
         $solicitudes = 0;
         $adopciones = 0;
-
-        if (Schema::hasTable('historiales')) {
-            $historiales = DB::table('historiales')->where('animal_id', $animal->id)->count();
-        }
+        $historiales = $animal->historiales()->count();
 
         if (Schema::hasTable('solicitudes')) {
             $solicitudes = DB::table('solicitudes')->where('animal_id', $animal->id)->count();
@@ -472,7 +468,7 @@ public function index(Request $request)
     {
         $usuario = $request->user();
 
-        $animales = Animal::where('cuidador_id', $usuario->id)
+        $animales = $usuario->animalesACargo()
             ->where('activo', true)
             ->orderBy('nombre')
             ->get();
@@ -539,7 +535,13 @@ public function index(Request $request)
             }
         }
 
-        $animal->cuidador_id = $request->cuidador_id;
+        // ASOCIAR O RETIRAR EL CUIDADOR
+        if ($request->cuidador_id) {
+            $animal->cuidador()->associate($cuidador);
+        } else {
+            $animal->cuidador()->dissociate();
+        }
+
         $animal->instrucciones_cuidado = $request->instrucciones_cuidado;
         $animal->save();
 

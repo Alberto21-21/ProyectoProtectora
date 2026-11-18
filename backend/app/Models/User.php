@@ -56,4 +56,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Empleado::class, 'user_id');
     }
+
+    // ANIMALES ASIGNADOS COMO CUIDADOR
+    public function animalesACargo()
+    {
+        return $this->hasMany(Animal::class, 'cuidador_id');
+    }
 }
