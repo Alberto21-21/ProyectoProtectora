@@ -11,6 +11,8 @@ use App\Http\Controllers\VeterinarioController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\AusenciaController;
 use App\Http\Controllers\HistorialController;
+use App\Http\Controllers\ZonaController;
+use App\Http\Controllers\HabitaculoController;
 
 use App\Http\Middleware\CuentaActiva;
 use App\Http\Middleware\EsAdministrador;
@@ -424,3 +426,21 @@ Route::post('/animales/{id}/observaciones', [HistorialController::class, 'guarda
         CuentaActiva::class,
         EsPersonalAutorizado::class
     ]);
+
+// INSTALACIONES: ZONAS Y HABITÁCULOS (T23, SOLO ADMINISTRADOR)
+
+Route::prefix('zonas')->middleware(['auth:sanctum', 'activa', 'alguna:instalaciones:gestionar'])->group(function () {
+    Route::get('/', [ZonaController::class, 'index']);
+    Route::post('/', [ZonaController::class, 'store']);
+    Route::get('/{id}', [ZonaController::class, 'show'])->whereNumber('id');
+    Route::put('/{id}', [ZonaController::class, 'update'])->whereNumber('id');
+    Route::patch('/{id}/activo', [ZonaController::class, 'toggleActivo'])->whereNumber('id');
+});
+
+Route::prefix('habitaculos')->middleware(['auth:sanctum', 'activa', 'alguna:instalaciones:gestionar'])->group(function () {
+    Route::get('/', [HabitaculoController::class, 'index']);
+    Route::post('/', [HabitaculoController::class, 'store']);
+    Route::get('/{id}', [HabitaculoController::class, 'show'])->whereNumber('id');
+    Route::put('/{id}', [HabitaculoController::class, 'update'])->whereNumber('id');
+    Route::patch('/{id}/activo', [HabitaculoController::class, 'toggleActivo'])->whereNumber('id');
+});

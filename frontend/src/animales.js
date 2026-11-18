@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Elementos de asignación de cuidador (T17) y enlaces de navegación
     const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
     const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
+    const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
     const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
     const selectCuidador = document.querySelector("#selectCuidador");
     const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
@@ -186,6 +187,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (enlaceUsuarios) {
             enlaceUsuarios.hidden = usuarioActual.rol !== "admin";
+        }
+        // Instalaciones: solo el administrador (T23)
+        if (enlaceInstalaciones) {
+            enlaceInstalaciones.hidden = usuarioActual.rol !== "admin";
         }
         if (botonCerrarSesion) botonCerrarSesion.hidden = false;
 

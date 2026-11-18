@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Middleware\CuentaActiva;
+use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\Exceptions\MissingAbilityException;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,10 +18,27 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // ALIAS DE LOS MIDDLEWARES PARA USARLOS EN LAS RUTAS
+        $middleware->alias([
+            'todas' => CheckAbilities::class,
+            'alguna' => CheckForAnyAbility::class,
+            'activa' => CuentaActiva::class,
+            'veterinarioAnimal' => VeterinarioAutorizadoParaAnimal::class,
+        ]);
+
+        // SI NO HAY TOKEN, LARAVEL LLEVA A ESTA RUTA EN VEZ DE A /login
+        $middleware->redirectGuestsTo('/api/nologin');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // RESPUESTA CUANDO EL TOKEN NO TIENE LA ABILITY QUE PIDE LA RUTA
+        $exceptions->render(function (MissingAbilityException $error) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para realizar esta operación.'
+            ], 403);
+        });
     })->create();
