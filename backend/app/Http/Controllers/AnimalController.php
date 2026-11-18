@@ -15,69 +15,73 @@ use App\Services\CloudinaryService;
 class AnimalController extends Controller
 {
 
- 
+public function index(Request $request)
+{
+    // VALIDAR LOS FILTROS
+    $datos = $request->validate([
+        'buscar' => 'nullable|string|max:255',
+        'especie' => 'nullable|in:Perro,Gato,Otro',
+        'bajas' => 'nullable|boolean',
+        'estado' => 'nullable|in:En acogida,En tratamiento,Disponible,Reservado,Adoptado',
+    ], [
+        'buscar.string' => 'La búsqueda debe ser un texto.',
+        'buscar.max' => 'La búsqueda no puede superar los 255 caracteres.',
+        'especie.in' => 'La especie seleccionada no es válida.',
+        'bajas.boolean' => 'El filtro de bajas no es válido.',
+        'estado.in' => 'El estado seleccionado no es válido.',
+    ]);
 
-    public function index(Request $request)
-    {
-        $consulta = Animal::query();
+    $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
 
+    $consulta = Animal::query();
 
-        $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
-
-        
-  
-
-
-       
-        if ($puedeVerInternos && $request->boolean('bajas')) {
-            $consulta->where('activo', false);
-        } else {
-            $consulta->where('activo', true);
-        }
-
-
-        
-        if (!$puedeVerInternos) {
-            $consulta->where('estado', 'Disponible');
-        }
-      
-      
-
-
-        // BUSCAR POR NOMBRE O RAZA
-
-        if ($request->filled('buscar')) {
-            $buscar = $request->input('buscar');
-
-            $consulta->where(function ($consultaBusqueda) use ($buscar) {
-                $consultaBusqueda->where('nombre', 'like', '%' . $buscar . '%')
-                    ->orWhere('raza', 'like', '%' . $buscar . '%');
-            });
-        }
-
-
-        // FILTRAR POR ESPECIE
-
-     
-
-        if ($request->filled('especie')) {
-            $consulta->where('especie', $request->especie);
-        }
-
-        $animales = $consulta->orderBy('created_at', 'desc')->get();
-
-        if ($puedeVerInternos) {
-            return response()->json($animales, 200);
-        }
-
-        // DEVOLVER SOLO LOS CAMPOS PUBLICABLES
-        $datosPublicos = $animales->map(function ($animal) {
-            return $this->datosPublicosAnimal($animal);
-        });
-
-        return response()->json($datosPublicos, 200);
+    // SOLO EL PERSONAL AUTORIZADO PUEDE CONSULTAR LAS BAJAS
+    if ($puedeVerInternos && !empty($datos['bajas'])) {
+        $consulta->where('activo', false);
+    } else {
+        $consulta->where('activo', true);
     }
 
+    // EL CATÁLOGO PÚBLICO SOLO MUESTRA ANIMALES DISPONIBLES
+    if (!$puedeVerInternos) {
+        $consulta->where('estado', 'Disponible');
+    }
+
+        // EL PERSONAL AUTORIZADO PUEDE FILTRAR POR ESTADO
+    if ($puedeVerInternos && isset($datos['estado'])) {
+        $consulta->where('estado', $datos['estado']);
+    }
+
+    // BUSCAR POR NOMBRE O RAZA
+    if (isset($datos['buscar']) && $datos['buscar'] !== '') {
+        $buscar = $datos['buscar'];
+
+        $consulta->where(function ($consultaBusqueda) use ($buscar) {
+            $consultaBusqueda->where('nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('raza', 'like', '%' . $buscar . '%');
+        });
+    }
+
+    // FILTRAR POR ESPECIE
+    if (isset($datos['especie'])) {
+        $consulta->where('especie', $datos['especie']);
+    }
+
+    $animales = $consulta->orderBy('created_at', 'desc')->get();
+
+    if ($puedeVerInternos) {
+        return response()->json($animales, 200);
+    }
+
+    // DEVOLVER ÚNICAMENTE LOS DATOS PÚBLICOS
+    $datosPublicos = [];
+
+    foreach ($animales as $animal) {
+        $datosPublicos[] = $this->datosPublicosAnimal($animal);
+    }
+
+    return response()->json($datosPublicos, 200);
+}
 
     // CONSULTAR LA FICHA SEGÚN LOS PERMISOS DEL USUARIO
     public function show(Request $request, $id)
@@ -380,13 +384,9 @@ class AnimalController extends Controller
         }
 
         // COMPROBAR LOS REGISTROS ASOCIADOS AL ANIMAL
-        $historiales = 0;
         $solicitudes = 0;
         $adopciones = 0;
-
-        if (Schema::hasTable('historiales')) {
-            $historiales = DB::table('historiales')->where('animal_id', $animal->id)->count();
-        }
+        $historiales = $animal->historiales()->count();
 
         if (Schema::hasTable('solicitudes')) {
             $solicitudes = DB::table('solicitudes')->where('animal_id', $animal->id)->count();
@@ -475,7 +475,7 @@ class AnimalController extends Controller
     {
         $usuario = $request->user();
 
-        $animales = Animal::where('cuidador_id', $usuario->id)
+        $animales = $usuario->animalesACargo()
             ->where('activo', true)
             ->orderBy('nombre')
             ->get();
@@ -542,7 +542,13 @@ class AnimalController extends Controller
             }
         }
 
-        $animal->cuidador_id = $request->cuidador_id;
+        // ASOCIAR O RETIRAR EL CUIDADOR
+        if ($request->cuidador_id) {
+            $animal->cuidador()->associate($cuidador);
+        } else {
+            $animal->cuidador()->dissociate();
+        }
+
         $animal->instrucciones_cuidado = $request->instrucciones_cuidado;
         $animal->save();
 
@@ -695,7 +701,7 @@ class AnimalController extends Controller
         ], 200);
     }
 
-        // COMPROBAR EL ACCESO A LA INFORMACIÓN INTERNA
+    // COMPROBAR EL ACCESO A LA INFORMACIÓN INTERNA
     private function puedeConsultarDatosInternos(Request $request): bool
     {
         $usuario = $request->user('sanctum');
@@ -704,19 +710,7 @@ class AnimalController extends Controller
             return false;
         }
 
-        if (!in_array(
-            $usuario->rol,
-            ['admin', 'personal', 'veterinario'],
-            true
-        )) {
-            return false;
-        }
-
-        return in_array(
-            'animales:consultar',
-            $usuario->obtenerPermisos(),
-            true
-        ) && $usuario->tokenCan('animales:consultar');
+        return $usuario->tokenCan('animales:gestionar');
     }
 
     // CAMPOS PERMITIDOS EN EL CATÁLOGO PÚBLICO

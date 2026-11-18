@@ -35,11 +35,15 @@ export async function iniciarSesion(datos) {
         }
     );
 
+    const resultado = await respuesta.json();
+
     if (!respuesta.ok) {
-        throw new Error(`Error HTTP: ${respuesta.status}`);
+        throw new Error(
+            resultado.message || "No se pudo iniciar sesión."
+        );
     }
 
-    return await respuesta.json();
+    return resultado;
 }
 
 // CONSULTAR EL USUARIO AUTENTICADO

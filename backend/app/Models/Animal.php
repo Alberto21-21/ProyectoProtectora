@@ -66,4 +66,10 @@ class Animal extends Model
     {
         return $this->belongsTo(User::class, 'cuidador_id');
     }
+
+    // REGISTROS DEL HISTORIAL DEL ANIMAL
+    public function historiales()
+    {
+        return $this->hasMany(Historial::class, 'animal_id');
+    }
 }
