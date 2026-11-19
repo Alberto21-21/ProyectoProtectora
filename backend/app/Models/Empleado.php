@@ -24,12 +24,24 @@ class Empleado extends Model
 
 
     public function disponibilidades(): HasMany
-{
-    return $this->hasMany(Disponibilidad::class);
-}
+    {
+        return $this->hasMany(Disponibilidad::class);
+    }
 
-public function ausencias(): HasMany
-{
-    return $this->hasMany(Ausencia::class);
-}
+    public function ausencias(): HasMany
+    {
+        return $this->hasMany(Ausencia::class);
+    }
+
+    // ASIGNACIONES DE ANIMALES DEL EMPLEADO
+    public function asignaciones()
+    {
+        return $this->hasMany(AnimalAsignacion::class, 'empleado_id');
+    }
+
+    // PERFIL VETERINARIO ASOCIADO A LA FICHA LABORAL
+    public function veterinario()
+    {
+        return $this->hasOne(Veterinario::class, 'empleado_id');
+    }
 }

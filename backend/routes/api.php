@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
@@ -15,14 +14,6 @@ use App\Http\Controllers\ZonaController;
 use App\Http\Controllers\HabitaculoController;
 
 use App\Http\Middleware\CuentaActiva;
-use App\Http\Middleware\EsAdministrador;
-use App\Http\Middleware\EsPersonalAutorizado;
-use App\Http\Middleware\EsVeterinario;
-use App\Http\Middleware\TienePermiso;
-
-
-
-
 
 use App\Http\Controllers\AnimalAsignacionController;
 use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
@@ -40,401 +31,289 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'cerrarSesion'])
     ->middleware('auth:sanctum');
 
-// CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
-Route::get('/user', function (Request $request) {
-    $usuario = $request->user();
+// PERFIL DEL USUARIO AUTENTICADO
+Route::prefix('user')
+    ->middleware(['auth:sanctum', CuentaActiva::class])
+    ->group(function () {
 
-    return response()->json([
-        'id' => $usuario->id,
-        'name' => $usuario->name,
-        'email' => $usuario->email,
-        'fecha_nacimiento' => $usuario->fecha_nacimiento,
-        'rol' => $usuario->rol,
-        'fotografia_url' => $usuario->fotografia
-            ? (
-                $usuario->fotografia_public_id
-                    ? $usuario->fotografia
-                    : asset('storage/' . $usuario->fotografia)
-            )
-            : null
-    ]);
-})->middleware([
-    'auth:sanctum',
-    CuentaActiva::class,
-    TienePermiso::class . ':perfil:consultar'
-]);
+        // CONSULTAR EL PERFIL
+        Route::get('/', [AuthController::class, 'mostrarPerfil'])
+            ->middleware('abilities:perfil:consultar');
 
-// ACTUALIZAR EL PERFIL
-Route::put('/user', [AuthController::class, 'actualizarPerfil'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        TienePermiso::class . ':perfil:editar'
-    ]);
+        // ACTUALIZAR LOS DATOS
+        Route::put('/', [AuthController::class, 'actualizarPerfil'])
+            ->middleware('abilities:perfil:editar');
 
-// ACTUALIZAR LA FOTOGRAFÍA
-Route::post('/user/fotografia', [AuthController::class, 'actualizarFotografia'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        TienePermiso::class . ':perfil:editar'
-    ]);
+        // ACTUALIZAR LA FOTOGRAFÍA
+        Route::post('/fotografia', [AuthController::class, 'actualizarFotografia'])
+            ->middleware('abilities:perfil:editar');
 
-// CAMBIAR LA CONTRASEÑA
-Route::put('/user/password', [AuthController::class, 'cambiarContrasena'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        TienePermiso::class . ':password:cambiar'
-    ]);
+        // CAMBIAR LA CONTRASEÑA
+        Route::put('/password', [AuthController::class, 'cambiarContrasena'])
+            ->middleware('abilities:password:cambiar');
 
+    });
 
-// ADMINISTRACIÓN DE CUENTAS
+// ADMINISTRACIÓN DE USUARIOS
+Route::prefix('usuarios')
+    ->middleware(['auth:sanctum', CuentaActiva::class])
+    ->group(function () {
 
-// CONSULTAR Y BUSCAR USUARIOS
-Route::get('/usuarios', [UsuarioController::class, 'index'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':usuarios:consultar'
-    ]);
+        // CONSULTAR Y BUSCAR USUARIOS
+        Route::get('/', [UsuarioController::class, 'index'])
+            ->middleware('abilities:usuarios:consultar');
 
-// CONSULTAR EL DETALLE DE UN USUARIO
-Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':usuarios:consultar'
-    ]);
+        // CONSULTAR EL DETALLE
+        Route::get('/{id}', [UsuarioController::class, 'show'])
+            ->whereNumber('id')
+            ->middleware('abilities:usuarios:consultar');
 
-// CREAR CUENTAS INTERNAS
-Route::post('/usuarios', [UsuarioController::class, 'store'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':usuarios:crear'
-    ]);
+        // CREAR UNA CUENTA INTERNA
+        Route::post('/', [UsuarioController::class, 'store'])
+            ->middleware('abilities:usuarios:crear');
 
-// EDITAR LOS DATOS DE UNA CUENTA
-Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':usuarios:editar'
-    ]);
+        // EDITAR LOS DATOS
+        Route::put('/{id}', [UsuarioController::class, 'update'])
+            ->whereNumber('id')
+            ->middleware('abilities:usuarios:editar');
 
-// CAMBIAR EL ROL DE UNA CUENTA
-Route::patch('/usuarios/{id}/rol', [UsuarioController::class, 'cambiarRol'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':usuarios:roles'
-    ]);
+        // CAMBIAR EL ROL
+        Route::patch('/{id}/rol', [UsuarioController::class, 'cambiarRol'])
+            ->whereNumber('id')
+            ->middleware('abilities:usuarios:roles');
 
-// DESACTIVAR UNA CUENTA
-Route::patch('/usuarios/{id}/desactivar', [UsuarioController::class, 'desactivar'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':usuarios:desactivar'
-    ]);
+        // DESACTIVAR LA CUENTA
+        Route::patch('/{id}/desactivar', [UsuarioController::class, 'desactivar'])
+            ->whereNumber('id')
+            ->middleware('abilities:usuarios:desactivar');
 
+    });
 
 // FICHAS LABORALES
-
-// CREAR FICHA LABORAL
-Route::post('/empleados', [EmpleadoController::class, 'store'])
+Route::prefix('empleados')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':personal:gestionar'
-    ]);
+        'abilities:personal:gestionar'
+    ])
+    ->group(function () {
 
-// CONSULTAR FICHA POR CUENTA
-Route::get('/empleados/usuario/{userId}', [EmpleadoController::class, 'mostrarPorUsuario'])
-    ->whereNumber('userId')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':personal:gestionar'
-    ]);
+        Route::post('/', [EmpleadoController::class, 'store']);
 
-// EDITAR FICHA POR CUENTA
-Route::put('/empleados/usuario/{userId}', [EmpleadoController::class, 'actualizarPorUsuario'])
-    ->whereNumber('userId')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':personal:gestionar'
-    ]);
+        Route::get('/usuario/{userId}', [
+            EmpleadoController::class,
+            'mostrarPorUsuario'
+        ])->whereNumber('userId');
 
+        Route::put('/usuario/{userId}', [
+            EmpleadoController::class,
+            'actualizarPorUsuario'
+        ])->whereNumber('userId');
+
+    });
 
 // PERFILES VETERINARIOS
-
-// CREAR PERFIL VETERINARIO
-Route::post('/veterinarios', [VeterinarioController::class, 'store'])
+Route::prefix('veterinarios')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':personal:gestionar'
-    ]);
+        'abilities:personal:gestionar'
+    ])
+    ->group(function () {
 
-// CONSULTAR PERFIL POR CUENTA
-Route::get('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'mostrarPorUsuario'])
-    ->whereNumber('userId')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':personal:gestionar'
-    ]);
+        Route::post('/', [VeterinarioController::class, 'store']);
 
-// EDITAR PERFIL POR CUENTA
-Route::put('/veterinarios/usuario/{userId}', [VeterinarioController::class, 'actualizarPorUsuario'])
-    ->whereNumber('userId')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':personal:gestionar'
-    ]);
+        Route::get('/usuario/{userId}', [
+            VeterinarioController::class,
+            'mostrarPorUsuario'
+        ])->whereNumber('userId');
 
+        Route::put('/usuario/{userId}', [
+            VeterinarioController::class,
+            'actualizarPorUsuario'
+        ])->whereNumber('userId');
 
-// DISPONIBILIDAD Y AUSENCIAS
+    });
+    
+// DISPONIBILIDAD
+Route::prefix('disponibilidades')
+    ->middleware(['auth:sanctum', CuentaActiva::class])
+    ->group(function () {
 
-// CONSULTAR EMPLEADOS PARA GESTIONAR SU DISPONIBILIDAD
-Route::get('/disponibilidades/empleados', [DisponibilidadController::class, 'empleados'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':disponibilidad:gestionar'
-    ]);
+        // CONSULTAR EMPLEADOS
+        Route::get('/empleados', [
+            DisponibilidadController::class,
+            'empleados'
+        ])->middleware('abilities:disponibilidad:gestionar');
 
-// CONSULTAR DISPONIBILIDAD
-Route::get('/disponibilidades', [DisponibilidadController::class, 'index'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':disponibilidad:consultar'
-    ]);
+        // CONSULTAR DISPONIBILIDAD
+        Route::get('/', [DisponibilidadController::class, 'index'])
+            ->middleware('abilities:disponibilidad:consultar');
 
-// REGISTRAR DISPONIBILIDAD
-Route::post('/disponibilidades', [DisponibilidadController::class, 'store'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':disponibilidad:gestionar'
-    ]);
+        // REGISTRAR DISPONIBILIDAD
+        Route::post('/', [DisponibilidadController::class, 'store'])
+            ->middleware('abilities:disponibilidad:gestionar');
 
-// CONSULTAR AUSENCIAS
-Route::get('/ausencias', [AusenciaController::class, 'index'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':disponibilidad:consultar'
-    ]);
+    });
 
-// REGISTRAR AUSENCIAS
-Route::post('/ausencias', [AusenciaController::class, 'store'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':disponibilidad:gestionar'
-    ]);
+// AUSENCIAS
+Route::prefix('ausencias')
+    ->middleware(['auth:sanctum', CuentaActiva::class])
+    ->group(function () {
 
+        // CONSULTAR AUSENCIAS
+        Route::get('/', [AusenciaController::class, 'index'])
+            ->middleware('abilities:disponibilidad:consultar');
+
+        // REGISTRAR AUSENCIAS
+        Route::post('/', [AusenciaController::class, 'store'])
+            ->middleware('abilities:disponibilidad:gestionar');
+
+    });
 
 // ANIMALES
+Route::prefix('animales')->group(function () {
 
-// CONSULTAR EL CATÁLOGO PÚBLICO
-Route::get('/animales', [AnimalController::class, 'index']);
+    // CATÁLOGO Y FICHA PÚBLICOS
+    Route::get('/', [AnimalController::class, 'index']);
 
-// CONSULTAR LA FICHA PÚBLICA
-Route::get('/animales/{id}', [AnimalController::class, 'show'])
-    ->whereNumber('id');
+    Route::get('/{id}', [AnimalController::class, 'show'])
+        ->whereNumber('id');
 
-// DAR DE ALTA UN ANIMAL
-Route::post('/animales', [AnimalController::class, 'store'])
-    ->middleware([
+    // GESTIÓN DE ANIMALES
+    Route::middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:gestionar'
-    ]);
+        'abilities:animales:gestionar'
+    ])->group(function () {
 
-// EDITAR LOS DATOS GENERALES
-Route::put('/animales/{id}', [AnimalController::class, 'update'])
-    ->whereNumber('id')
-    ->middleware([
+        Route::post('/', [AnimalController::class, 'store']);
+
+        Route::put('/{id}', [AnimalController::class, 'update'])
+            ->whereNumber('id');
+
+        Route::post('/{id}/imagen', [
+            AnimalController::class,
+            'actualizarImagen'
+        ])->whereNumber('id');
+
+        Route::patch('/{id}/estado', [
+            AnimalController::class,
+            'actualizarEstado'
+        ])->whereNumber('id');
+
+        Route::patch('/{id}/baja', [
+            AnimalController::class,
+            'darDeBaja'
+        ])->whereNumber('id');
+
+        Route::delete('/{id}', [AnimalController::class, 'destroy'])
+            ->whereNumber('id');
+
+    });
+
+    // ASIGNAR CUIDADOR
+    Route::put('/{id}/asignacion', [
+        AnimalController::class,
+        'asignarCuidador'
+    ])->whereNumber('id')->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:gestionar'
+        'abilities:animales:asignar'
     ]);
 
-// CAMBIAR LA FOTOGRAFÍA
-Route::post('/animales/{id}/imagen', [AnimalController::class, 'actualizarImagen'])
-    ->whereNumber('id')
-    ->middleware([
+    // INFORMACIÓN CLÍNICA
+    Route::middleware([
         'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:gestionar'
-    ]);
+        CuentaActiva::class
+    ])->group(function () {
 
-// ACTUALIZAR EL ESTADO
-Route::patch('/animales/{id}/estado', [AnimalController::class, 'actualizarEstado'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:gestionar'
-    ]);
+        Route::get('/{id}/clinico', [
+            AnimalController::class,
+            'mostrarDatosClinicos'
+        ])->whereNumber('id')->middleware([
+            'abilities:clinica:consultar',
+            VeterinarioAutorizadoParaAnimal::class
+        ]);
 
-// DAR DE BAJA UN ANIMAL
-Route::patch('/animales/{id}/baja', [AnimalController::class, 'darDeBaja'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:gestionar'
-    ]);
+        Route::put('/{id}/clinico', [
+            AnimalController::class,
+            'actualizarDatosClinicos'
+        ])->whereNumber('id')->middleware([
+            'abilities:clinica:gestionar',
+            VeterinarioAutorizadoParaAnimal::class
+        ]);
 
-// ELIMINAR UN ANIMAL SI NO TIENE REGISTROS
-Route::delete('/animales/{id}', [AnimalController::class, 'destroy'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:gestionar'
-    ]);
+    });
+
+});
 
 // CONSULTAR LOS ANIMALES ASIGNADOS
 Route::get('/mis-animales', [AnimalController::class, 'misAnimales'])
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsPersonalAutorizado::class,
-        TienePermiso::class . ':animales:consultar'
+        'abilities:animales:gestionar'
     ]);
 
-// ASIGNAR CUIDADOR E INSTRUCCIONES
-Route::put('/animales/{id}/asignacion', [AnimalController::class, 'asignarCuidador'])
-    ->whereNumber('id')
+// ASIGNACIONES DE ANIMALES
+Route::prefix('animal-asignaciones')
+    ->middleware(['auth:sanctum', CuentaActiva::class])
+    ->group(function () {
+
+        // CONSULTAR ASIGNACIONES
+        Route::get('/', [AnimalAsignacionController::class, 'index'])
+            ->middleware('abilities:asignaciones:consultar');
+
+        // CONSULTAR VETERINARIOS DISPONIBLES
+        Route::get('/veterinarios', [
+            AnimalAsignacionController::class,
+            'veterinariosDisponibles'
+        ])->middleware('abilities:asignaciones:gestionar');
+
+        // CREAR UNA ASIGNACIÓN
+        Route::post('/', [AnimalAsignacionController::class, 'store'])
+            ->middleware('abilities:asignaciones:gestionar');
+
+        // RETIRAR UNA ASIGNACIÓN
+        Route::delete('/{id}', [
+            AnimalAsignacionController::class,
+            'retirarasignaciones'
+        ])->whereNumber('id')
+            ->middleware('abilities:asignaciones:gestionar');
+
+    });
+
+// HISTORIAL DE ANIMALES
+Route::prefix('animales')
     ->middleware([
         'auth:sanctum',
         CuentaActiva::class,
-        EsAdministrador::class,
-        TienePermiso::class . ':animales:asignar'
-    ]);
+        'abilities:animales:gestionar'
+    ])
+    ->group(function () {
 
+        // CONSULTAR EL HISTORIAL
+        Route::get('/{id}/historial', [
+            HistorialController::class,
+            'index'
+        ])->whereNumber('id');
 
-// INFORMACIÓN CLÍNICA
+        // REGISTRAR UNA OBSERVACIÓN GENERAL
+        Route::post('/{id}/observaciones', [
+            HistorialController::class,
+            'guardarObservacion'
+        ])->whereNumber('id');
 
-
-// CONSULTAR LOS DATOS CLÍNICOS
-Route::get('/animales/{id}/clinico', [AnimalController::class, 'mostrarDatosClinicos'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsVeterinario::class,
-        TienePermiso::class . ':clinica:consultar',
-        VeterinarioAutorizadoParaAnimal::class
-    ]);
-
-// EDITAR LOS DATOS CLÍNICOS
-Route::put('/animales/{id}/clinico', [AnimalController::class, 'actualizarDatosClinicos'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsVeterinario::class,
-        TienePermiso::class . ':clinica:gestionar',
-        VeterinarioAutorizadoParaAnimal::class
-    ]);
-
-// CONSULTAR ASIGNACIONES
-Route::get('/animal-asignaciones', [AnimalAsignacionController::class, 'index'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-    ]);
-
-// CREAR ASIGNACIONES
-Route::post('/animal-asignaciones', [AnimalAsignacionController::class, 'store'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-    ]);
-
-// ELIMINAR ASIGNACIONES
-Route::delete('/animal-asignaciones/{id}', [AnimalAsignacionController::class, 'retirarasignaciones'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-    ]);
-
-// CONSULTAR VETERINARIOS DISPONIBLES
-Route::get('/animal-asignaciones/veterinarios', [AnimalAsignacionController::class, 'veterinariosDisponibles'])
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class,
-    ]);
-
-
-// HISTORIAL DEL ANIMAL (T18)
-
-// CONSULTAR EL HISTORIAL GENERAL DE UN ANIMAL
-Route::get('/animales/{id}/historial', [HistorialController::class, 'index'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class
-    ]);
-
-// REGISTRAR UNA OBSERVACIÓN GENERAL
-Route::post('/animales/{id}/observaciones', [HistorialController::class, 'guardarObservacion'])
-    ->whereNumber('id')
-    ->middleware([
-        'auth:sanctum',
-        CuentaActiva::class,
-        EsPersonalAutorizado::class
-    ]);
+    });
 
 // INSTALACIONES: ZONAS Y HABITÁCULOS (T23 GESTIÓN, T24 CONSULTA)
-
 Route::prefix('zonas')->middleware(['auth:sanctum', 'activa'])->group(function () {
 
-     // CONSULTA: ADMINISTRADOR, PERSONAL Y VETERINARIOS (T24)
+    // CONSULTA: ADMINISTRADOR, PERSONAL Y VETERINARIOS (T24)
     Route::get('/', [ZonaController::class, 'index'])->middleware('alguna:instalaciones:consultar');
 
-     // GESTIÓN: SOLO ADMINISTRADOR (T23)
+    // GESTIÓN: SOLO ADMINISTRADOR (T23)
     Route::post('/', [ZonaController::class, 'store'])->middleware('alguna:instalaciones:gestionar');
     Route::get('/{id}', [ZonaController::class, 'show'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
     Route::put('/{id}', [ZonaController::class, 'update'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');

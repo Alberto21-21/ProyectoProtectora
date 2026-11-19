@@ -18,23 +18,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // ALIAS DE LOS MIDDLEWARES PARA USARLOS EN LAS RUTAS
+        // ALIAS DE LOS MIDDLEWARE PARA LAS RUTAS
         $middleware->alias([
+            'abilities' => CheckAbilities::class,
             'todas' => CheckAbilities::class,
             'alguna' => CheckForAnyAbility::class,
             'activa' => CuentaActiva::class,
             'veterinarioAnimal' => VeterinarioAutorizadoParaAnimal::class,
         ]);
 
-        // SI NO HAY TOKEN, LARAVEL LLEVA A ESTA RUTA EN VEZ DE A /login
         $middleware->redirectGuestsTo('/api/nologin');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request) =>
+                $request->is('api/*') || $request->expectsJson(),
         );
 
-        // RESPUESTA CUANDO EL TOKEN NO TIENE LA ABILITY QUE PIDE LA RUTA
+        // RESPUESTA CUANDO FALTA UN PERMISO EN EL TOKEN
         $exceptions->render(function (MissingAbilityException $error) {
             return response()->json([
                 'success' => false,

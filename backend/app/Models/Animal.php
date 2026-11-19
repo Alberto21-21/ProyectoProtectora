@@ -45,7 +45,6 @@ class Animal extends Model
         'habitaculo_id',
     ];
 
-    
     protected $casts = [
         'activo' => 'boolean',
     ];
@@ -72,5 +71,11 @@ class Animal extends Model
     public function habitaculo()
     {
         return $this->belongsTo(Habitaculo::class, 'habitaculo_id', 'id');
+    }
+
+    // REGISTROS DEL HISTORIAL DEL ANIMAL
+    public function historiales()
+    {
+        return $this->hasMany(Historial::class, 'animal_id');
     }
 }

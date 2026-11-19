@@ -27,7 +27,11 @@ return [
             'animales:asignar',
             'clinica:consultar',
             'clinica:gestionar',
-             'instalaciones:gestionar',
+            'asignaciones:consultar',
+            'asignaciones:gestionar',
+            'clinica:consultar-todas',
+            'asignaciones:administrar',
+            'instalaciones:gestionar',
             'instalaciones:consultar',
         ],
 
@@ -39,6 +43,8 @@ return [
             'animales:consultar',
             'animales:gestionar',
             'disponibilidad:consultar',
+            'asignaciones:consultar',
+            'asignaciones:gestionar',
             'instalaciones:consultar',
         ],
 
@@ -48,6 +54,7 @@ return [
             'disponibilidad:consultar',
             'clinica:consultar',
             'clinica:gestionar',
+            'asignaciones:consultar',
             'instalaciones:consultar',
         ],
 

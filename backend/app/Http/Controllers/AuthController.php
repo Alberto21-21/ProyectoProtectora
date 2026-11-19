@@ -283,4 +283,29 @@ class AuthController extends Controller
             'message' => 'Contraseña actualizada correctamente.'
         ], 200);
     }
+
+    // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
+    public function mostrarPerfil(Request $request)
+    {
+        $usuario = $request->user();
+
+        $fotografiaUrl = null;
+
+        if ($usuario->fotografia) {
+            if ($usuario->fotografia_public_id) {
+                $fotografiaUrl = $usuario->fotografia;
+            } else {
+                $fotografiaUrl = asset('storage/' . $usuario->fotografia);
+            }
+        }
+
+        return response()->json([
+            'id' => $usuario->id,
+            'name' => $usuario->name,
+            'email' => $usuario->email,
+            'fecha_nacimiento' => $usuario->fecha_nacimiento,
+            'rol' => $usuario->rol,
+            'fotografia_url' => $fotografiaUrl
+        ]);
+    }
 }
