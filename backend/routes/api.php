@@ -16,6 +16,7 @@ use App\Http\Middleware\CuentaActiva;
 use App\Http\Controllers\AnimalAsignacionController;
 use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
 use App\Http\Controllers\HogarController;
+use App\Http\Controllers\CompatibilidadController;
 
 
 // AUTENTICACIÓN Y PERFIL
@@ -350,3 +351,14 @@ Route::prefix('habitaculos')->middleware(['auth:sanctum', 'activa'])->group(func
     Route::put('/{id}', [HabitaculoController::class, 'update'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
     Route::patch('/{id}/activo', [HabitaculoController::class, 'toggleActivo'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
 });
+
+// COMPATIBILIDAD DEL ADOPTANTE CON LOS ANIMALES
+Route::prefix('compatibilidad')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class,
+        'abilities:compatibilidad:consultar'
+    ])
+    ->group(function () {
+        Route::get('/', [CompatibilidadController::class, 'index']);
+    });

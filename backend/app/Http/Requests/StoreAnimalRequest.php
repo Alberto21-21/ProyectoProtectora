@@ -48,7 +48,10 @@ class StoreAnimalRequest extends FormRequest
             'necesidades_especiales' => 'nullable|string|max:1000',
             'observaciones' => 'nullable|string|max:1000',
             'historia_publica' => 'nullable|string|max:3000',
-            'cuidados_publicos' => 'nullable|string|max:3000'
+            'cuidados_publicos' => 'nullable|string|max:3000',
+            'minutos_paseos' => 'nullable|integer|min:0|max:1440',
+            'minutos_cuidados' => 'nullable|integer|min:0|max:1440',
+            'tiene_necesidades_especiales' => 'nullable|boolean',
         ];
     }
 
@@ -96,7 +99,15 @@ class StoreAnimalRequest extends FormRequest
             'historia_publica.string' => 'La historia pública debe ser un texto.',
             'historia_publica.max' => 'La historia pública no puede superar los 3000 caracteres.',
             'cuidados_publicos.string' => 'Los cuidados públicos deben ser un texto.',
-            'cuidados_publicos.max' => 'Los cuidados públicos no pueden superar los 3000 caracteres.'
+            'cuidados_publicos.max' => 'Los cuidados públicos no pueden superar los 3000 caracteres.',
+            'minutos_paseos.integer' => 'El tiempo de paseo debe ser un número entero.',
+            'minutos_paseos.min' => 'El tiempo de paseo no puede ser negativo.',
+            'minutos_paseos.max' => 'El tiempo de paseo no puede superar los 1440 minutos diarios.',
+
+            'minutos_cuidados.integer' => 'El tiempo de cuidados debe ser un número entero.',
+            'minutos_cuidados.min' => 'El tiempo de cuidados no puede ser negativo.',
+            'minutos_cuidados.max' => 'El tiempo de cuidados no puede superar los 1440 minutos diarios.',
+            'tiene_necesidades_especiales.boolean' => 'Debes indicar sí o no para las necesidades especiales.',
         ];
     }
 

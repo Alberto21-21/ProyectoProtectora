@@ -133,7 +133,10 @@ document.addEventListener("DOMContentLoaded", function () {
         "necesidades_especiales",
         "observaciones",
         "historia_publica",
-        "cuidados_publicos"
+        "cuidados_publicos",
+        "minutos_paseos",
+        "minutos_cuidados",
+        "tiene_necesidades_especiales"
     ];
 
     // TRANSICIONES PERMITIDAS SEGÚN EL ESTADO ACTUAL (T15)

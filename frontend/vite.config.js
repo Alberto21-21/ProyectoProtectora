@@ -16,7 +16,8 @@ export default defineConfig({
                 historial: "historial.html",
                 disponibilidad: "disponibilidad.html",
                 instalaciones: "instalaciones.html",
-                habitaculos: "habitaculos.html"
+                habitaculos: "habitaculos.html",
+                compatibilidad: "compatibilidad.html",
             }
         }
     }

@@ -39,7 +39,9 @@ return [
             'animales:consultar',
             'hogar:consultar',
             'hogar:editar',
+            'compatibilidad:consultar',
         ],
+        
         'personal' => [
             'animales:consultar',
             'animales:gestionar',

@@ -43,10 +43,16 @@ class Animal extends Model
         'fotografia_public_id',
         'imagen_public_id',
         'habitaculo_id',
+        'minutos_paseos',
+        'minutos_cuidados',
+        'tiene_necesidades_especiales',
     ];
-
+    
     protected $casts = [
         'activo' => 'boolean',
+        'minutos_paseos' => 'integer',
+        'minutos_cuidados' => 'integer',
+        'tiene_necesidades_especiales' => 'boolean',
     ];
 
     // Ocultar atributos sensibles/clínicos por defecto en serialización JSON

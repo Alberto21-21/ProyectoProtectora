@@ -38,6 +38,9 @@ const historiaPublicaEditar = document.querySelector("#historiaPublicaEditar");
 const cuidadosPublicosEditar = document.querySelector("#cuidadosPublicosEditar");
 const mensajeAnimal = document.querySelector("#mensajeAnimal");
 const botonGuardarAnimal = document.querySelector("#botonGuardarAnimal");
+const minutosPaseosEditar = document.querySelector("#minutosPaseosEditar");
+const minutosCuidadosEditar = document.querySelector("#minutosCuidadosEditar");
+const necesidadesEspecialesEditar = document.querySelector("#necesidadesEspecialesEditar");
 
 // ELEMENTOS DE LA FOTOGRAFÍA
 const formularioImagen = document.querySelector("#formularioImagen");
@@ -101,6 +104,17 @@ function mostrarAnimal(animal) {
         pesoEditar.value = animal.peso;
     } else {
         pesoEditar.value = "";
+    }
+
+        minutosPaseosEditar.value = animal.minutos_paseos ?? "";
+    minutosCuidadosEditar.value = animal.minutos_cuidados ?? "";
+
+    if (animal.tiene_necesidades_especiales === true) {
+        necesidadesEspecialesEditar.value = "1";
+    } else if (animal.tiene_necesidades_especiales === false) {
+        necesidadesEspecialesEditar.value = "0";
+    } else {
+        necesidadesEspecialesEditar.value = "";
     }
 }
 
@@ -207,6 +221,25 @@ async function guardarAnimal(evento) {
         historia_publica: historiaPublicaEditar.value.trim(),
         cuidados_publicos: cuidadosPublicosEditar.value.trim()
     };
+
+        datos.minutos_paseos = null;
+
+    if (minutosPaseosEditar.value !== "") {
+        datos.minutos_paseos = Number(minutosPaseosEditar.value);
+    }
+
+    datos.minutos_cuidados = null;
+
+    if (minutosCuidadosEditar.value !== "") {
+        datos.minutos_cuidados = Number(minutosCuidadosEditar.value);
+    }
+
+    datos.tiene_necesidades_especiales = null;
+
+    if (necesidadesEspecialesEditar.value !== "") {
+        datos.tiene_necesidades_especiales =
+            necesidadesEspecialesEditar.value === "1";
+    }
 
     mensajeAnimal.textContent = "Guardando cambios...";
     botonGuardarAnimal.disabled = true;
