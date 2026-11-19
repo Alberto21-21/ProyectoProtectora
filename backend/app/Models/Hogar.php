@@ -19,7 +19,16 @@ class Hogar extends Model
         'edades_ninos',
         'hay_otros_animales',
         'otros_animales',
-        'experiencia'
+        'experiencia',
+        'minutos_paseos',
+        'minutos_cuidados',
+        'nivel_actividad',
+        'especie_preferida',
+        'tamano_preferido',
+        'edad_minima',
+        'edad_maxima',
+        'acepta_necesidades_especiales',
+        'cuidados_asumibles',
     ];
 
     protected $casts = [
@@ -27,7 +36,12 @@ class Hogar extends Model
         'tiene_terraza' => 'boolean',
         'hay_ninos' => 'boolean',
         'hay_otros_animales' => 'boolean',
-        'edades_ninos' => 'array'
+        'edades_ninos' => 'array',
+        'minutos_paseos' => 'integer',
+        'minutos_cuidados' => 'integer',
+        'edad_minima' => 'integer',
+        'edad_maxima' => 'integer',
+        'acepta_necesidades_especiales' => 'boolean',
     ];
 
     // CUENTA A LA QUE PERTENECE EL HOGAR

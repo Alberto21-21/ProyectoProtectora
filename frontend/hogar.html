@@ -34,7 +34,7 @@
                 <a href="index.html">Inicio</a>
                 <a href="animales.html">Animales</a>
                 <a href="perfil.html" aria-current="page">Mi perfil</a> 
-                               
+
                 <button type="button" id="botonCerrarSesion">
                     Cerrar sesión
                 </button>
@@ -209,6 +209,121 @@
 
                 </fieldset>
 
+                <!-- PREFERENCIAS DE ADOPCIÓN -->
+                <div class="grupo-hogar">
+                    <h2>Preferencias y cuidados</h2>
+
+                    <div class="campos-hogar">
+
+                        <div class="campo-hogar">
+                            <label for="minutosPaseos">
+                                Tiempo diario para paseos (minutos)
+                            </label>
+                            <input
+                                type="number"
+                                id="minutosPaseos"
+                                min="0"
+                                max="1440"
+                                step="1"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="minutosCuidados">
+                                Tiempo diario para otros cuidados (minutos)
+                            </label>
+                            <input
+                                type="number"
+                                id="minutosCuidados"
+                                min="0"
+                                max="1440"
+                                step="1"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="nivelActividad">Nivel de actividad que puedes ofrecer</label>
+                            <select id="nivelActividad" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="Bajo">Bajo</option>
+                                <option value="Medio">Medio</option>
+                                <option value="Alto">Alto</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="especiePreferida">Especie preferida</label>
+                            <select id="especiePreferida">
+                                <option value="">Sin preferencia</option>
+                                <option value="Perro">Perro</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="tamanoPreferido">Tamaño preferido</label>
+                            <select id="tamanoPreferido">
+                                <option value="">Sin preferencia</option>
+                                <option value="Pequeño">Pequeño</option>
+                                <option value="Mediano">Mediano</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="edadMinima">Edad mínima preferida (años)</label>
+                            <input
+                                type="number"
+                                id="edadMinima"
+                                min="0"
+                                max="100"
+                                step="1"
+                                placeholder="Sin preferencia"
+                            >
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="edadMaxima">Edad máxima preferida (años)</label>
+                            <input
+                                type="number"
+                                id="edadMaxima"
+                                min="0"
+                                max="100"
+                                step="1"
+                                placeholder="Sin preferencia"
+                            >
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="aceptaNecesidades">
+                                ¿Puedes asumir necesidades especiales?
+                            </label>
+                            <select id="aceptaNecesidades" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="1">Sí</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="campo-hogar">
+                        <label for="cuidadosAsumibles">
+                            Cuidados que puedes asumir
+                        </label>
+                        <textarea
+                            id="cuidadosAsumibles"
+                            rows="4"
+                            maxlength="2000"
+                            placeholder="Describe los cuidados habituales o especiales que puedes ofrecer."
+                        ></textarea>
+                    </div>
+
+                </div>
+                
                 <p id="mensajeGuardarHogar" role="status"></p>
 
                 <div class="acciones-hogar">
