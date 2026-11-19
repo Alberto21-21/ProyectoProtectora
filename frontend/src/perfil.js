@@ -13,6 +13,7 @@ const nombre = document.querySelector("#nombrePerfil");
 const email = document.querySelector("#emailPerfil");
 const fechaNacimiento = document.querySelector("#fechaNacimientoPerfil");
 const rol = document.querySelector("#rolPerfil");
+const enlaceHogar = document.querySelector("#enlaceHogar");
 
 // FORMULARIO DE EDICIÓN
 const formulario = document.querySelector("#formularioEditarPerfil");
@@ -76,6 +77,7 @@ function mostrarFotografia(url) {
 function mostrarPerfil(usuario) {
 
     usuarioActual = usuario;
+    enlaceHogar.hidden = usuario.rol !== "adoptante";
 
     const fecha = usuario.fecha_nacimiento
         ? usuario.fecha_nacimiento.slice(0, 10)

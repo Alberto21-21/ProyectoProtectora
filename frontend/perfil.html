@@ -51,12 +51,30 @@
     <!-- CONTENIDO DEL PERFIL -->
     <main class="contenido-perfil">
 
-        <div class="titulo-perfil">
-            <span>MI CUENTA</span>
-            <h1>Mi perfil</h1>
-            <p>Consulta los datos de tu cuenta en Salvando Huellas.</p>
-        </div>
+        <div class="cabecera-contenido-perfil">
 
+                <div class="titulo-perfil">
+                    <span>MI CUENTA</span>
+                    <h1>Mi perfil</h1>
+                    <p>Consulta los datos de tu cuenta en Salvando Huellas.</p>
+                </div>
+
+                <a
+                    href="hogar.html"
+                    id="enlaceHogar"
+                    class="acceso-hogar"
+                    hidden
+                >
+                    <img
+                        src="/src/assets/icono-hogar.svg"
+                        alt=""
+                        class="icono-acceso-hogar"
+                    >
+                    <span>Mi hogar</span>
+                </a>
+
+            </div>
+            
         <p id="mensajePerfil" role="status"></p>
 
         <div id="datosPerfil" class="distribucion-perfil" hidden>
@@ -152,6 +170,7 @@
                     </button>
 
                 </div>
+
 
             </section>
 

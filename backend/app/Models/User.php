@@ -62,4 +62,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Animal::class, 'cuidador_id');
     }
+
+    // HOGAR DEL ADOPTANTE
+    public function hogar()
+    {
+        return $this->hasOne(Hogar::class, 'user_id');
+    }
 }

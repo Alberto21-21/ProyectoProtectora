@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mi hogar - Salvando Huellas</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="pagina-perfil">
+
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html" aria-current="page">Mi perfil</a> 
+                               
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>MI CUENTA</span>
+            <h1>Mi hogar</h1>
+            <p>Describe el entorno que puedes ofrecer a tu futuro compañero.</p>
+        </div>
+
+        <p id="mensajeHogar" role="status"></p>
+
+        <section id="seccionHogar" class="informacion-perfil" hidden>
+
+            <form id="formularioHogar" class="formulario-hogar">
+
+                <fieldset>
+                    <legend>Vivienda</legend>
+
+                    <div class="campos-hogar">
+
+                        <div class="campo-hogar">
+                            <label for="tipoVivienda">Tipo de vivienda</label>
+                            <select id="tipoVivienda" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="Piso">Piso</option>
+                                <option value="Casa">Casa</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="superficieHogar">
+                                Superficie interior (m²)
+                            </label>
+                            <input
+                                type="number"
+                                id="superficieHogar"
+                                min="0.01"
+                                max="999999.99"
+                                step="0.01"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="tieneJardin">¿Tienes jardín?</label>
+                            <select id="tieneJardin" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="1">Sí</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="tieneTerraza">¿Tienes terraza?</label>
+                            <select id="tieneTerraza" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="1">Sí</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar" id="campoExterior" hidden>
+                            <label for="superficieExterior">
+                                Superficie exterior total (m²)
+                            </label>
+                            <input
+                                type="number"
+                                id="superficieExterior"
+                                min="0.01"
+                                max="999999.99"
+                                step="0.01"
+                                disabled
+                            >
+                        </div>
+
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Unidad familiar</legend>
+
+                    <div class="campos-hogar">
+
+                        <div class="campo-hogar">
+                            <label for="numeroPersonas">
+                                Número total de personas, incluidos los niños
+                            </label>
+                            <input
+                                type="number"
+                                id="numeroPersonas"
+                                min="1"
+                                max="100"
+                                step="1"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo-hogar">
+                            <label for="hayNinos">¿Viven niños en el hogar?</label>
+                            <select id="hayNinos" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="1">Sí</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-hogar" id="campoEdades" hidden>
+                            <label for="edadesNinos">
+                                Edades de los niños, separadas por comas
+                            </label>
+                            <input
+                                type="text"
+                                id="edadesNinos"
+                                placeholder="Por ejemplo: 5, 12"
+                                aria-describedby="ayudaEdades"
+                                disabled
+                            >
+                            <small id="ayudaEdades">
+                                Indica una edad entre 0 y 17 por cada niño.
+                            </small>
+                        </div>
+
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Animales y experiencia</legend>
+
+                    <div class="campo-hogar">
+                        <label for="hayOtrosAnimales">
+                            ¿Convives con otros animales?
+                        </label>
+                        <select id="hayOtrosAnimales" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="1">Sí</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="campo-hogar" id="campoOtrosAnimales" hidden>
+                        <label for="otrosAnimales">
+                            Describe los animales con los que convives
+                        </label>
+                        <textarea
+                            id="otrosAnimales"
+                            rows="3"
+                            maxlength="2000"
+                            disabled
+                        ></textarea>
+                    </div>
+
+                    <div class="campo-hogar">
+                        <label for="experienciaHogar">
+                            Experiencia cuidando animales
+                        </label>
+                        <textarea
+                            id="experienciaHogar"
+                            rows="4"
+                            maxlength="2000"
+                            placeholder="Si no tienes experiencia, también puedes indicarlo."
+                            required
+                        ></textarea>
+                    </div>
+
+                </fieldset>
+
+                <p id="mensajeGuardarHogar" role="status"></p>
+
+                <div class="acciones-hogar">
+                    <button type="submit" id="botonGuardarHogar">
+                        Guardar mi hogar
+                    </button>
+
+                    <a href="perfil.html">Volver a mi perfil</a>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="/src/hogar.js"></script>
+
+</body>
+
+</html>
