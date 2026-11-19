@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 
 class UpdateZonaRequest extends FormRequest
 {
+    // La ruta aplica los permisos y aquí se comprueban los datos recibidos.
     public function authorize(): bool
     {
         return true;
@@ -14,6 +15,7 @@ class UpdateZonaRequest extends FormRequest
 
     public function rules(): array
     {
+         // Al editar se ignora el id actual para poder mantener el mismo nombre.
         return [
             'nombre' => [
                 'required',

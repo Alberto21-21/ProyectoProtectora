@@ -427,20 +427,29 @@ Route::post('/animales/{id}/observaciones', [HistorialController::class, 'guarda
         EsPersonalAutorizado::class
     ]);
 
-// INSTALACIONES: ZONAS Y HABITÁCULOS (T23, SOLO ADMINISTRADOR)
+// INSTALACIONES: ZONAS Y HABITÁCULOS (T23 GESTIÓN, T24 CONSULTA)
 
-Route::prefix('zonas')->middleware(['auth:sanctum', 'activa', 'alguna:instalaciones:gestionar'])->group(function () {
-    Route::get('/', [ZonaController::class, 'index']);
-    Route::post('/', [ZonaController::class, 'store']);
-    Route::get('/{id}', [ZonaController::class, 'show'])->whereNumber('id');
-    Route::put('/{id}', [ZonaController::class, 'update'])->whereNumber('id');
-    Route::patch('/{id}/activo', [ZonaController::class, 'toggleActivo'])->whereNumber('id');
+Route::prefix('zonas')->middleware(['auth:sanctum', 'activa'])->group(function () {
+
+     // CONSULTA: ADMINISTRADOR, PERSONAL Y VETERINARIOS (T24)
+    Route::get('/', [ZonaController::class, 'index'])->middleware('alguna:instalaciones:consultar');
+
+     // GESTIÓN: SOLO ADMINISTRADOR (T23)
+    Route::post('/', [ZonaController::class, 'store'])->middleware('alguna:instalaciones:gestionar');
+    Route::get('/{id}', [ZonaController::class, 'show'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
+    Route::put('/{id}', [ZonaController::class, 'update'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
+    Route::patch('/{id}/activo', [ZonaController::class, 'toggleActivo'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
 });
 
-Route::prefix('habitaculos')->middleware(['auth:sanctum', 'activa', 'alguna:instalaciones:gestionar'])->group(function () {
-    Route::get('/', [HabitaculoController::class, 'index']);
-    Route::post('/', [HabitaculoController::class, 'store']);
-    Route::get('/{id}', [HabitaculoController::class, 'show'])->whereNumber('id');
-    Route::put('/{id}', [HabitaculoController::class, 'update'])->whereNumber('id');
-    Route::patch('/{id}/activo', [HabitaculoController::class, 'toggleActivo'])->whereNumber('id');
+Route::prefix('habitaculos')->middleware(['auth:sanctum', 'activa'])->group(function () {
+
+    // CONSULTA: ADMINISTRADOR, PERSONAL Y VETERINARIOS (T24)
+    Route::get('/', [HabitaculoController::class, 'index'])->middleware('alguna:instalaciones:consultar');
+    Route::get('/{id}', [HabitaculoController::class, 'show'])->whereNumber('id')->middleware('alguna:instalaciones:consultar');
+    Route::get('/{id}/ficha', [HabitaculoController::class, 'ficha'])->whereNumber('id')->middleware('alguna:instalaciones:consultar');
+
+    // GESTIÓN: SOLO ADMINISTRADOR (T23)
+    Route::post('/', [HabitaculoController::class, 'store'])->middleware('alguna:instalaciones:gestionar');
+    Route::put('/{id}', [HabitaculoController::class, 'update'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
+    Route::patch('/{id}/activo', [HabitaculoController::class, 'toggleActivo'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
 });

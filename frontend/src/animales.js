@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
     const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
     const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
+    const enlaceHabitaculos = document.querySelector("#enlaceHabitaculos");
     const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
     const selectCuidador = document.querySelector("#selectCuidador");
     const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
@@ -189,6 +190,10 @@ document.addEventListener("DOMContentLoaded", function () {
             enlaceUsuarios.hidden = usuarioActual.rol !== "admin";
         }
         // Instalaciones: solo el administrador (T23)
+        // Habitáculos: admin, personal y veterinarios (T24)
+        if (enlaceHabitaculos) {
+            enlaceHabitaculos.hidden = usuarioActual.rol !== "admin" && usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
+        }
         if (enlaceInstalaciones) {
             enlaceInstalaciones.hidden = usuarioActual.rol !== "admin";
         }

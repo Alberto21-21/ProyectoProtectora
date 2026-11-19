@@ -1,5 +1,6 @@
 // PETICIÓN COMÚN A LA API DE INSTALACIONES (T23)
 async function peticion(ruta, metodo, datos, token) {
+    // Todas las llamadas usan el mismo formato y mandan el token en la cabecera.
     const opciones = {
         method: metodo,
         headers: {
@@ -55,6 +56,11 @@ export function obtenerHabitaculos(filtros, token) {
     }
 
     return peticion("habitaculos?" + parametros.toString(), "GET", null, token);
+}
+
+// FICHA DEL HABITÁCULO: ANIMALES, PLAZAS, RESTRICCIONES Y ACTUACIONES (T24)
+export function obtenerFichaHabitaculo(id, token) {
+    return peticion("habitaculos/" + id + "/ficha", "GET", null, token);
 }
 
 export function crearHabitaculo(datos, token) {

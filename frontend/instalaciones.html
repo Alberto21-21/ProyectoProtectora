@@ -31,12 +31,15 @@
                 >
             </a>
 
-            <nav aria-label="Navegación principal">
+             <nav aria-label="Navegación principal">
                 <a href="index.html">Inicio</a>
                 <a href="animales.html">Animales</a>
-                <a href="perfil.html">Mi perfil</a>
-                <a href="usuarios.html">Usuarios</a>
-                <a href="instalaciones.html" aria-current="page">Instalaciones</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="disponibilidad.html" id="enlaceDisponibilidad" hidden>Disponibilidad</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" aria-current="page" hidden>Instalaciones</a>
+                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
                 <button type="button" id="botonCerrarSesion">
                     Cerrar sesión
                 </button>
@@ -285,6 +288,16 @@
                 ></textarea>
                 <p class="error-campo" id="error-habitaculo-observaciones"></p>
 
+                <label for="habitaculoRestricciones">Restricciones</label>
+                <input
+                    type="text"
+                    id="habitaculoRestricciones"
+                    name="restricciones"
+                    maxlength="255"
+                    placeholder="Solo gatos, aislamiento..."
+                >
+                <p class="error-campo" id="error-habitaculo-restricciones"></p>
+
                 <p id="mensajeHabitaculo" role="status"></p>
 
                 <button type="submit" id="botonGuardarHabitaculo">
@@ -302,6 +315,7 @@
 
     </main>
 
+    <script type="module" src="/src/menu.js"></script>
     <script type="module" src="/src/instalaciones.js"></script>
 
 </body>

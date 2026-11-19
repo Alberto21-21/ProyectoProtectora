@@ -82,6 +82,7 @@ class HabitaculoController extends Controller
             'fecha_ultima_limpieza' => $fechaUltimaLimpieza,
             'fecha_proxima_limpieza' => $request->fecha_proxima_limpieza,
             'observaciones' => $request->observaciones,
+            'restricciones' => $request->restricciones,
             'activo' => true
         ]);
 
@@ -106,6 +107,19 @@ class HabitaculoController extends Controller
 
         $request->validate($this->reglas($request, $habitaculo->id), $this->mensajes());
 
+        // LA CAPACIDAD NO PUEDE SER MENOR QUE LOS ANIMALES QUE YA ESTÁN ALOJADOS (T24)
+        $alojados = $habitaculo->animales()->where('activo', true)->count();
+
+        if ($request->capacidad < $alojados) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La capacidad no puede ser menor que los ' . $alojados . ' animales alojados.',
+                'errors' => [
+                    'capacidad' => ['Hay ' . $alojados . ' animales alojados en este habitáculo.']
+                ]
+            ], 422);
+        }
+
         // SI PASA A ESTAR LIMPIO Y NO SE INDICA LA FECHA, SE HA LIMPIADO HOY
         $fechaUltimaLimpieza = $request->fecha_ultima_limpieza;
 
@@ -121,6 +135,7 @@ class HabitaculoController extends Controller
         $habitaculo->fecha_ultima_limpieza = $fechaUltimaLimpieza;
         $habitaculo->fecha_proxima_limpieza = $request->fecha_proxima_limpieza;
         $habitaculo->observaciones = $request->observaciones;
+        $habitaculo->restricciones = $request->restricciones;
         $habitaculo->save();
 
         return response()->json([
@@ -150,6 +165,18 @@ class HabitaculoController extends Controller
             ], 422);
         }
 
+        // NO SE PUEDE DESACTIVAR SI TIENE ANIMALES ALOJADOS (T24)
+        if ($habitaculo->activo) {
+            $alojados = $habitaculo->animales()->where('activo', true)->count();
+
+            if ($alojados > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede desactivar: el habitáculo tiene ' . $alojados . ' animales alojados.'
+                ], 422);
+            }
+        }
+
         $habitaculo->activo = !$habitaculo->activo;
         $habitaculo->save();
 
@@ -163,6 +190,105 @@ class HabitaculoController extends Controller
             'success' => true,
             'message' => $mensaje,
             'data' => $habitaculo->load('zona:id,nombre,activo')
+        ], 200);
+    }
+
+    // FICHA DEL HABITÁCULO PARA LOS TRABAJADORES (T24):
+    // ANIMALES ALOJADOS, PLAZAS, RESTRICCIONES, ESTADOS Y PRÓXIMAS ACTUACIONES
+    public function ficha($id)
+    {
+        $habitaculo = Habitaculo::with('zona:id,nombre,activo')->find($id);
+
+        if (is_null($habitaculo)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Habitáculo no encontrado.'
+            ], 404);
+        }
+
+        // ANIMALES ALOJADOS (SOLO DATOS GENERALES, NADA CLÍNICO)
+        $animales = $habitaculo->animales()
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'especie', 'sexo', 'tamano', 'estado']);
+
+        // PLAZAS
+        $ocupadas = count($animales);
+        $libres = $habitaculo->capacidad - $ocupadas;
+
+        if ($libres < 0) {
+            $libres = 0;
+        }
+
+        // RESTRICCIONES: LAS QUE ESCRIBE EL ADMINISTRADOR Y LAS QUE SALEN DEL ESTADO
+        $restricciones = [];
+
+        if ($habitaculo->restricciones) {
+            $restricciones[] = $habitaculo->restricciones;
+        }
+
+        if (!$habitaculo->activo) {
+            $restricciones[] = 'Habitáculo desactivado: no admite animales.';
+        }
+
+        if ($habitaculo->estado_mantenimiento !== 'Operativo') {
+            $restricciones[] = 'Estado "' . $habitaculo->estado_mantenimiento . '": no se deben alojar animales nuevos.';
+        }
+
+        if ($libres === 0) {
+            $restricciones[] = 'Completo: no quedan plazas libres.';
+        }
+
+        // PRÓXIMAS ACTUACIONES
+        $actuaciones = [];
+        $hoy = now()->toDateString();
+
+        if ($habitaculo->estado_limpieza === 'Pendiente') {
+            $actuaciones[] = [
+                'tipo' => 'Limpieza',
+                'fecha' => null,
+                'descripcion' => 'Limpieza pendiente de realizar.'
+            ];
+        }
+
+        if ($habitaculo->fecha_proxima_limpieza) {
+            $fechaProxima = $habitaculo->fecha_proxima_limpieza->toDateString();
+
+            if ($fechaProxima < $hoy) {
+                $descripcion = 'Limpieza programada con fecha vencida.';
+            } else {
+                $descripcion = 'Limpieza programada.';
+            }
+
+            $actuaciones[] = [
+                'tipo' => 'Limpieza',
+                'fecha' => $fechaProxima,
+                'descripcion' => $descripcion
+            ];
+        }
+
+        if ($habitaculo->estado_mantenimiento !== 'Operativo') {
+            $actuaciones[] = [
+                'tipo' => 'Mantenimiento',
+                'fecha' => null,
+                'descripcion' => 'Revisar el habitáculo (' . $habitaculo->estado_mantenimiento . ').'
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ficha del habitáculo consultada correctamente.',
+            'data' => [
+                'habitaculo' => $habitaculo,
+                'plazas' => [
+                    'capacidad' => $habitaculo->capacidad,
+                    'ocupadas' => $ocupadas,
+                    'libres' => $libres
+                ],
+                'animales' => $animales,
+                'restricciones' => $restricciones,
+                'actuaciones' => $actuaciones
+            ]
         ], 200);
     }
 
@@ -195,7 +321,8 @@ class HabitaculoController extends Controller
             'estado_mantenimiento' => 'required|in:Operativo,En mantenimiento,Averiado',
             'fecha_ultima_limpieza' => 'nullable|date|before_or_equal:today',
             'fecha_proxima_limpieza' => $reglaProximaLimpieza,
-            'observaciones' => 'nullable|string|max:1000'
+            'observaciones' => 'nullable|string|max:1000',
+            'restricciones' => 'nullable|string|max:255'
         ];
     }
 
@@ -223,7 +350,9 @@ class HabitaculoController extends Controller
             'fecha_proxima_limpieza.date' => 'La fecha de la próxima limpieza no es válida.',
             'fecha_proxima_limpieza.after' => 'La próxima limpieza tiene que ser posterior a la última.',
             'observaciones.string' => 'Las observaciones deben ser un texto.',
-            'observaciones.max' => 'Las observaciones no pueden superar los 1000 caracteres.'
+            'observaciones.max' => 'Las observaciones no pueden superar los 1000 caracteres.',
+            'restricciones.string' => 'Las restricciones deben ser un texto.',
+            'restricciones.max' => 'Las restricciones no pueden superar los 255 caracteres.'
         ];
     }
 }

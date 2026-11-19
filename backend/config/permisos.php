@@ -13,6 +13,7 @@ return [
     'roles' => [
 
         'admin' => [
+            // El administrador puede gestionar las instalaciones y consultar su ficha.
             'usuarios:consultar',
             'usuarios:crear',
             'usuarios:editar',
@@ -26,7 +27,8 @@ return [
             'animales:asignar',
             'clinica:consultar',
             'clinica:gestionar',
-            'instalaciones:gestionar',
+             'instalaciones:gestionar',
+            'instalaciones:consultar',
         ],
 
         'adoptante' => [
@@ -37,6 +39,7 @@ return [
             'animales:consultar',
             'animales:gestionar',
             'disponibilidad:consultar',
+            'instalaciones:consultar',
         ],
 
         'veterinario' => [
@@ -45,6 +48,7 @@ return [
             'disponibilidad:consultar',
             'clinica:consultar',
             'clinica:gestionar',
+            'instalaciones:consultar',
         ],
 
     ],

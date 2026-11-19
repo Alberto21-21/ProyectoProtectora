@@ -15,6 +15,9 @@ const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 const enlacePerfil = document.querySelector("#enlacePerfil");
 const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
 const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
+const enlaceDisponibilidad = document.querySelector("#enlaceDisponibilidad");
+const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
+const enlaceHabitaculos = document.querySelector("#enlaceHabitaculos");
 const mensajeSesion = document.querySelector("#mensajeSesion");
 const modalLogin = document.querySelector("#modalLogin");
 
@@ -36,6 +39,18 @@ function actualizarCabecera(sesionActiva, rol = "") {
     // MIS ANIMALES: SOLO PERSONAL Y VETERINARIOS (T17)
     if (enlaceMisAnimales) {
         enlaceMisAnimales.hidden = !sesionActiva || (rol !== "personal" && rol !== "veterinario");
+    }
+
+    if (enlaceDisponibilidad) {
+        enlaceDisponibilidad.hidden = !sesionActiva || rol !== "admin";
+    }
+
+    if (enlaceInstalaciones) {
+        enlaceInstalaciones.hidden = !sesionActiva || rol !== "admin";
+    }
+
+    if (enlaceHabitaculos) {
+        enlaceHabitaculos.hidden = !sesionActiva || !["admin", "personal", "veterinario"].includes(rol);
     }
 
     botonCerrarSesion.hidden = !sesionActiva;

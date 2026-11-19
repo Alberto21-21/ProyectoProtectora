@@ -42,6 +42,7 @@ class Animal extends Model
         'cuidados_publicos',
         'fotografia_public_id',
         'imagen_public_id',
+        'habitaculo_id',
     ];
 
     
@@ -65,5 +66,11 @@ class Animal extends Model
     public function cuidador()
     {
         return $this->belongsTo(User::class, 'cuidador_id');
+    }
+
+    // HABITÁCULO DONDE ESTÁ ALOJADO EL ANIMAL (T24)
+    public function habitaculo()
+    {
+        return $this->belongsTo(Habitaculo::class, 'habitaculo_id', 'id');
     }
 }

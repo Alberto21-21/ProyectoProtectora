@@ -32,28 +32,18 @@
                 >
             </a>
 
-            <nav aria-label="Navegación principal">
-
+             <nav aria-label="Navegación principal">
                 <a href="index.html">Inicio</a>
-
                 <a href="animales.html">Animales</a>
-
-                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>
-                    Mis animales
-                </a>
-
-                <a href="perfil.html" aria-current="page">
-                    Mi perfil
-                </a>
-
-                <a href="usuarios.html" id="enlaceUsuarios" hidden>
-                    Usuarios
-                </a>
-
+                <a href="perfil.html" id="enlacePerfil" aria-current="page" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="disponibilidad.html" id="enlaceDisponibilidad" hidden>Disponibilidad</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
                 <button type="button" id="botonCerrarSesion">
                     Cerrar sesión
                 </button>
-
             </nav>
         </div>
     </header>
@@ -291,6 +281,7 @@
 
     </main>
 
+    <script type="module" src="/src/menu.js"></script>
     <script type="module" src="/src/perfil.js"></script>
 
 </body>
