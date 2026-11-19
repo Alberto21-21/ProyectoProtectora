@@ -11,15 +11,18 @@ class UsuarioController extends Controller
     // LISTAR Y BUSCAR USUARIOS
     public function index(Request $request)
     {
-        $request->validate([
+        $datos = $request->validate([
             'buscar' => 'nullable|string|max:255',
             'rol' => 'nullable|in:admin,adoptante,personal,veterinario',
-            'estado' => 'nullable|in:activo,inactivo'
+            'estado' => 'nullable|in:activo,inactivo',
+            'page' => 'sometimes|integer|min:1'
         ], [
             'buscar.string' => 'La búsqueda debe ser un texto.',
             'buscar.max' => 'La búsqueda no puede superar los 255 caracteres.',
             'rol.in' => 'El rol seleccionado no es válido.',
-            'estado.in' => 'El estado seleccionado no es válido.'
+            'estado.in' => 'El estado seleccionado no es válido.',
+            'page.integer' => 'La página debe ser un número entero.',
+            'page.min' => 'La página debe ser mayor o igual a 1.'
         ]);
 
         // SELECCIONAR SOLO LOS DATOS NECESARIOS
@@ -32,8 +35,8 @@ class UsuarioController extends Controller
         );
 
         // BUSCAR POR NOMBRE O CORREO
-        if ($request->filled('buscar')) {
-            $buscar = trim($request->buscar);
+        if (isset($datos['buscar']) && trim($datos['buscar']) !== '') {
+            $buscar = trim($datos['buscar']);
 
             $consulta->where(function ($consultaBusqueda) use ($buscar) {
                 $consultaBusqueda->where('name', 'like', '%' . $buscar . '%')
@@ -42,13 +45,13 @@ class UsuarioController extends Controller
         }
 
         // FILTRAR POR ROL
-        if ($request->filled('rol')) {
-            $consulta->where('rol', $request->rol);
+        if (isset($datos['rol'])) {
+            $consulta->where('rol', $datos['rol']);
         }
 
         // FILTRAR POR ESTADO
-        if ($request->filled('estado')) {
-            $consulta->where('estado', $request->estado);
+        if (isset($datos['estado'])) {
+            $consulta->where('estado', $datos['estado']);
         }
 
         $usuarios = $consulta->orderBy('name')
@@ -62,8 +65,8 @@ class UsuarioController extends Controller
         ], 200);
     }
 
-    
     // CONSULTAR EL DETALLE DE UN USUARIO
+
     public function show($id)
     {
         $usuario = User::select(
@@ -74,6 +77,7 @@ class UsuarioController extends Controller
             'rol',
             'estado',
             'fotografia',
+            'fotografia_public_id',
             'created_at'
         )->find($id);
 
@@ -82,6 +86,18 @@ class UsuarioController extends Controller
                 'success' => false,
                 'message' => 'El usuario no existe.'
             ], 404);
+        }
+
+        // OBTENER LA URL DE CLOUDINARY O DE LA FOTOGRAFÍA LOCAL
+        $fotografiaUrl = null;
+
+        if ($usuario->fotografia) {
+            $fotografiaUrl = str_starts_with(
+                $usuario->fotografia,
+                'https://'
+            )
+                ? $usuario->fotografia
+                : asset('storage/' . $usuario->fotografia);
         }
 
         return response()->json([
@@ -94,13 +110,13 @@ class UsuarioController extends Controller
                 'fecha_nacimiento' => $usuario->fecha_nacimiento,
                 'rol' => $usuario->rol,
                 'estado' => $usuario->estado,
-                'fotografia_url' => $usuario->fotografia
-                    ? asset('storage/' . $usuario->fotografia)
-                    : null,
+                'fotografia_url' => $fotografiaUrl,
                 'created_at' => $usuario->created_at
             ]
         ], 200);
-    }    // DAR DE ALTA PERSONAL Y VETERINARIOS
+    }
+    
+    // DAR DE ALTA PERSONAL Y VETERINARIOS
     public function store(Request $request)
     {
         $request->validate([

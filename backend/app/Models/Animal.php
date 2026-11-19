@@ -40,9 +40,11 @@ class Animal extends Model
         'instrucciones_cuidado',
         'historia_publica',
         'cuidados_publicos',
+        'fotografia_public_id',
+        'imagen_public_id',
+        'habitaculo_id',
     ];
 
-    // Convertir el campo de baja lógica a booleano (T16)
     protected $casts = [
         'activo' => 'boolean',
     ];
@@ -63,5 +65,17 @@ class Animal extends Model
     public function cuidador()
     {
         return $this->belongsTo(User::class, 'cuidador_id');
+    }
+
+    // HABITÁCULO DONDE ESTÁ ALOJADO EL ANIMAL (T24)
+    public function habitaculo()
+    {
+        return $this->belongsTo(Habitaculo::class, 'habitaculo_id', 'id');
+    }
+
+    // REGISTROS DEL HISTORIAL DEL ANIMAL
+    public function historiales()
+    {
+        return $this->hasMany(Historial::class, 'animal_id');
     }
 }

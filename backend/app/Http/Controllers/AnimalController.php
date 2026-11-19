@@ -10,66 +10,82 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
 
 class AnimalController extends Controller
 {
-    /**
-     * Obtener listado de animales con búsqueda y filtros.
-     * El catálogo público muestra únicamente los animales disponibles.
-     */
-    
-        // CONSULTAR EL LISTADO SEGÚN LOS PERMISOS DEL USUARIO
-    public function index(Request $request)
-    {
-        $consulta = Animal::query();
 
-        $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
+public function index(Request $request)
+{
+    // VALIDAR LOS FILTROS
+    $datos = $request->validate([
+        'buscar' => 'nullable|string|max:255',
+        'especie' => 'nullable|in:Perro,Gato,Otro',
+        'bajas' => 'nullable|boolean',
+        'estado' => 'nullable|in:En acogida,En tratamiento,Disponible,Reservado,Adoptado',
+    ], [
+        'buscar.string' => 'La búsqueda debe ser un texto.',
+        'buscar.max' => 'La búsqueda no puede superar los 255 caracteres.',
+        'especie.in' => 'La especie seleccionada no es válida.',
+        'bajas.boolean' => 'El filtro de bajas no es válido.',
+        'estado.in' => 'El estado seleccionado no es válido.',
+    ]);
 
-        // SOLO EL PERSONAL AUTORIZADO PUEDE CONSULTAR LAS BAJAS
-        if ($puedeVerInternos && $request->boolean('bajas')) {
-            $consulta->where('activo', false);
-        } else {
-            $consulta->where('activo', true);
-        }
+    $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
 
-        // EL CATÁLOGO PÚBLICO SOLO MUESTRA ANIMALES DISPONIBLES
-        if (!$puedeVerInternos) {
-            $consulta->where('estado', 'Disponible');
-        } elseif ($request->filled('estado')) {
-            $consulta->where('estado', $request->estado);
-        }
+    $consulta = Animal::query();
 
-        // BUSCAR POR NOMBRE O RAZA
-        if ($request->filled('buscar')) {
-            $buscar = $request->input('buscar');
-
-            $consulta->where(function ($consultaBusqueda) use ($buscar) {
-                $consultaBusqueda->where('nombre', 'like', '%' . $buscar . '%')
-                    ->orWhere('raza', 'like', '%' . $buscar . '%');
-            });
-        }
-
-        // FILTRAR POR ESPECIE
-        if ($request->filled('especie')) {
-            $consulta->where('especie', $request->especie);
-        }
-
-        $animales = $consulta->orderBy('created_at', 'desc')->get();
-
-        if ($puedeVerInternos) {
-            return response()->json($animales, 200);
-        }
-
-        // DEVOLVER SOLO LOS CAMPOS PUBLICABLES
-        $datosPublicos = $animales->map(function ($animal) {
-            return $this->datosPublicosAnimal($animal);
-        });
-
-        return response()->json($datosPublicos, 200);
+    // SOLO EL PERSONAL AUTORIZADO PUEDE CONSULTAR LAS BAJAS
+    if ($puedeVerInternos && !empty($datos['bajas'])) {
+        $consulta->where('activo', false);
+    } else {
+        $consulta->where('activo', true);
     }
+
+    // EL CATÁLOGO PÚBLICO SOLO MUESTRA ANIMALES DISPONIBLES
+    if (!$puedeVerInternos) {
+        $consulta->where('estado', 'Disponible');
+    }
+
+        // EL PERSONAL AUTORIZADO PUEDE FILTRAR POR ESTADO
+    if ($puedeVerInternos && isset($datos['estado'])) {
+        $consulta->where('estado', $datos['estado']);
+    }
+
+    // BUSCAR POR NOMBRE O RAZA
+    if (isset($datos['buscar']) && $datos['buscar'] !== '') {
+        $buscar = $datos['buscar'];
+
+        $consulta->where(function ($consultaBusqueda) use ($buscar) {
+            $consultaBusqueda->where('nombre', 'like', '%' . $buscar . '%')
+                ->orWhere('raza', 'like', '%' . $buscar . '%');
+        });
+    }
+
+    // FILTRAR POR ESPECIE
+    if (isset($datos['especie'])) {
+        $consulta->where('especie', $datos['especie']);
+    }
+
+    $animales = $consulta->orderBy('created_at', 'desc')->get();
+
+    if ($puedeVerInternos) {
+        return response()->json($animales, 200);
+    }
+
+    // DEVOLVER ÚNICAMENTE LOS DATOS PÚBLICOS
+    $datosPublicos = [];
+
+    foreach ($animales as $animal) {
+        $datosPublicos[] = $this->datosPublicosAnimal($animal);
+    }
+
+    return response()->json($datosPublicos, 200);
+}
 
     // CONSULTAR LA FICHA SEGÚN LOS PERMISOS DEL USUARIO
     public function show(Request $request, $id)
+
     {
         $puedeVerInternos = $this->puedeConsultarDatosInternos($request);
 
@@ -99,24 +115,53 @@ class AnimalController extends Controller
         );
     }
 
-    public function store(StoreAnimalRequest $request)
-    {
-        // Datos validados por el FormRequest
+
+    public function store(
+        StoreAnimalRequest $request,
+        CloudinaryService $cloudinary
+    ) {
         $datos = $request->validated();
 
-        // Guardar la fotografía si se ha subido
-        if ($request->hasFile('fotografia')) {
-            $datos['fotografia'] = $request->file('fotografia')->store('animales', 'public');
-        } elseif ($request->hasFile('imagen')) {
-            $datos['fotografia'] = $request->file('imagen')->store('animales', 'public');
+        // SEPARAR LOS ARCHIVOS DE LOS DATOS DEL ANIMAL
+        unset($datos['fotografia'], $datos['imagen']);
+
+        $resultado = null;
+
+        $archivo = $request->file('fotografia');
+
+        // SUBIR LA FOTOGRAFÍA A CLOUDINARY
+        if ($archivo) {
+            $resultado = $cloudinary->upload(
+                $archivo,
+                'protectora/animales'
+            );
+
+            $datos['fotografia'] = $resultado['secure_url'];
+            $datos['fotografia_public_id'] = $resultado['public_id'];
+
+   
+   
+
         }
 
-        // Registrar el usuario que da de alta (si hay autenticación activa)
-        if ($request->user()) {
-            $datos['user_id'] = $request->user()->id;
-        }
+        $datos['user_id'] = $request->user()->id;
 
-        $animal = Animal::create($datos);
+        try {
+            $animal = Animal::create($datos);
+
+        } catch (\Throwable $error) {
+            // EVITAR DEJAR UNA IMAGEN SIN ANIMAL ASOCIADO
+            if ($resultado) {
+                try {
+                    $cloudinary->eliminar($resultado['public_id']);
+
+                } catch (\Throwable $errorLimpieza) {
+                    report($errorLimpieza);
+                }
+            }
+
+            throw $error;
+        }
 
         return response()->json([
             'success' => true,
@@ -127,15 +172,11 @@ class AnimalController extends Controller
                 'especie' => $animal->especie,
                 'estado' => $animal->estado,
                 'fotografia_url' => $animal->fotografia
-                    ? asset('storage/' . $animal->fotografia)
-                    : null
             ]
         ], 201);
     }
 
-    /**
-     * Actualizar los datos generales de un animal (sin saltar las transiciones de estado).
-     */
+  
     public function update(Request $request, $id)
     {
         $animal = Animal::find($id);
@@ -210,9 +251,7 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    /**
-     * T15: Actualizar el estado de un animal aplicando solo transiciones permitidas.
-     */
+   
     public function actualizarEstado(UpdateEstadoAnimalRequest $request, $id)
     {
         $animal = Animal::find($id);
@@ -250,7 +289,6 @@ class AnimalController extends Controller
             ], 422);
         }
 
-        // Definición de transiciones permitidas
         $transicionesPermitidas = [
             'En acogida'     => ['En tratamiento', 'Disponible'],
             'En tratamiento' => ['En acogida', 'Disponible'],
@@ -278,9 +316,8 @@ class AnimalController extends Controller
         ], 200);
     }
 
-    /**
-     * T16: Dar de baja un animal (baja lógica).
-     * El animal no se borra: se marca como inactivo y se conservan
+  
+     /* El animal no se borra: se marca como inactivo y se conservan
      * su historial, solicitudes y adopciones.
      */
     public function darDeBaja(Request $request, $id)
@@ -302,7 +339,7 @@ class AnimalController extends Controller
             'motivo_baja.max' => 'El motivo no puede superar los 255 caracteres.'
         ]);
 
-        // RECHAZO: EL ANIMAL YA ESTÁ DADO DE BAJA
+      
         if (!$animal->activo) {
             return response()->json([
                 'success' => false,
@@ -310,7 +347,7 @@ class AnimalController extends Controller
             ], 422);
         }
 
-        // RECHAZO: EL ANIMAL TIENE UNA RESERVA EN CURSO
+       
         if ($animal->estado === 'Reservado') {
             return response()->json([
                 'success' => false,
@@ -331,12 +368,12 @@ class AnimalController extends Controller
     }
 
     /**
-     * T16: Eliminar un animal definitivamente.
+     *  Eliminar un animal definitivamente.
      * Solo se permite si no tiene historial, solicitudes ni adopciones.
      * Si los tiene, se rechaza para no perder su historia.
      */
-    public function destroy($id)
-    {
+    
+    public function destroy($id, CloudinaryService $cloudinary)    {
         $animal = Animal::find($id);
 
         if (!$animal) {
@@ -347,13 +384,9 @@ class AnimalController extends Controller
         }
 
         // COMPROBAR LOS REGISTROS ASOCIADOS AL ANIMAL
-        $historiales = 0;
         $solicitudes = 0;
         $adopciones = 0;
-
-        if (Schema::hasTable('historiales')) {
-            $historiales = DB::table('historiales')->where('animal_id', $animal->id)->count();
-        }
+        $historiales = $animal->historiales()->count();
 
         if (Schema::hasTable('solicitudes')) {
             $solicitudes = DB::table('solicitudes')->where('animal_id', $animal->id)->count();
@@ -387,18 +420,45 @@ class AnimalController extends Controller
             ], 422);
         }
 
-        // ELIMINACIÓN DEFINITIVA
-        $fotografia = $animal->fotografia;
-        $imagen = $animal->imagen;
+               // GUARDAR LAS REFERENCIAS ANTES DE ELIMINAR EL ANIMAL
+        $imagenes = [
+            [
+                'ruta' => $animal->fotografia,
+                'public_id' => $animal->fotografia_public_id
+            ],
+            [
+                'ruta' => $animal->imagen,
+                'public_id' => $animal->imagen_public_id
+            ]
+        ];
 
         $animal->delete();
 
-        if ($fotografia) {
-            Storage::disk('public')->delete($fotografia);
-        }
+        // ELIMINAR LAS IMÁGENES DE CLOUDINARY O DEL ALMACENAMIENTO LOCAL
+        $imagenesEliminadas = [];
 
-        if ($imagen) {
-            Storage::disk('public')->delete($imagen);
+        foreach ($imagenes as $imagen) {
+            try {
+                if ($imagen['public_id']) {
+                    if (!in_array(
+                        $imagen['public_id'],
+                        $imagenesEliminadas,
+                        true
+                    )) {
+                        $cloudinary->eliminar($imagen['public_id']);
+                        $imagenesEliminadas[] = $imagen['public_id'];
+                    }
+
+                } elseif (
+                    $imagen['ruta']
+                    && str_starts_with($imagen['ruta'], 'animales/')
+                ) {
+                    Storage::disk('public')->delete($imagen['ruta']);
+                }
+
+            } catch (\Throwable $errorLimpieza) {
+                report($errorLimpieza);
+            }
         }
 
         return response()->json([
@@ -415,7 +475,7 @@ class AnimalController extends Controller
     {
         $usuario = $request->user();
 
-        $animales = Animal::where('cuidador_id', $usuario->id)
+        $animales = $usuario->animalesACargo()
             ->where('activo', true)
             ->orderBy('nombre')
             ->get();
@@ -482,7 +542,13 @@ class AnimalController extends Controller
             }
         }
 
-        $animal->cuidador_id = $request->cuidador_id;
+        // ASOCIAR O RETIRAR EL CUIDADOR
+        if ($request->cuidador_id) {
+            $animal->cuidador()->associate($cuidador);
+        } else {
+            $animal->cuidador()->dissociate();
+        }
+
         $animal->instrucciones_cuidado = $request->instrucciones_cuidado;
         $animal->save();
 
@@ -500,8 +566,11 @@ class AnimalController extends Controller
     /**
      * Actualizar la fotografía de un animal.
      */
-    public function actualizarImagen(Request $request, $id)
-    {
+    public function actualizarImagen(
+        Request $request,
+        $id,
+        CloudinaryService $cloudinary
+    ) {
         $animal = Animal::find($id);
 
         if (!$animal) {
@@ -521,27 +590,54 @@ class AnimalController extends Controller
         ]);
 
         $imagenAnterior = $animal->imagen;
+        $publicIdAnterior = $animal->imagen_public_id;
 
-        // Guardar la nueva imagen
-        $ruta = $request->file('imagen')->store('animales', 'public');
+        // SUBIR LA NUEVA IMAGEN
+        $resultado = $cloudinary->upload(
+            $request->file('imagen'),
+            'protectora/animales'
+        );
 
-        $animal->imagen = $ruta;
-        $animal->save();
+        try {
+            $animal->imagen = $resultado['secure_url'];
+            $animal->imagen_public_id = $resultado['public_id'];
+            $animal->save();
 
-        // Eliminar la imagen anterior si existía
-        if ($imagenAnterior) {
-            Storage::disk('public')->delete($imagenAnterior);
+        } catch (\Throwable $error) {
+            try {
+                $cloudinary->eliminar($resultado['public_id']);
+
+            } catch (\Throwable $errorLimpieza) {
+                report($errorLimpieza);
+            }
+
+            throw $error;
+        }
+
+        // ELIMINAR LA IMAGEN ANTERIOR TRAS GUARDAR LA NUEVA
+        try {
+            if ($publicIdAnterior) {
+                $cloudinary->eliminar($publicIdAnterior);
+
+            } elseif (
+                $imagenAnterior
+                && str_starts_with($imagenAnterior, 'animales/')
+            ) {
+                Storage::disk('public')->delete($imagenAnterior);
+            }
+
+        } catch (\Throwable $errorLimpieza) {
+            report($errorLimpieza);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Fotografía del animal actualizada correctamente.',
             'data' => [
-                'imagen_url' => asset('storage/' . $ruta)
+                'imagen_url' => $animal->imagen
             ]
         ], 200);
     }
-
     /**
      * Consultar los datos clínicos de un animal.
      */
@@ -605,7 +701,7 @@ class AnimalController extends Controller
         ], 200);
     }
 
-        // COMPROBAR EL ACCESO A LA INFORMACIÓN INTERNA
+    // COMPROBAR EL ACCESO A LA INFORMACIÓN INTERNA
     private function puedeConsultarDatosInternos(Request $request): bool
     {
         $usuario = $request->user('sanctum');
@@ -614,22 +710,11 @@ class AnimalController extends Controller
             return false;
         }
 
-        if (!in_array(
-            $usuario->rol,
-            ['admin', 'personal', 'veterinario'],
-            true
-        )) {
-            return false;
-        }
-
-        return in_array(
-            'animales:consultar',
-            $usuario->obtenerPermisos(),
-            true
-        ) && $usuario->tokenCan('animales:consultar');
+        return $usuario->tokenCan('animales:gestionar');
     }
 
     // CAMPOS PERMITIDOS EN EL CATÁLOGO PÚBLICO
+
     private function datosPublicosAnimal(Animal $animal): array
     {
         $datos = $animal->only([
@@ -652,14 +737,28 @@ class AnimalController extends Controller
             'cuidados_publicos',
         ]);
 
-        $datos['fotografia_url'] = $animal->fotografia
-            ? asset('storage/' . $animal->fotografia)
-            : null;
+        $datos['fotografia_url'] = $this->obtenerUrlImagen(
+            $animal->fotografia
+        );
 
-        $datos['imagen_url'] = $animal->imagen
-            ? asset('storage/' . $animal->imagen)
-            : null;
+        $datos['imagen_url'] = $this->obtenerUrlImagen(
+            $animal->imagen
+        );
 
         return $datos;
     }
-}
+
+    // OBTENER LA URL DE UNA IMAGEN LOCAL O DE CLOUDINARY
+    private function obtenerUrlImagen(?string $ruta): ?string
+    {
+        if (!$ruta) {
+            return null;
+        }
+
+        if (str_starts_with($ruta, 'https://')) {
+            return $ruta;
+        }
+
+        return asset('storage/' . $ruta);
+    }
+ }

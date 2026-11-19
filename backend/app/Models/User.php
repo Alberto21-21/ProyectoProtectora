@@ -50,4 +50,16 @@ class User extends Authenticatable
             )
         );
     }
+
+    // FICHA LABORAL ASOCIADA A LA CUENTA
+    public function empleado()
+    {
+        return $this->hasOne(Empleado::class, 'user_id');
+    }
+
+    // ANIMALES ASIGNADOS COMO CUIDADOR
+    public function animalesACargo()
+    {
+        return $this->hasMany(Animal::class, 'cuidador_id');
+    }
 }

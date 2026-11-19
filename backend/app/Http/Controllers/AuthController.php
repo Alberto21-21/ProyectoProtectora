@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
 
 class AuthController extends Controller
 {
@@ -177,9 +178,11 @@ class AuthController extends Controller
         ], 200);
     }
 
-    // ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO
-    public function actualizarFotografia(Request $request)
-    {
+    // ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO EN CLOUDINARY
+    public function actualizarFotografia(
+        Request $request,
+        CloudinaryService $cloudinary
+    ) {
         $request->validate([
             'fotografia' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048'
         ], [
@@ -190,28 +193,61 @@ class AuthController extends Controller
         ]);
 
         $usuario = $request->user();
+
         $fotografiaAnterior = $usuario->fotografia;
+        $publicIdAnterior = $usuario->fotografia_public_id;
 
-        // GUARDAR LA NUEVA IMAGEN
-        $ruta = $request->file('fotografia')->store('perfiles', 'public');
+        // SUBIR LA NUEVA FOTOGRAFÍA
+        $resultado = $cloudinary->upload(
+            $request->file('fotografia'),
+            'protectora/perfiles'
+        );
 
-        $usuario->fotografia = $ruta;
-        $usuario->save();
+        // GUARDAR LA URL Y EL IDENTIFICADOR EN LA BASE DE DATOS
+        try {
+            $usuario->fotografia = $resultado['secure_url'];
+            $usuario->fotografia_public_id = $resultado['public_id'];
+            $usuario->save();
 
-        // ELIMINAR LA IMAGEN ANTERIOR
-        if ($fotografiaAnterior) {
-            Storage::disk('public')->delete($fotografiaAnterior);
+        } catch (\Throwable $error) {
+
+            // EVITAR DEJAR UNA IMAGEN SIN CUENTA ASOCIADA
+            try {
+                $cloudinary->eliminar($resultado['public_id']);
+            } catch (\Throwable $errorLimpieza) {
+                report($errorLimpieza);
+            }
+
+            throw $error;
+        }
+
+        // ELIMINAR LA FOTOGRAFÍA ANTERIOR DESPUÉS DE GUARDAR
+        try {
+            if ($publicIdAnterior) {
+                $cloudinary->eliminar($publicIdAnterior);
+
+            } elseif (
+                $fotografiaAnterior &&
+                str_starts_with($fotografiaAnterior, 'perfiles/')
+            ) {
+                Storage::disk('public')->delete($fotografiaAnterior);
+            }
+
+        } catch (\Throwable $errorLimpieza) {
+
+            // LA NUEVA FOTO YA ESTÁ GUARDADA: REGISTRAR EL FALLO DE LIMPIEZA
+            report($errorLimpieza);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Fotografía actualizada correctamente.',
             'data' => [
-                'fotografia_url' => asset('storage/' . $ruta)
+                'fotografia_url' => $usuario->fotografia
             ]
         ], 200);
     }
-
+    
     // CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
     public function cambiarContrasena(Request $request)
     {
@@ -246,5 +282,30 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Contraseña actualizada correctamente.'
         ], 200);
+    }
+
+    // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
+    public function mostrarPerfil(Request $request)
+    {
+        $usuario = $request->user();
+
+        $fotografiaUrl = null;
+
+        if ($usuario->fotografia) {
+            if ($usuario->fotografia_public_id) {
+                $fotografiaUrl = $usuario->fotografia;
+            } else {
+                $fotografiaUrl = asset('storage/' . $usuario->fotografia);
+            }
+        }
+
+        return response()->json([
+            'id' => $usuario->id,
+            'name' => $usuario->name,
+            'email' => $usuario->email,
+            'fecha_nacimiento' => $usuario->fecha_nacimiento,
+            'rol' => $usuario->rol,
+            'fotografia_url' => $fotografiaUrl
+        ]);
     }
 }

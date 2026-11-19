@@ -1,7 +1,4 @@
-import {
-    obtenerUsuario,
-    cerrarSesion
-} from "./providers/autenticacionProvider.js";
+import { obtenerUsuario, cerrarSesion } from "./providers/autenticacionProvider.js";
 
 import {
     crearAnimal,
@@ -14,8 +11,13 @@ import {
 } from "./providers/animalesProvider.js";
 
 import {
-    obtenerEmpleadosParaDisponibilidad
-} from "./providers/disponibilidadProvider.js";
+    obtenerVeterinariosDisponibles,
+    obtenerAsignacionesAnimal,
+    crearAsignacionAnimal,
+    retirarAsignacionAnimal
+} from "./providers/asignacionProvider.js";
+
+import { obtenerEmpleadosParaDisponibilidad } from "./providers/disponibilidadProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     // -------------------------------------------------------------
@@ -45,7 +47,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalDetalleAnimal = document.querySelector("#modalDetalleAnimal");
     const cerrarDetalleAnimal = document.querySelector("#cerrarDetalleAnimal");
     const enlaceEditarAnimal = document.querySelector("#enlaceEditarAnimal");
+
     const enlaceHistorialAnimal = document.querySelector("#enlaceHistorialAnimal");
+
+    
+    const bloqueAsignacionesAnimal = document.querySelector("#bloqueAsignacionesAnimal");
+    const listaAsignacionesAnimal = document.querySelector("#listaAsignacionesAnimal");
+    const formularioAsignacionAnimal = document.querySelector("#formularioAsignacionAnimal");
+    const campoTipoAsignacion = document.querySelector("#campoTipoAsignacion");
+    const tipoAsignacionAnimal = document.querySelector("#tipoAsignacionAnimal");
+    const empleadoAsignacionAnimal = document.querySelector("#empleadoAsignacionAnimal");
+    const mensajeAsignacionAnimal = document.querySelector("#mensajeAsignacionAnimal");
+
 
     // Elementos de la ficha modal
     const fichaNombre = document.querySelector("#fichaNombre");
@@ -89,6 +102,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Elementos de asignación de cuidador (T17) y enlaces de navegación
     const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
     const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
+    const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
+    const enlaceHabitaculos = document.querySelector("#enlaceHabitaculos");
     const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
     const selectCuidador = document.querySelector("#selectCuidador");
     const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
@@ -173,6 +188,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (enlaceUsuarios) {
             enlaceUsuarios.hidden = usuarioActual.rol !== "admin";
+        }
+        // Instalaciones: solo el administrador (T23)
+        // Habitáculos: admin, personal y veterinarios (T24)
+        if (enlaceHabitaculos) {
+            enlaceHabitaculos.hidden = usuarioActual.rol !== "admin" && usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
+        }
+        if (enlaceInstalaciones) {
+            enlaceInstalaciones.hidden = usuarioActual.rol !== "admin";
         }
         if (botonCerrarSesion) botonCerrarSesion.hidden = false;
 
@@ -407,6 +430,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
     // CALCULAR LA EDAD DESDE EL NACIMIENTO APROXIMADO
     function calcularEdadAnimal(fechaNacimiento) {
 
@@ -468,11 +492,18 @@ document.addEventListener("DOMContentLoaded", function () {
             // FOTOGRAFÍA
             const rutaImagen = animal.imagen || animal.fotografia;
 
-            if (rutaImagen) {
+            const urlImagen = animal.imagen_url
+                || animal.fotografia_url
+                || (rutaImagen
+                    ? (rutaImagen.startsWith("https://")
+                        ? rutaImagen
+                        : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                    : null);
+
+            if (urlImagen) {
                 const imagen = document.createElement("img");
 
-                imagen.src =
-                    "http://127.0.0.1:8000/storage/" + rutaImagen;
+                imagen.src = urlImagen;
 
                 imagen.alt = "Fotografía de " + animal.nombre;
                 imagen.loading = "lazy";
@@ -538,6 +569,145 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+
+
+    async function cargarPersonasAsignables() {
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+    if (!token || !empleadoAsignacionAnimal || !usuarioActual) {
+        return;
+    }
+
+    const tipo = usuarioActual.rol === "admin"
+        ? tipoAsignacionAnimal.value
+        : "veterinario";
+
+    let personas = [];
+
+    if (tipo === "responsable") {
+        const resultado = await obtenerEmpleadosParaDisponibilidad(token);
+
+        personas = resultado.data.filter(persona =>
+            persona.user && persona.user.rol === "personal"
+        );
+    } else {
+        const resultado = await obtenerVeterinariosDisponibles(token);
+        personas = resultado.data;
+    }
+
+    empleadoAsignacionAnimal.replaceChildren();
+
+    const opcionInicial = document.createElement("option");
+    opcionInicial.value = "";
+    opcionInicial.textContent = "Selecciona una persona";
+    empleadoAsignacionAnimal.appendChild(opcionInicial);
+
+    personas.forEach(persona => {
+        const opcion = document.createElement("option");
+        opcion.value = persona.id;
+        opcion.textContent = `${persona.user?.name || "Sin nombre"} — ${persona.puesto || "Sin puesto"}`;
+        empleadoAsignacionAnimal.appendChild(opcion);
+    });
+}
+
+async function cargarAsignacionesEnFicha(animalId) {
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    const rol = usuarioActual?.rol;
+
+    if (!token || !bloqueAsignacionesAnimal || !listaAsignacionesAnimal) {
+        return;
+    }
+
+    const puedeConsultar = ["admin", "personal", "veterinario"].includes(rol);
+
+    if (!puedeConsultar) {
+        bloqueAsignacionesAnimal.hidden = true;
+        return;
+    }
+
+    bloqueAsignacionesAnimal.hidden = false;
+    listaAsignacionesAnimal.replaceChildren();
+
+    const puedeGestionar = ["admin", "personal"].includes(rol);
+
+    if (formularioAsignacionAnimal) {
+        formularioAsignacionAnimal.hidden = !puedeGestionar;
+    }
+
+    if (campoTipoAsignacion) {
+        campoTipoAsignacion.hidden = rol !== "admin";
+    }
+
+    if (rol !== "admin" && tipoAsignacionAnimal) {
+        tipoAsignacionAnimal.value = "veterinario";
+    }
+
+    const resultado = await obtenerAsignacionesAnimal(animalId, token);
+
+    if (resultado.data.length === 0) {
+        const elementoVacio = document.createElement("li");
+        elementoVacio.textContent = "No hay asignaciones registradas para mostrar.";
+        listaAsignacionesAnimal.appendChild(elementoVacio);
+    } else {
+       resultado.data.forEach(asignacion => {
+    const elemento = document.createElement("li");
+    const nombre = asignacion.empleado?.user?.name || "Sin nombre";
+    const puesto = asignacion.empleado?.puesto || "Sin puesto";
+    const tipoAsignacion = asignacion.tipo_asignacion === "responsable"
+        ? "Responsable"
+        : "Veterinario";
+
+    const texto = document.createElement("span");
+    texto.textContent = `${tipoAsignacion}: ${nombre} — ${puesto}`;
+    elemento.appendChild(texto);
+
+    if (puedeGestionar) {
+        const botonRetirar = document.createElement("button");
+        botonRetirar.type = "button";
+        botonRetirar.textContent = "Retirar asignación";
+
+        botonRetirar.addEventListener("click", async function () {
+            const confirmado = confirm("¿Quieres retirar esta asignación?");
+            if (!confirmado) {
+                return;
+            }
+
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            botonRetirar.disabled = true;
+
+            try {
+                const resultado = await retirarAsignacionAnimal(asignacion.id, token);
+
+                if (mensajeAsignacionAnimal) {
+                    mensajeAsignacionAnimal.textContent = resultado.message;
+                    mensajeAsignacionAnimal.style.color = "green";
+                }
+
+                await cargarAsignacionesEnFicha(animalId);
+            } catch (error) {
+                if (mensajeAsignacionAnimal) {
+                    mensajeAsignacionAnimal.textContent = error.message;
+                    mensajeAsignacionAnimal.style.color = "red";
+                }
+            } finally {
+                botonRetirar.disabled = false;
+            }
+        });
+
+        elemento.appendChild(botonRetirar);
+    }
+
+    listaAsignacionesAnimal.appendChild(elemento);
+});
+    }
+
+    if (puedeGestionar) {
+        await cargarPersonasAsignables();
+    }
+}
+
+
     // -------------------------------------------------------------
     // CONSULTA DE FICHA DETALLADA Y CAMBIO DE ESTADO (T15)
     // -------------------------------------------------------------
@@ -579,14 +749,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 animal.cuidados_publicos ||
                 "Consulta con la protectora los cuidados que necesita.";
 
-            const imgUrl = animal.fotografia || animal.imagen;
+            // PRIORIZAR LA IMAGEN MÁS RECIENTE
+            const rutaImagen = animal.imagen || animal.fotografia;
 
-            if (fichaNombre) fichaNombre.textContent = `Ficha de ${animal.nombre}`;
+            const urlImagen = animal.imagen_url
+                || animal.fotografia_url
+                || (rutaImagen
+                    ? (rutaImagen.startsWith("https://")
+                        ? rutaImagen
+                        : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                    : null);
+
+            if (fichaNombre) {
+                fichaNombre.textContent = "Ficha de " + animal.nombre;
+            }
+
             if (fichaImagen) {
-                if (imgUrl) {
-                    fichaImagen.src = `http://127.0.0.1:8000/storage/${imgUrl}`;
-                    fichaImagen.alt = animal.nombre;
+                if (urlImagen) {
+                    fichaImagen.src = urlImagen;
+                    fichaImagen.alt = "Fotografía de " + animal.nombre;
                     fichaImagen.hidden = false;
+
                 } else {
                     fichaImagen.removeAttribute("src");
                     fichaImagen.hidden = true;
@@ -670,6 +853,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 enlaceEditarAnimal.hidden = !esAutorizado;
             }
 
+
             // Bloque de asignación: solo el administrador y si el animal no está de baja (T17)
             if (bloqueAsignacion) {
                 const esAdmin = usuarioActual && usuarioActual.rol === "admin";
@@ -678,6 +862,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (selectCuidador) selectCuidador.value = animal.cuidador_id || "";
                 if (instruccionesCuidado) instruccionesCuidado.value = animal.instrucciones_cuidado || "";
                 if (mensajeAsignacion) mensajeAsignacion.textContent = "";
+            }
+            try {
+                await cargarAsignacionesEnFicha(id);
+            } catch (error) {
+            if (bloqueAsignacionesAnimal) {
+                 bloqueAsignacionesAnimal.hidden = false;
+            }
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
             }
 
             if (!modalDetalleAnimal.open) {
@@ -689,6 +885,90 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("No se pudo conectar con el servidor.");
         }
     }
+
+    if (tipoAsignacionAnimal) {
+    tipoAsignacionAnimal.addEventListener("change", async function () {
+        try {
+            await cargarPersonasAsignables();
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "";
+            }
+        } catch (error) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+        }
+    });
+}
+
+
+if (formularioAsignacionAnimal) {
+    formularioAsignacionAnimal.addEventListener("submit", async function (evento) {
+        evento.preventDefault();
+
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+        if (!token || !usuarioActual || !["admin", "personal"].includes(usuarioActual.rol)) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "No tienes permiso para crear asignaciones.";
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+            return;
+        }
+
+        const tipo = usuarioActual.rol === "admin"
+            ? tipoAsignacionAnimal.value
+            : "veterinario";
+
+        const empleadoId = empleadoAsignacionAnimal.value;
+
+        if (!empleadoId || !animalSeleccionadoId) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "Selecciona una persona para asignar.";
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+            return;
+        }
+
+        const botonGuardarAsignacion =
+            formularioAsignacionAnimal.querySelector('button[type="submit"]');
+
+        if (botonGuardarAsignacion) {
+            botonGuardarAsignacion.disabled = true;
+        }
+
+        try {
+            const resultado = await crearAsignacionAnimal({
+                animal_id: Number(animalSeleccionadoId),
+                empleado_id: Number(empleadoId),
+                tipo_asignacion: tipo
+            }, token);
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = resultado.message;
+                mensajeAsignacionAnimal.style.color = "green";
+            }
+
+            await cargarAsignacionesEnFicha(animalSeleccionadoId);
+        } catch (error) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+        } finally {
+            if (botonGuardarAsignacion) {
+                botonGuardarAsignacion.disabled = false;
+            }
+        }
+    });
+}
+
+
+
+
+
 
     // EVENTO PARA GUARDAR EL CAMBIO DE ESTADO (T15)
     if (btnGuardarEstadoAnimal && selectNuevoEstado) {

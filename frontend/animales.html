@@ -27,9 +27,12 @@
             <nav aria-label="Navegación principal">
                 <a href="index.html">Inicio</a>
                 <a href="animales.html" aria-current="page">Animales</a>
-                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
-                <a href="perfil.html">Mi perfil</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
                 <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="disponibilidad.html" id="enlaceDisponibilidad" hidden>Disponibilidad</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
                 <button type="button" id="botonCerrarSesion">Cerrar sesión</button>
             </nav>
         </div>
@@ -422,6 +425,36 @@
                     * Eliminar definitivamente: solo se permite si el animal no tiene ningún registro asociado.
                 </small>
             </div>
+
+<section id="bloqueAsignacionesAnimal" hidden>
+    <hr>
+    <h3>Responsables y veterinarios asignados</h3>
+
+    <ul id="listaAsignacionesAnimal"></ul>
+
+    <form id="formularioAsignacionAnimal">
+        <div id="campoTipoAsignacion" hidden>
+            <label for="tipoAsignacionAnimal">Tipo de asignación</label>
+            <select id="tipoAsignacionAnimal">
+                <option value="responsable">Empleado responsable</option>
+                <option value="veterinario">Veterinario</option>
+            </select>
+        </div>
+
+        <label for="empleadoAsignacionAnimal">Persona que se asignará</label>
+        <select id="empleadoAsignacionAnimal" required>
+            <option value="">Selecciona una persona</option>
+        </select>
+
+        <button type="submit">Guardar asignación</button>
+    </form>
+
+    <p id="mensajeAsignacionAnimal" role="status"></p>
+</section>
+
+
+
+
         </div>
 
         <div class="acciones-modal-animal">
@@ -431,6 +464,7 @@
         </div>
     </dialog>
 
+    <script type="module" src="./src/menu.js"></script>
     <script type="module" src="./src/animales.js"></script>
 </body>
 

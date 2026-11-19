@@ -147,8 +147,19 @@ async function cargarFicha() {
 
         mostrarAnimal(animal);
 
-        if (animal.imagen) {
-            mostrarImagen("http://127.0.0.1:8000/storage/" + animal.imagen);
+        // MOSTRAR LA IMAGEN DE CLOUDINARY O LA FOTOGRAFÍA LOCAL
+        const rutaImagen = animal.imagen || animal.fotografia;
+
+        const urlImagen = animal.imagen_url
+            || animal.fotografia_url
+            || (rutaImagen
+                ? (rutaImagen.startsWith("https://")
+                    ? rutaImagen
+                    : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                : null);
+
+        if (urlImagen) {
+            mostrarImagen(urlImagen);
         }
 
         // SOLO VETERINARIO Y ADMINISTRADOR VEN LOS DATOS CLÍNICOS

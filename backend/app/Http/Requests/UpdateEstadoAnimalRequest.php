@@ -11,11 +11,11 @@ class UpdateEstadoAnimalRequest extends FormRequest
     {
         $usuario = $this->user();
 
-        if (!$usuario) {
+        if (!$usuario || $usuario->estado !== 'activo') {
             return false;
         }
 
-        return in_array($usuario->rol, ['admin', 'personal', 'veterinario']);
+        return $usuario->tokenCan('animales:gestionar');
     }
 
     public function rules(): array

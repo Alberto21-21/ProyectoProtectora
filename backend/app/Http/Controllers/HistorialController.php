@@ -22,8 +22,8 @@ class HistorialController extends Controller
             ], 404);
         }
 
-        $registros = Historial::with('autor:id,name,rol')
-            ->where('animal_id', $animal->id)
+        $registros = $animal->historiales()
+            ->with('autor:id,name,rol')
             ->orderBy('fecha', 'desc')
             ->orderBy('id', 'desc')
             ->get();
@@ -77,12 +77,12 @@ class HistorialController extends Controller
         ]);
 
         $registro = new Historial();
-        $registro->animal_id = $animal->id;
         $registro->user_id = $request->user()->id;
         $registro->tipo = 'observacion';
         $registro->descripcion = $request->descripcion;
         $registro->fecha = now();
-        $registro->save();
+
+        $animal->historiales()->save($registro);
 
         // Cargar el autor para devolverlo junto al registro
         $registro->load('autor:id,name,rol');

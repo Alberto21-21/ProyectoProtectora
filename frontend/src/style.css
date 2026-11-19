@@ -291,15 +291,19 @@ button:focus-visible {
     color: #8B5C4A;
 }
 
+/* Las ventanas nuevas comparten el tamaño de los formularios de usuario. */
 #modalAltaUsuario,
 #modalEditarUsuario,
 #modalRolUsuario,
 #modalEditarPerfil,
-#modalContrasena {
+#modalContrasena,
+#modalZona,
+#modalHabitaculo {
     max-width: 460px;
 }
 
-#modalDetalleUsuario {
+#modalDetalleUsuario,
+#modalFichaHabitaculo {
     max-width: 600px;
 }
 
@@ -314,7 +318,9 @@ button:focus-visible {
 #formularioAnimal,
 #formularioEditarUsuario,
 #formularioAltaUsuario,
-#formularioRolUsuario {
+#formularioRolUsuario,
+#formularioZona,
+#formularioHabitaculo {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -327,7 +333,9 @@ button:focus-visible {
 #formularioContrasena label,
 #formularioAnimal label,
 #formularioEditarUsuario label,
-#formularioAltaUsuario label {
+#formularioAltaUsuario label,
+#formularioZona label,
+#formularioHabitaculo label {
     margin-top: 8px;
     font-size: 13px;
     font-weight: 600;
@@ -344,6 +352,10 @@ button:focus-visible {
 #formularioEditarUsuario input,
 #formularioAltaUsuario input,
 #formularioAltaUsuario select,
+#formularioZona input,
+#formularioHabitaculo input,
+#formularioHabitaculo select,
+#formularioHabitaculo textarea,
 #nuevoRolUsuario {
     width: 100%;
     min-width: 0;
@@ -366,6 +378,10 @@ button:focus-visible {
 #formularioEditarUsuario input:focus,
 #formularioAltaUsuario input:focus,
 #formularioAltaUsuario select:focus,
+#formularioZona input:focus,
+#formularioHabitaculo input:focus,
+#formularioHabitaculo select:focus,
+#formularioHabitaculo textarea:focus,
 #nuevoRolUsuario:focus {
     outline: 2px solid #300E28;
     outline-offset: 2px;
@@ -381,7 +397,9 @@ button:focus-visible {
 #mensajeFotografia,
 #mensajeContrasena,
 #mensajeAltaUsuario,
-#mensajeEditarUsuario {
+#mensajeEditarUsuario,
+#mensajeZona,
+#mensajeHabitaculo {
     margin: 5px 0;
     font-size: 13px;
     line-height: 1.5;
@@ -390,14 +408,20 @@ button:focus-visible {
 
 #mensajeAnimal,
 #mensajeUsuarios,
-#mensajeDetalleUsuario {
+#mensajeInstalaciones,
+#mensajeHabitaculos,
+#mensajeDetalleUsuario,
+#mensajeFichaHabitaculo {
     margin: 0 0 20px;
     font-size: 14px;
     line-height: 1.6;
 }
 
 #mensajeUsuarios,
-#mensajeDetalleUsuario {
+#mensajeInstalaciones,
+#mensajeHabitaculos,
+#mensajeDetalleUsuario,
+#mensajeFichaHabitaculo {
     overflow-wrap: anywhere;
 }
 
@@ -413,7 +437,12 @@ button:focus-visible {
 #mensajeDetalleUsuario:empty,
 #mensajeAltaUsuario:empty,
 #mensajeEditarUsuario:empty,
-#mensajeRolUsuario:empty {
+#mensajeRolUsuario:empty,
+#mensajeInstalaciones:empty,
+#mensajeZona:empty,
+#mensajeHabitaculo:empty,
+#mensajeHabitaculos:empty,
+#mensajeFichaHabitaculo:empty {
     display: none;
 }
 
@@ -429,7 +458,9 @@ button:focus-visible {
 #botonCerrarSesion,
 #botonCrearUsuario,
 #botonActualizarUsuario,
-#botonGuardarRol {
+#botonGuardarRol,
+#botonGuardarZona,
+#botonGuardarHabitaculo {
     padding: 13px;
     border: none;
     border-radius: 25px;
@@ -449,7 +480,9 @@ button:focus-visible {
 #botonCerrarSesion:hover,
 #botonCrearUsuario:hover,
 #botonActualizarUsuario:hover,
-#botonGuardarRol:hover {
+#botonGuardarRol:hover,
+#botonGuardarZona:hover,
+#botonGuardarHabitaculo:hover {
     background-color: #8B5C4A;
 }
 
@@ -463,6 +496,8 @@ button:focus-visible {
 #botonCrearUsuario:disabled,
 #botonActualizarUsuario:disabled,
 #botonGuardarRol:disabled,
+#botonGuardarZona:disabled,
+#botonGuardarHabitaculo:disabled,
 #cerrarRolUsuario:disabled,
 #nuevoRolUsuario:disabled,
 #cerrarEditarPerfil:disabled,
@@ -815,18 +850,23 @@ button:focus-visible {
 
 /* FORMULARIO DE ANIMALES */
 
-#formularioAnimal textarea {
+#formularioAnimal textarea,
+#formularioHabitaculo textarea {
     resize: vertical;
     min-height: 80px;
 }
 
-#formularioAnimal .error-campo {
+#formularioAnimal .error-campo,
+#formularioZona .error-campo,
+#formularioHabitaculo .error-campo {
     margin: 0;
     color: #B3261E;
     font-size: 13px;
 }
 
-#formularioAnimal .error-campo:empty {
+#formularioAnimal .error-campo:empty,
+#formularioZona .error-campo:empty,
+#formularioHabitaculo .error-campo:empty {
     display: none;
 }
 
@@ -1078,11 +1118,13 @@ button:focus-visible {
     object-fit: cover;
 }
 
-#modalDetalleUsuario .lista-datos-perfil {
+#modalDetalleUsuario .lista-datos-perfil,
+#modalFichaHabitaculo .lista-datos-perfil {
     gap: 20px;
 }
 
-#modalDetalleUsuario .dato-perfil dd {
+#modalDetalleUsuario .dato-perfil dd,
+#modalFichaHabitaculo .dato-perfil dd {
     font-size: 14px;
 }
 
@@ -2061,4 +2103,69 @@ button:focus-visible {
         text-align: center;
     }
 
+}
+
+/* MODAL DE LA FICHA DEL ANIMAL */
+#modalDetalleAnimal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    transform: none;
+
+    width: min(600px, calc(100% - 32px));
+    height: fit-content;
+    max-height: calc(100dvh - 40px);
+
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    border: none;
+    border-radius: 24px;
+}
+
+/* MODAL DE LA FICHA DEL ANIMAL */
+#modalDetalleAnimal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    transform: none;
+
+    width: min(520px, calc(100% - 32px));
+    height: fit-content;
+    max-height: 75dvh;
+    padding: 24px;
+
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    border: none;
+    border-radius: 24px;
+}
+
+#modalDetalleAnimal h2 {
+    margin: 0 0 16px;
+    font-size: 24px;
+}
+
+#fichaImagen {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 16px;
+}
+
+#fichaImagen[hidden] {
+    display: none;
+}
+
+#fichaImagen {
+    display: block;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 14px;
+    margin-bottom: 16px;
 }
