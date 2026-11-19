@@ -29,6 +29,17 @@ const hayOtrosAnimales = document.querySelector("#hayOtrosAnimales");
 const otrosAnimales = document.querySelector("#otrosAnimales");
 const experiencia = document.querySelector("#experienciaHogar");
 
+// PREFERENCIAS DE ADOPCIÓN
+const minutosPaseos = document.querySelector("#minutosPaseos");
+const minutosCuidados = document.querySelector("#minutosCuidados");
+const nivelActividad = document.querySelector("#nivelActividad");
+const especiePreferida = document.querySelector("#especiePreferida");
+const tamanoPreferido = document.querySelector("#tamanoPreferido");
+const edadMinima = document.querySelector("#edadMinima");
+const edadMaxima = document.querySelector("#edadMaxima");
+const aceptaNecesidades = document.querySelector("#aceptaNecesidades");
+const cuidadosAsumibles = document.querySelector("#cuidadosAsumibles");
+
 // BLOQUES CONDICIONALES
 const campoExterior = document.querySelector("#campoExterior");
 const campoEdades = document.querySelector("#campoEdades");
@@ -77,6 +88,26 @@ function mostrarHogar(hogar) {
     hayOtrosAnimales.value = hogar.hay_otros_animales ? "1" : "0";
     otrosAnimales.value = hogar.otros_animales ?? "";
     experiencia.value = hogar.experiencia;
+
+    // MOSTRAR LAS PREFERENCIAS GUARDADAS
+    minutosPaseos.value = hogar.minutos_paseos ?? "";
+    minutosCuidados.value = hogar.minutos_cuidados ?? "";
+    nivelActividad.value = hogar.nivel_actividad ?? "";
+    especiePreferida.value = hogar.especie_preferida ?? "";
+    tamanoPreferido.value = hogar.tamano_preferido ?? "";
+    edadMinima.value = hogar.edad_minima ?? "";
+    edadMaxima.value = hogar.edad_maxima ?? "";
+    cuidadosAsumibles.value = hogar.cuidados_asumibles ?? "";
+
+    if (
+        hogar.acepta_necesidades_especiales === null ||
+        hogar.acepta_necesidades_especiales === undefined
+    ) {
+        aceptaNecesidades.value = "";
+    } else {
+        aceptaNecesidades.value =
+            hogar.acepta_necesidades_especiales ? "1" : "0";
+    }
 
     actualizarCampos();
 }
@@ -203,6 +234,15 @@ async function enviarHogar(evento) {
     const hayExterior =
         tieneJardin.value === "1" || tieneTerraza.value === "1";
 
+        // COMPROBAR EL INTERVALO DE EDAD
+        if (edadMinima.value !== "" && edadMaxima.value !== "") {
+            if (Number(edadMaxima.value) < Number(edadMinima.value)) {
+                mensajeGuardar.textContent =
+                    "La edad máxima no puede ser menor que la mínima.";
+                return;
+            }
+        }
+
     const datos = {
         tipo_vivienda: tipoVivienda.value,
         superficie: Number(superficie.value),
@@ -218,8 +258,21 @@ async function enviarHogar(evento) {
         otros_animales: hayOtrosAnimales.value === "1"
             ? otrosAnimales.value.trim()
             : null,
-        experiencia: experiencia.value.trim()
-    };
+        experiencia: experiencia.value.trim(),
+        minutos_paseos: Number(minutosPaseos.value),
+        minutos_cuidados: Number(minutosCuidados.value),
+        nivel_actividad: nivelActividad.value,
+        especie_preferida: especiePreferida.value || null,
+        tamano_preferido: tamanoPreferido.value || null,
+        edad_minima: edadMinima.value !== ""
+            ? Number(edadMinima.value)
+            : null,
+        edad_maxima: edadMaxima.value !== ""
+            ? Number(edadMaxima.value)
+            : null,
+        acepta_necesidades_especiales: Number(aceptaNecesidades.value),
+        cuidados_asumibles: cuidadosAsumibles.value.trim() || null
+        };
 
     botonGuardar.disabled = true;
     mensajeGuardar.textContent = "Guardando hogar...";
