@@ -32,36 +32,20 @@
         </a>
 
         <nav aria-label="Navegación principal">
-
-            <a href="index.html" aria-current="page">
-                Inicio
-            </a>
-
-            <!-- ENLACE NAVEGA A LA NUEVA PÁGINA ANIMALES.HTML -->
-            <a href="animales.html">
-                Animales
-            </a>
-
-            <button type="button" id="abrirLogin">
+            <a href="index.html" aria-current="page">Inicio</a>
+            <a href="animales.html">Animales</a>
+            <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+            <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+            <a href="disponibilidad.html" id="enlaceDisponibilidad" hidden>Disponibilidad</a>
+            <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+            <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+            <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
+            <button type="button" id="abrirLogin" class="boton-nav">
                 Iniciar sesión
             </button>
-
-            <a href="misAnimales.html" id="enlaceMisAnimales" hidden>
-                Mis animales
-            </a>
-
-            <a href="perfil.html" id="enlacePerfil" hidden>
-                Mi perfil
-            </a>
-
-            <a href="usuarios.html" id="enlaceUsuarios" hidden>
-                Usuarios
-            </a>
-
             <button type="button" id="botonCerrarSesion" hidden>
                 Cerrar sesión
             </button>
-
         </nav>
 
     </header>
@@ -155,11 +139,6 @@
             </button>
 
         </form>
-
-        <!-- CERRAR SESION -->
-        <button type="button" id="botonCerrarSesion" hidden>
-            Cerrar sesión
-        </button>
 
         <!-- PERFIL -->
         <p>
@@ -274,6 +253,7 @@
     </dialog>
 
     <!-- JAVASCRIPT DE LA PORTADA -->
+    <script type="module" src="/src/menu.js"></script>
     <script type="module" src="/src/inicio.js"></script>
 
 </body>
