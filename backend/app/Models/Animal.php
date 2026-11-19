@@ -78,4 +78,9 @@ class Animal extends Model
     {
         return $this->hasMany(Historial::class, 'animal_id');
     }
+    // HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (T25)
+    public function alojamientos()
+    {
+        return $this->hasMany(Alojamiento::class, 'animal_id')->orderByDesc('fecha_movimiento');
+    }
 }

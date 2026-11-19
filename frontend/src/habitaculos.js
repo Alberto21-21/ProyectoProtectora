@@ -6,13 +6,16 @@ import {
 import {
     obtenerZonas,
     obtenerHabitaculos,
-    obtenerFichaHabitaculo
+    obtenerFichaHabitaculo,
+    alojarAnimal,
+    obtenerHistorialAlojamientos,
+    obtenerAnimalesParaAlojar
 } from "./providers/instalacionesProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    // -------------------------------------------------------------
+   
     // ELEMENTOS DEL DOM
-    // -------------------------------------------------------------
+   
     const mensajeHabitaculos = document.querySelector("#mensajeHabitaculos");
     const contenidoHabitaculos = document.querySelector("#contenidoHabitaculos");
     const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
@@ -24,6 +27,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const filtroLimpieza = document.querySelector("#filtroLimpieza");
     const botonLimpiarFiltros = document.querySelector("#botonLimpiarFiltros");
     const tablaHabitaculos = document.querySelector("#tablaHabitaculos");
+
+    // Historial de alojamientos (T25)
+    const tablaHistorialAlojamientos = document.querySelector("#tablaHistorialAlojamientos");
+
+    // Modal alojar / trasladar animal (T25)
+    const botonAbrirAlojar = document.querySelector("#botonAbrirAlojar");
+    const modalAlojarAnimal = document.querySelector("#modalAlojarAnimal");
+    const cerrarAlojarAnimal = document.querySelector("#cerrarAlojarAnimal");
+    const formularioAlojarAnimal = document.querySelector("#formularioAlojarAnimal");
+    const selectAnimalAlojar = document.querySelector("#selectAnimalAlojar");
+    const selectHabitaculoDestino = document.querySelector("#selectHabitaculoDestino");
+    const observacionesAlojar = document.querySelector("#observacionesAlojar");
+    const mensajeAlojarAnimal = document.querySelector("#mensajeAlojarAnimal");
+    const botonGuardarAlojamiento = document.querySelector("#botonGuardarAlojamiento");
 
     // Ficha
     const modalFichaHabitaculo = document.querySelector("#modalFichaHabitaculo");
@@ -43,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const listaActuaciones = document.querySelector("#listaActuaciones");
     const tablaAnimalesAlojados = document.querySelector("#tablaAnimalesAlojados");
 
-     // ROLES QUE PUEDEN CONSULTAR LOS HABITÁCULOS
+    // ROLES QUE PUEDEN CONSULTAR Y ALOJAR EN LOS HABITÁCULOS
     const rolesTrabajadores = ["admin", "personal", "veterinario"];
 
     function obtenerToken() {
@@ -62,9 +79,26 @@ document.addEventListener("DOMContentLoaded", function () {
         return elemento;
     }
 
-    // -------------------------------------------------------------
+    function formatearFechaHora(fechaIso) {
+        if (!fechaIso) {
+            return "-";
+        }
+        const fecha = new Date(fechaIso);
+        if (Number.isNaN(fecha.getTime())) {
+            return fechaIso;
+        }
+        return fecha.toLocaleString("es-ES", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+   
     // COMPROBAR QUE ES UN TRABAJADOR
-    // -------------------------------------------------------------
+    
     async function comprobarAcceso() {
         const token = obtenerToken();
 
@@ -87,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             contenidoHabitaculos.hidden = false;
             await cargarZonas();
             await cargarHabitaculos();
+            await cargarHistorial();
 
         } catch (error) {
             mensajeHabitaculos.textContent = "No se pudo comprobar tu sesión: " + error.message;
@@ -111,9 +146,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // -------------------------------------------------------------
+    
     // LISTADO DE HABITÁCULOS
-    // -------------------------------------------------------------
+    
     async function cargarHabitaculos() {
         const filtros = {
             zona_id: filtroZona.value,
@@ -172,11 +207,176 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // -------------------------------------------------------------
+   
+    // HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (T25)
+   
+    async function cargarHistorial() {
+        try {
+            const resultado = await obtenerHistorialAlojamientos({}, obtenerToken());
+            pintarTablaHistorial(resultado.data || []);
+        } catch (error) {
+            mensajeHabitaculos.textContent = error.message;
+        }
+    }
+
+    function pintarTablaHistorial(movimientos) {
+        tablaHistorialAlojamientos.replaceChildren();
+
+        if (movimientos.length === 0) {
+            const fila = document.createElement("tr");
+            const celda = crearCelda("Aún no se han registrado alojamientos ni traslados.");
+            celda.colSpan = 5;
+            fila.appendChild(celda);
+            tablaHistorialAlojamientos.appendChild(fila);
+            return;
+        }
+
+        for (let i = 0; i < movimientos.length; i++) {
+            const mov = movimientos[i];
+            const fila = document.createElement("tr");
+
+            const nombreAnimal = mov.animal
+                ? mov.animal.nombre + " (" + mov.animal.especie + ")"
+                : "Animal #" + mov.animal_id;
+
+            const origen = mov.habitaculo_origen
+                ? mov.habitaculo_origen.identificador
+                : "Primer ingreso";
+
+            const destino = mov.habitaculo_destino
+                ? mov.habitaculo_destino.identificador
+                : "-";
+
+            const responsable = mov.responsable
+                ? mov.responsable.name
+                : "Usuario #" + mov.user_id;
+
+            fila.appendChild(crearCelda(nombreAnimal));
+            fila.appendChild(crearCelda(origen));
+            fila.appendChild(crearCelda(destino));
+            fila.appendChild(crearCelda(formatearFechaHora(mov.fecha_movimiento)));
+            fila.appendChild(crearCelda(responsable));
+
+            tablaHistorialAlojamientos.appendChild(fila);
+        }
+    }
+
+  
+    // MODAL ALOJAR / TRASLADAR ANIMAL (T25)
+    
+    async function abrirModalAlojar() {
+        mensajeAlojarAnimal.textContent = "Cargando animales y habitáculos...";
+        formularioAlojarAnimal.reset();
+        selectAnimalAlojar.replaceChildren();
+        selectHabitaculoDestino.replaceChildren();
+
+        const opcionAnimalDefecto = document.createElement("option");
+        opcionAnimalDefecto.value = "";
+        opcionAnimalDefecto.textContent = "Selecciona un animal";
+        selectAnimalAlojar.appendChild(opcionAnimalDefecto);
+
+        const opcionHabDefecto = document.createElement("option");
+        opcionHabDefecto.value = "";
+        opcionHabDefecto.textContent = "Selecciona un habitáculo";
+        selectHabitaculoDestino.appendChild(opcionHabDefecto);
+
+        modalAlojarAnimal.showModal();
+
+        try {
+            const token = obtenerToken();
+            const [resAnimales, resHabitaculos] = await Promise.all([
+                obtenerAnimalesParaAlojar(token),
+                obtenerHabitaculos({}, token)
+            ]);
+
+            const listaHabitaculos = resHabitaculos.data || [];
+            const mapaHabitaculos = new Map();
+            for (let i = 0; i < listaHabitaculos.length; i++) {
+                mapaHabitaculos.set(listaHabitaculos[i].id, listaHabitaculos[i].identificador);
+            }
+
+            const listaAnimales = Array.isArray(resAnimales)
+                ? resAnimales
+                : (Array.isArray(resAnimales.data)
+                    ? resAnimales.data
+                    : (resAnimales.data?.data || []));
+
+            for (let i = 0; i < listaAnimales.length; i++) {
+                const animal = listaAnimales[i];
+                if (animal.activo === false) {
+                    continue;
+                }
+
+                const opcion = document.createElement("option");
+                opcion.value = animal.id;
+
+                const nombreHabActual = animal.habitaculo?.identificador
+                    || (animal.habitaculo_id ? mapaHabitaculos.get(animal.habitaculo_id) : null);
+
+                const ubicacionActual = nombreHabActual
+                    ? " — Actual: " + nombreHabActual
+                    : " — Sin alojar";
+
+                opcion.textContent = animal.nombre + " (" + animal.especie + ")" + ubicacionActual;
+                selectAnimalAlojar.appendChild(opcion);
+            }
+
+            for (let i = 0; i < listaHabitaculos.length; i++) {
+                const hab = listaHabitaculos[i];
+                if (!hab.activo || hab.estado_mantenimiento !== "Operativo") {
+                    continue;
+                }
+
+                const opcion = document.createElement("option");
+                opcion.value = hab.id;
+                opcion.textContent = hab.identificador + " (" + hab.zona.nombre + " · Cap: " + hab.capacidad + ")";
+                selectHabitaculoDestino.appendChild(opcion);
+            }
+
+            mensajeAlojarAnimal.textContent = "";
+
+        } catch (error) {
+            mensajeAlojarAnimal.textContent = error.message;
+        }
+    }
+
+    botonAbrirAlojar.addEventListener("click", abrirModalAlojar);
+
+    cerrarAlojarAnimal.addEventListener("click", function () {
+        modalAlojarAnimal.close();
+    });
+
+    formularioAlojarAnimal.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const datos = {
+            animal_id: Number(selectAnimalAlojar.value),
+            habitaculo_destino_id: Number(selectHabitaculoDestino.value),
+            observaciones: observacionesAlojar.value.trim() || null
+        };
+
+        botonGuardarAlojamiento.disabled = true;
+        mensajeAlojarAnimal.textContent = "Guardando movimiento...";
+
+        try {
+            const resultado = await alojarAnimal(datos, obtenerToken());
+            mensajeHabitaculos.textContent = resultado.message;
+            modalAlojarAnimal.close();
+
+            await cargarHabitaculos();
+            await cargarHistorial();
+
+        } catch (error) {
+            mensajeAlojarAnimal.textContent = error.message;
+        } finally {
+            botonGuardarAlojamiento.disabled = false;
+        }
+    });
+
+    
     // FICHA DEL HABITÁCULO
-    // -------------------------------------------------------------
+   
     async function verFicha(id) {
-        // Se muestra el modal enseguida mientras llegan los datos de la API.
         datosFichaHabitaculo.hidden = true;
         tituloFichaHabitaculo.textContent = "Ficha del habitáculo";
         mensajeFichaHabitaculo.textContent = "Cargando ficha...";
@@ -210,7 +410,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // LISTA DE TEXTOS (RESTRICCIONES)
     function pintarLista(lista, textos, textoVacio) {
         lista.replaceChildren();
 
@@ -224,7 +423,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // PRÓXIMAS ACTUACIONES: TIPO, FECHA (SI LA HAY) Y DESCRIPCIÓN
     function pintarActuaciones(actuaciones) {
         listaActuaciones.replaceChildren();
 
@@ -244,8 +442,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-     // Solo se pintan datos generales del animal en esta ficha.
-    // ANIMALES ALOJADOS
     function pintarAnimales(animales) {
         tablaAnimalesAlojados.replaceChildren();
 
@@ -275,9 +471,9 @@ document.addEventListener("DOMContentLoaded", function () {
         modalFichaHabitaculo.close();
     });
 
-    // -------------------------------------------------------------
+  
     // FILTROS
-    // -------------------------------------------------------------
+    
     formularioFiltros.addEventListener("submit", function (e) {
         e.preventDefault();
         cargarHabitaculos();
@@ -289,9 +485,9 @@ document.addEventListener("DOMContentLoaded", function () {
         cargarHabitaculos();
     });
 
-    // -------------------------------------------------------------
+   
     // CERRAR SESIÓN
-    // -------------------------------------------------------------
+    
     botonCerrarSesion.addEventListener("click", async function () {
         const token = obtenerToken();
 

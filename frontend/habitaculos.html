@@ -31,7 +31,7 @@
                 >
             </a>
 
-             <nav aria-label="Navegación principal">
+            <nav aria-label="Navegación principal">
                 <a href="index.html">Inicio</a>
                 <a href="animales.html">Animales</a>
                 <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
@@ -54,7 +54,7 @@
         <div class="titulo-perfil">
             <span>INSTALACIONES</span>
             <h1>Habitáculos</h1>
-            <p>Consulta la ocupación y las condiciones de cada habitáculo.</p>
+            <p>Consulta la ocupación, las condiciones y gestiona el alojamiento o traslado de animales.</p>
         </div>
 
         <p id="mensajeHabitaculos" role="status"></p>
@@ -92,11 +92,14 @@
 
             </form>
 
-            <!-- LISTADO -->
+            <!-- LISTADO DE HABITÁCULOS -->
             <div class="tabla-usuarios">
 
                 <div class="cabecera-listado">
                     <h2 id="tituloListadoHabitaculos">Listado de habitáculos</h2>
+                    <button type="button" id="botonAbrirAlojar">
+                        Alojar / trasladar animal
+                    </button>
                 </div>
 
                 <table aria-labelledby="tituloListadoHabitaculos">
@@ -117,9 +120,30 @@
                 </table>
             </div>
 
+            <!-- HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (T25) -->
+            <div class="tabla-usuarios">
+
+                <div class="cabecera-listado">
+                    <h2 id="tituloHistorialAlojamientos">Historial de alojamientos y traslados</h2>
+                </div>
+
+                <table aria-labelledby="tituloHistorialAlojamientos">
+                    <thead>
+                        <tr>
+                            <th scope="col">Animal</th>
+                            <th scope="col">Origen</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Responsable</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaHistorialAlojamientos"></tbody>
+                </table>
+            </div>
+
         </section>
 
-         <!-- La ficha muestra los datos extra cuando el usuario la abre. -->
         <!-- FICHA DEL HABITÁCULO -->
         <dialog
             id="modalFichaHabitaculo"
@@ -214,6 +238,60 @@
                 </div>
 
             </div>
+
+        </dialog>
+
+        <!-- MODAL DE ALOJAR O TRASLADAR ANIMAL (T25) -->
+        <dialog
+            id="modalAlojarAnimal"
+            class="modal-acceso"
+            aria-labelledby="tituloAlojarAnimal"
+        >
+
+            <button
+                type="button"
+                id="cerrarAlojarAnimal"
+                class="cerrar-modal"
+                aria-label="Cerrar formulario de alojamiento"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloAlojarAnimal">Alojar o trasladar animal</h2>
+
+            <form id="formularioAlojarAnimal">
+
+                <div>
+                    <label for="selectAnimalAlojar">Animal</label>
+                    <select id="selectAnimalAlojar" name="animal_id" required>
+                        <option value="">Selecciona un animal</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="selectHabitaculoDestino">Habitáculo de destino</label>
+                    <select id="selectHabitaculoDestino" name="habitaculo_destino_id" required>
+                        <option value="">Selecciona un habitáculo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="observacionesAlojar">Observaciones (opcional)</label>
+                    <textarea
+                        id="observacionesAlojar"
+                        name="observaciones"
+                        rows="3"
+                        maxlength="1000"
+                    ></textarea>
+                </div>
+
+                <p id="mensajeAlojarAnimal" role="status"></p>
+
+                <button type="submit" id="botonGuardarAlojamiento">
+                    Guardar movimiento
+                </button>
+
+            </form>
 
         </dialog>
 

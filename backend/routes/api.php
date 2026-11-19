@@ -327,6 +327,10 @@ Route::prefix('habitaculos')->middleware(['auth:sanctum', 'activa'])->group(func
     Route::get('/{id}', [HabitaculoController::class, 'show'])->whereNumber('id')->middleware('alguna:instalaciones:consultar');
     Route::get('/{id}/ficha', [HabitaculoController::class, 'ficha'])->whereNumber('id')->middleware('alguna:instalaciones:consultar');
 
+    // ALOJAR Y TRASLADAR ANIMALES + HISTORIAL (T25)
+    Route::get('/alojamientos', [HabitaculoController::class, 'historialAlojamientos'])->middleware('alguna:instalaciones:consultar');
+    Route::post('/alojar', [HabitaculoController::class, 'alojarAnimal'])->middleware('alguna:instalaciones:consultar');
+
     // GESTIÓN: SOLO ADMINISTRADOR (T23)
     Route::post('/', [HabitaculoController::class, 'store'])->middleware('alguna:instalaciones:gestionar');
     Route::put('/{id}', [HabitaculoController::class, 'update'])->whereNumber('id')->middleware('alguna:instalaciones:gestionar');
