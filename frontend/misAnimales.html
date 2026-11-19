@@ -23,12 +23,18 @@
                     height="69"
                 >
             </a>
-            <nav aria-label="Navegación principal">
+             <nav aria-label="Navegación principal">
                 <a href="index.html">Inicio</a>
                 <a href="animales.html">Animales</a>
-                <a href="misAnimales.html" aria-current="page">Mis animales</a>
-                <a href="perfil.html">Mi perfil</a>
-                <button type="button" id="botonCerrarSesion">Cerrar sesión</button>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="disponibilidad.html" id="enlaceDisponibilidad" hidden>Disponibilidad</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" aria-current="page" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
             </nav>
         </div>
     </header>
@@ -70,6 +76,7 @@
 
     </main>
 
+    <script type="module" src="./src/menu.js"></script>
     <script type="module" src="./src/misAnimales.js"></script>
 </body>
 

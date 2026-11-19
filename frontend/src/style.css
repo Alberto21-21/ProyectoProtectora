@@ -291,6 +291,7 @@ button:focus-visible {
     color: #8B5C4A;
 }
 
+/* Las ventanas nuevas comparten el tamaño de los formularios de usuario. */
 #modalAltaUsuario,
 #modalEditarUsuario,
 #modalRolUsuario,
@@ -301,7 +302,8 @@ button:focus-visible {
     max-width: 460px;
 }
 
-#modalDetalleUsuario {
+#modalDetalleUsuario,
+#modalFichaHabitaculo {
     max-width: 600px;
 }
 
@@ -407,7 +409,9 @@ button:focus-visible {
 #mensajeAnimal,
 #mensajeUsuarios,
 #mensajeInstalaciones,
-#mensajeDetalleUsuario {
+#mensajeHabitaculos,
+#mensajeDetalleUsuario,
+#mensajeFichaHabitaculo {
     margin: 0 0 20px;
     font-size: 14px;
     line-height: 1.6;
@@ -415,7 +419,9 @@ button:focus-visible {
 
 #mensajeUsuarios,
 #mensajeInstalaciones,
-#mensajeDetalleUsuario {
+#mensajeHabitaculos,
+#mensajeDetalleUsuario,
+#mensajeFichaHabitaculo {
     overflow-wrap: anywhere;
 }
 
@@ -434,7 +440,9 @@ button:focus-visible {
 #mensajeRolUsuario:empty,
 #mensajeInstalaciones:empty,
 #mensajeZona:empty,
-#mensajeHabitaculo:empty {
+#mensajeHabitaculo:empty,
+#mensajeHabitaculos:empty,
+#mensajeFichaHabitaculo:empty {
     display: none;
 }
 
@@ -1110,11 +1118,13 @@ button:focus-visible {
     object-fit: cover;
 }
 
-#modalDetalleUsuario .lista-datos-perfil {
+#modalDetalleUsuario .lista-datos-perfil,
+#modalFichaHabitaculo .lista-datos-perfil {
     gap: 20px;
 }
 
-#modalDetalleUsuario .dato-perfil dd {
+#modalDetalleUsuario .dato-perfil dd,
+#modalFichaHabitaculo .dato-perfil dd {
     font-size: 14px;
 }
 

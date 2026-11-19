@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreZonaRequest extends FormRequest
 {
+    // Por ahora la API ya controla el acceso antes de llegar a este formulario.
     public function authorize(): bool
     {
         return true;
@@ -13,6 +14,7 @@ class StoreZonaRequest extends FormRequest
 
     public function rules(): array
     {
+        // El nombre se guarda como único para no tener dos zonas iguales.
         return [
             'nombre' => 'required|string|max:100|unique:zonas,nombre',
             'descripcion' => 'nullable|string|max:255',

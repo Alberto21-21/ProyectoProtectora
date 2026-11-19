@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Habitaculo extends Model
 {
@@ -18,6 +19,7 @@ class Habitaculo extends Model
         'fecha_ultima_limpieza',
         'fecha_proxima_limpieza',
         'observaciones',
+        'restricciones',
         'activo',
     ];
 
@@ -32,5 +34,11 @@ class Habitaculo extends Model
     public function zona(): BelongsTo
     {
         return $this->belongsTo(Zona::class, 'zona_id', 'id');
+    }
+
+    // UN HABITÁCULO TIENE MUCHOS ANIMALES ALOJADOS (T24)
+    public function animales(): HasMany
+    {
+        return $this->hasMany(Animal::class, 'habitaculo_id', 'id');
     }
 }

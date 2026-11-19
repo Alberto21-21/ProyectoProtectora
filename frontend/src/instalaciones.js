@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const habitaculoUltimaLimpieza = document.querySelector("#habitaculoUltimaLimpieza");
     const habitaculoProximaLimpieza = document.querySelector("#habitaculoProximaLimpieza");
     const habitaculoObservaciones = document.querySelector("#habitaculoObservaciones");
+    const habitaculoRestricciones = document.querySelector("#habitaculoRestricciones");
     const botonGuardarHabitaculo = document.querySelector("#botonGuardarHabitaculo");
     const mensajeHabitaculo = document.querySelector("#mensajeHabitaculo");
 
@@ -70,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "estado_mantenimiento",
         "fecha_ultima_limpieza",
         "fecha_proxima_limpieza",
-        "observaciones"
+        "observaciones",
+        "restricciones"
     ];
 
     function obtenerToken() {
@@ -414,6 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
         habitaculoUltimaLimpieza.value = habitaculo.fecha_ultima_limpieza || "";
         habitaculoProximaLimpieza.value = habitaculo.fecha_proxima_limpieza || "";
         habitaculoObservaciones.value = habitaculo.observaciones || "";
+        habitaculoRestricciones.value = habitaculo.restricciones || "";
         tituloModalHabitaculo.textContent = "Editar habitáculo";
         modalHabitaculo.showModal();
     }
@@ -434,7 +437,8 @@ document.addEventListener("DOMContentLoaded", function () {
             estado_mantenimiento: habitaculoMantenimiento.value,
             fecha_ultima_limpieza: habitaculoUltimaLimpieza.value,
             fecha_proxima_limpieza: habitaculoProximaLimpieza.value,
-            observaciones: habitaculoObservaciones.value.trim()
+            observaciones: habitaculoObservaciones.value.trim(),
+            restricciones: habitaculoRestricciones.value.trim()
         };
 
         botonGuardarHabitaculo.disabled = true;
