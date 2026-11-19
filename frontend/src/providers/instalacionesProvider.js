@@ -74,3 +74,29 @@ export function actualizarHabitaculo(id, datos, token) {
 export function cambiarActivoHabitaculo(id, token) {
     return peticion("habitaculos/" + id + "/activo", "PATCH", null, token);
 }
+
+// ALOJAR Y TRASLADAR ANIMALES (T25)
+export function alojarAnimal(datos, token) {
+    return peticion("habitaculos/alojar", "POST", datos, token);
+}
+
+export function obtenerHistorialAlojamientos(filtros, token) {
+    const parametros = new URLSearchParams();
+
+    if (filtros && filtros.animal_id) {
+        parametros.append("animal_id", filtros.animal_id);
+    }
+
+    if (filtros && filtros.habitaculo_id) {
+        parametros.append("habitaculo_id", filtros.habitaculo_id);
+    }
+
+    const query = parametros.toString();
+    const ruta = query ? "habitaculos/alojamientos?" + query : "habitaculos/alojamientos";
+
+    return peticion(ruta, "GET", null, token);
+}
+
+export function obtenerAnimalesParaAlojar(token) {
+    return peticion("animales", "GET", null, token);
+}

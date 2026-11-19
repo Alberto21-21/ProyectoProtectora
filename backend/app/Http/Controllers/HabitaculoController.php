@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alojamiento;
+use App\Models\Animal;
 use App\Models\Habitaculo;
 use App\Models\Zona;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class HabitaculoController extends Controller
@@ -157,7 +160,7 @@ class HabitaculoController extends Controller
             ], 404);
         }
 
-         // PARA ACTIVARLO, SU ZONA TIENE QUE ESTAR ACTIVA
+        // PARA ACTIVARLO, SU ZONA TIENE QUE ESTAR ACTIVA
         if (!$habitaculo->activo && !$habitaculo->zona->activo) {
             return response()->json([
                 'success' => false,
@@ -289,6 +292,151 @@ class HabitaculoController extends Controller
                 'restricciones' => $restricciones,
                 'actuaciones' => $actuaciones
             ]
+        ], 200);
+    }
+
+    // LISTAR ANIMALES ACTIVOS PARA ALOJAR O TRASLADAR (T25)
+    public function animalesParaAlojar()
+    {
+        $animales = Animal::with('habitaculo:id,identificador')
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'especie', 'estado', 'habitaculo_id']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Animales consultados correctamente.',
+            'data' => $animales
+        ], 200);
+    }
+
+    // ALOJAR O TRASLADAR UN ANIMAL A UN HABITÁCULO (T25)
+    public function alojarAnimal(Request $request)
+    {
+        $request->validate([
+            'animal_id' => 'required|integer|exists:animales,id',
+            'habitaculo_destino_id' => 'required|integer|exists:habitaculos,id',
+            'observaciones' => 'nullable|string|max:1000',
+        ], [
+            'animal_id.required' => 'Debes seleccionar un animal.',
+            'animal_id.integer' => 'El animal seleccionado no es válido.',
+            'animal_id.exists' => 'El animal seleccionado no existe.',
+            'habitaculo_destino_id.required' => 'Debes seleccionar un habitáculo de destino.',
+            'habitaculo_destino_id.integer' => 'El habitáculo de destino no es válido.',
+            'habitaculo_destino_id.exists' => 'El habitáculo de destino no existe.',
+            'observaciones.string' => 'Las observaciones deben ser un texto.',
+            'observaciones.max' => 'Las observaciones no pueden superar los 1000 caracteres.',
+        ]);
+
+        $animal = Animal::find($request->animal_id);
+
+        if (!$animal->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede alojar un animal dado de baja o inactivo.'
+            ], 422);
+        }
+
+        $habitaculoDestino = Habitaculo::with('zona:id,nombre,activo')->find($request->habitaculo_destino_id);
+
+        if (!$habitaculoDestino->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El habitáculo "' . $habitaculoDestino->identificador . '" está desactivado y no admite animales.'
+            ], 422);
+        }
+
+        if ($habitaculoDestino->estado_mantenimiento !== 'Operativo') {
+            return response()->json([
+                'success' => false,
+                'message' => 'El habitáculo "' . $habitaculoDestino->identificador . '" está en estado "' . $habitaculoDestino->estado_mantenimiento . '" y no admite animales.'
+            ], 422);
+        }
+
+        if ((int) $animal->habitaculo_id === (int) $habitaculoDestino->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El animal ya se encuentra alojado en el habitáculo "' . $habitaculoDestino->identificador . '".'
+            ], 422);
+        }
+
+        // COMPROBAR CAPACIDAD Y REALIZAR MOVIMIENTO EN TRANSACCIÓN PARA EVITAR INCONSISTENCIAS
+        $resultado = DB::transaction(function () use ($request, $animal, $habitaculoDestino) {
+            $destinoBloqueado = Habitaculo::where('id', $habitaculoDestino->id)->lockForUpdate()->first();
+            $ocupadas = $destinoBloqueado->animales()->where('activo', true)->count();
+
+            if ($ocupadas >= $destinoBloqueado->capacidad) {
+                return null;
+            }
+
+            $origenId = $animal->habitaculo_id; // null si es primer alojamiento, o ID anterior si es traslado
+
+            $movimiento = Alojamiento::create([
+                'animal_id' => $animal->id,
+                'habitaculo_origen_id' => $origenId,
+                'habitaculo_destino_id' => $destinoBloqueado->id,
+                'user_id' => $request->user()->id,
+                'fecha_movimiento' => now(),
+                'observaciones' => $request->observaciones,
+            ]);
+
+            $animal->habitaculo_id = $destinoBloqueado->id;
+            $animal->save();
+
+            return [
+                'movimiento' => $movimiento->load([
+                    'animal:id,nombre,especie',
+                    'habitaculoOrigen:id,identificador',
+                    'habitaculoDestino:id,identificador',
+                    'responsable:id,name'
+                ]),
+                'es_traslado' => !is_null($origenId),
+            ];
+        });
+
+        if (is_null($resultado)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El habitáculo "' . $habitaculoDestino->identificador . '" está completo (capacidad máxima: ' . $habitaculoDestino->capacidad . ').'
+            ], 422);
+        }
+
+        $mensaje = $resultado['es_traslado']
+            ? 'Animal trasladado correctamente al habitáculo ' . $habitaculoDestino->identificador . '.'
+            : 'Animal alojado correctamente en el habitáculo ' . $habitaculoDestino->identificador . '.';
+
+        return response()->json([
+            'success' => true,
+            'message' => $mensaje,
+            'data' => $resultado['movimiento']
+        ], 201);
+    }
+
+    // CONSULTAR HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (OPCIONALMENTE FILTRADO POR ANIMAL O HABITÁCULO)
+    public function historialAlojamientos(Request $request)
+    {
+        $consulta = Alojamiento::with([
+            'animal:id,nombre,especie',
+            'habitaculoOrigen:id,identificador',
+            'habitaculoDestino:id,identificador',
+            'responsable:id,name'
+        ])->orderByDesc('fecha_movimiento');
+
+        if ($request->filled('animal_id')) {
+            $consulta->where('animal_id', $request->animal_id);
+        }
+
+        if ($request->filled('habitaculo_id')) {
+            $consulta->where(function ($q) use ($request) {
+                $q->where('habitaculo_origen_id', $request->habitaculo_id)
+                  ->orWhere('habitaculo_destino_id', $request->habitaculo_id);
+            });
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Historial de alojamientos consultado correctamente.',
+            'data' => $consulta->get()
         ], 200);
     }
 
