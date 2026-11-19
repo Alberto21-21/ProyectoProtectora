@@ -198,7 +198,10 @@ public function index(Request $request)
             'caracter' => 'nullable|string|max:255',
             'descripcion' => 'nullable|string',
             'historia_publica' => 'sometimes|nullable|string|max:3000',
-            'cuidados_publicos' => 'sometimes|nullable|string|max:3000'
+            'cuidados_publicos' => 'sometimes|nullable|string|max:3000',
+            'minutos_paseos' => 'sometimes|nullable|integer|min:0|max:1440',
+            'minutos_cuidados' => 'sometimes|nullable|integer|min:0|max:1440',
+            'tiene_necesidades_especiales' => 'sometimes|nullable|boolean',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.string' => 'El nombre debe ser un texto.',
@@ -221,7 +224,15 @@ public function index(Request $request)
             'historia_publica.string' => 'La historia pública debe ser un texto.',
             'historia_publica.max' => 'La historia pública no puede superar los 3000 caracteres.',
             'cuidados_publicos.string' => 'Los cuidados públicos deben ser un texto.',
-            'cuidados_publicos.max' => 'Los cuidados públicos no pueden superar los 3000 caracteres.'
+            'cuidados_publicos.max' => 'Los cuidados públicos no pueden superar los 3000 caracteres.',
+            'minutos_paseos.integer' => 'El tiempo de paseo debe ser un número entero.',
+            'minutos_paseos.min' => 'El tiempo de paseo no puede ser negativo.',
+            'minutos_paseos.max' => 'El tiempo de paseo no puede superar los 1440 minutos diarios.',
+            'minutos_cuidados.integer' => 'El tiempo de cuidados debe ser un número entero.',
+            'minutos_cuidados.min' => 'El tiempo de cuidados no puede ser negativo.',
+            'minutos_cuidados.max' => 'El tiempo de cuidados no puede superar los 1440 minutos diarios.',
+            'tiene_necesidades_especiales.boolean' =>
+            'Debes indicar sí o no para las necesidades especiales.',
         ]);
 
         $animal->nombre = $request->nombre;
@@ -242,6 +253,20 @@ public function index(Request $request)
             $animal->cuidados_publicos = $request->cuidados_publicos;
         }
         
+                // ACTUALIZAR LOS TIEMPOS SOLO SI SE ENVÍAN
+        if ($request->exists('minutos_paseos')) {
+            $animal->minutos_paseos = $request->minutos_paseos;
+        }
+
+        if ($request->exists('minutos_cuidados')) {
+            $animal->minutos_cuidados = $request->minutos_cuidados;
+        }
+
+        if ($request->exists('tiene_necesidades_especiales')) {
+            $animal->tiene_necesidades_especiales =
+                $request->tiene_necesidades_especiales;
+        }
+
         $animal->save();
 
         return response()->json([

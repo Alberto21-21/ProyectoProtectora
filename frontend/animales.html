@@ -147,6 +147,50 @@
                     </select>
                     <p class="error-campo" id="error-estado"></p>
 
+                    <label for="minutosPaseosAnimal">
+                        Minutos diarios de paseo
+                    </label>
+                    <input
+                        type="number"
+                        id="minutosPaseosAnimal"
+                        name="minutos_paseos"
+                        min="0"
+                        max="1440"
+                        step="1"
+                        placeholder="Pendiente de valorar"
+                    >
+                    <p class="error-campo" id="error-minutos_paseos"></p>
+
+                    <label for="minutosCuidadosAnimal">
+                        Minutos diarios de cuidados
+                    </label>
+                    <input
+                        type="number"
+                        id="minutosCuidadosAnimal"
+                        name="minutos_cuidados"
+                        min="0"
+                        max="1440"
+                        step="1"
+                        placeholder="Pendiente de valorar"
+                    >
+                    <p class="error-campo" id="error-minutos_cuidados"></p>
+
+                    <label for="necesidadesEspecialesAnimal">
+                        ¿Necesita cuidados especiales?
+                    </label>
+                    <select
+                        id="necesidadesEspecialesAnimal"
+                        name="tiene_necesidades_especiales"
+                    >
+                        <option value="">Pendiente de valorar</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <p
+                        class="error-campo"
+                        id="error-tiene_necesidades_especiales"
+                    ></p>
+
                     <!-- CARÁCTER -->
                     <label for="caracterAnimal">Carácter</label>
                     <input type="text" id="caracterAnimal" name="caracter" placeholder="Cariñoso, juguetón..." maxlength="1000">
