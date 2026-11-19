@@ -12,11 +12,10 @@ use App\Http\Controllers\AusenciaController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\ZonaController;
 use App\Http\Controllers\HabitaculoController;
-
 use App\Http\Middleware\CuentaActiva;
-
 use App\Http\Controllers\AnimalAsignacionController;
 use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
+use App\Http\Controllers\HogarController;
 
 
 // AUTENTICACIÓN Y PERFIL
@@ -51,6 +50,21 @@ Route::prefix('user')
         // CAMBIAR LA CONTRASEÑA
         Route::put('/password', [AuthController::class, 'cambiarContrasena'])
             ->middleware('abilities:password:cambiar');
+
+    });
+
+// HOGAR DEL ADOPTANTE
+Route::prefix('hogar')
+    ->middleware(['auth:sanctum', CuentaActiva::class])
+    ->group(function () {
+
+        // CONSULTAR EL HOGAR PROPIO
+        Route::get('/', [HogarController::class, 'mostrar'])
+            ->middleware('abilities:hogar:consultar');
+
+        // GUARDAR O ACTUALIZAR EL HOGAR PROPIO
+        Route::put('/', [HogarController::class, 'guardar'])
+            ->middleware('abilities:hogar:editar');
 
     });
 

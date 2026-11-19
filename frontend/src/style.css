@@ -2169,3 +2169,306 @@ button:focus-visible {
     border-radius: 14px;
     margin-bottom: 16px;
 }
+
+/* ACCESO AL HOGAR DEL ADOPTANTE */
+.boton-hogar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    border-radius: 30px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.boton-hogar:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.boton-hogar[hidden] {
+    display: none;
+}
+
+/* FORMULARIO DEL HOGAR */
+#seccionHogar {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.formulario-hogar {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.formulario-hogar fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 24px;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+}
+
+.formulario-hogar legend {
+    padding: 0 10px;
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.campos-hogar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.campo-hogar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.formulario-hogar fieldset > .campo-hogar + .campo-hogar {
+    margin-top: 22px;
+}
+
+.campo-hogar label {
+    color: #300E28;
+    font-weight: 600;
+}
+
+.campo-hogar input,
+.campo-hogar select,
+.campo-hogar textarea {
+    width: 100%;
+    margin: 0;
+    padding: 13px 15px;
+    border: 1px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font: inherit;
+}
+
+.campo-hogar textarea {
+    resize: vertical;
+}
+
+.campo-hogar input:focus-visible,
+.campo-hogar select:focus-visible,
+.campo-hogar textarea:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.campo-hogar small {
+    color: #8B5C4A;
+    line-height: 1.5;
+}
+
+.acciones-hogar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+#botonGuardarHogar {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 30px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarHogar:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarHogar:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.acciones-hogar a {
+    color: #300E28;
+    font-weight: 600;
+}
+
+#seccionHogar[hidden],
+.campo-hogar[hidden] {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .campos-hogar {
+        grid-template-columns: 1fr;
+    }
+
+    .formulario-hogar fieldset {
+        padding: 18px;
+    }
+
+    .formulario-hogar legend {
+        font-size: 18px;
+    }
+
+    .acciones-hogar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+}
+
+/* ACCESO A MI HOGAR */
+.boton-hogar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.boton-hogar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.boton-hogar:hover {
+    opacity: 0.8;
+}
+
+.boton-hogar:focus-visible {
+    outline: 3px solid #300E28;
+    outline-offset: 4px;
+}
+
+.boton-hogar[hidden] {
+    display: none;
+}
+
+/* ACCESO AL HOGAR DESDE EL PERFIL */
+.acceso-hogar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin-top: 30px;
+    padding: 24px 0 0;
+    border-top: 1px solid #E5E5E5;
+
+    color: #300E28;
+    text-decoration: none;
+}
+
+.icono-acceso-hogar {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+}
+
+.texto-acceso-hogar h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.texto-acceso-hogar p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.acceso-hogar:hover h3 {
+    text-decoration: underline;
+}
+
+.acceso-hogar:focus-visible {
+    outline: 3px solid #300E28;
+    outline-offset: 5px;
+    border-radius: 8px;
+}
+
+.acceso-hogar[hidden] {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .acceso-hogar {
+        gap: 14px;
+    }
+
+    .icono-acceso-hogar {
+        width: 52px;
+        height: 52px;
+    }
+
+    .texto-acceso-hogar h3 {
+        font-size: 20px;
+    }
+}
+
+/* TÍTULO DEL PERFIL Y ACCESO AL HOGAR */
+.cabecera-contenido-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.acceso-hogar {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+
+    padding: 12px 20px;
+    border-radius: 18px;
+    background-color: #FFFFFF;
+    color: #300E28;
+
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.icono-acceso-hogar {
+    display: block;
+    width: 50px;
+    height: 50px;
+}
+
+.acceso-hogar:hover {
+    background-color: #FFAC16;
+}
+
+.acceso-hogar:focus-visible {
+    outline: 3px solid #300E28;
+    outline-offset: 4px;
+}
+
+.acceso-hogar[hidden] {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .cabecera-contenido-perfil {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .acceso-hogar {
+        margin-bottom: 24px;
+    }
+}

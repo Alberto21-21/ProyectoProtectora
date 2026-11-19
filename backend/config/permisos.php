@@ -37,8 +37,9 @@ return [
 
         'adoptante' => [
             'animales:consultar',
+            'hogar:consultar',
+            'hogar:editar',
         ],
-
         'personal' => [
             'animales:consultar',
             'animales:gestionar',
