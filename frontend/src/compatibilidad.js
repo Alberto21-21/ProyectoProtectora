@@ -12,6 +12,7 @@ const mensaje = document.querySelector("#mensajeCompatibilidad");
 const seccion = document.querySelector("#seccionCompatibilidad");
 const tabla = document.querySelector("#tablaCompatibilidad");
 const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
+const avisoPendientes = document.querySelector("#avisoPendientesCompatibilidad");
 
 // MOSTRAR LOS RESULTADOS
 function mostrarResultados(animales) {
@@ -47,6 +48,14 @@ function mostrarResultados(animales) {
         nombreAnimal.textContent = animal.nombre;
 
         contenidoAnimal.appendChild(nombreAnimal);
+
+        const enlaceFicha = document.createElement("a");
+
+        enlaceFicha.href = "animales.html?animal=" + animal.id;
+        enlaceFicha.textContent = "Ver ficha";
+        enlaceFicha.className = "enlace-ficha-compatibilidad";
+
+        contenidoAnimal.appendChild(enlaceFicha);
         nombre.appendChild(contenidoAnimal);
         
         const estado = document.createElement("td");
@@ -88,6 +97,10 @@ function mostrarResultados(animales) {
 // CONSULTAR LA COMPATIBILIDAD
 async function cargarCompatibilidad() {
 
+    seccion.hidden = true;
+    tabla.replaceChildren();
+    avisoPendientes.textContent = "";
+
     const token = sessionStorage.getItem("token");
 
     if (!token) {
@@ -109,6 +122,16 @@ async function cargarCompatibilidad() {
         const resultado = await obtenerCompatibilidad(token);
 
         mostrarResultados(resultado.data.recomendados);
+
+        const numeroPendientes = resultado.data.pendientes.length;
+
+        avisoPendientes.textContent = "";
+
+        if (numeroPendientes > 0) {
+            avisoPendientes.textContent =
+                "Animales pendientes de valoración: " + numeroPendientes +
+                ". Todavía no se incluyen en las recomendaciones.";
+        }
 
         if (resultado.data.recomendados.length === 0) {
             mensaje.textContent = resultado.message;
@@ -149,4 +172,4 @@ async function salirDeLaSesion() {
 // EVENTOS Y CARGA INICIAL
 botonCerrarSesion.addEventListener("click", salirDeLaSesion);
 
-cargarCompatibilidad();
+window.addEventListener("pageshow", cargarCompatibilidad);

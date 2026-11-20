@@ -2855,3 +2855,35 @@ button:focus-visible {
     }
 }
 
+/* ACCESO A LA FICHA DESDE LAS RECOMENDACIONES */
+.enlace-ficha-compatibilidad {
+    display: inline-block;
+    padding: 9px 16px;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.enlace-ficha-compatibilidad:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+/* AVISO DE VALORACIONES PENDIENTES */
+#avisoPendientesCompatibilidad {
+    margin: 0 0 24px;
+    padding: 15px 20px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #8B5C4A;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#avisoPendientesCompatibilidad:empty {
+    display: none;
+}
