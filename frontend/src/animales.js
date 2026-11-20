@@ -1166,6 +1166,14 @@ if (formularioAsignacionAnimal) {
         });
     }
 
-    // INICIAR VERIFICACIÓN AL CARGAR LA PÁGINA
-    comprobarAcceso();
+    // COMPROBAR EL ACCESO Y ABRIR EL ANIMAL INDICADO EN EL ENLACE
+    comprobarAcceso().then(function () {
+
+        const parametros = new URLSearchParams(window.location.search);
+        const idAnimal = Number(parametros.get("animal"));
+
+        if (Number.isInteger(idAnimal) && idAnimal > 0) {
+            verFichaAnimal(idAnimal);
+        }
+    });
 });

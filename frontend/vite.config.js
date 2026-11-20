@@ -14,7 +14,6 @@ export default defineConfig({
                 editarAnimal: "editarAnimal.html",
                 misAnimales: "misAnimales.html",
                 historial: "historial.html",
-                disponibilidad: "disponibilidad.html",
                 instalaciones: "instalaciones.html",
                 habitaculos: "habitaculos.html",
                 compatibilidad: "compatibilidad.html",
