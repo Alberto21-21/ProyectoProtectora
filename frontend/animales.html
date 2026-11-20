@@ -489,10 +489,37 @@
     <p id="mensajeAsignacionAnimal" role="status"></p>
 </section>
 
-
-
-
         </div>
+
+        <!-- SOLICITUD DE ADOPCIÓN -->
+        <form id="formularioSolicitud" class="formulario-solicitud" hidden>
+
+            <h3>Solicitar adopción</h3>
+
+            <p>
+                Enviar la solicitud inicia el proceso.
+                La protectora deberá valorar y aprobar la adopción.
+            </p>
+
+            <label for="observacionesSolicitud">
+                ¿Quieres contarnos algo? (opcional)
+            </label>
+
+            <textarea
+                id="observacionesSolicitud"
+                name="observaciones"
+                rows="3"
+                maxlength="2000"
+                placeholder="Cuéntanos por qué te gustaría adoptar a este animal."
+            ></textarea>
+
+            <p id="mensajeSolicitud" role="status"></p>
+
+            <button type="submit" id="botonEnviarSolicitud">
+                Solicitar adopción
+            </button>
+
+        </form>
 
         <div class="acciones-modal-animal">
             <a href="#" id="enlaceHistorialAnimal" class="boton-portada" hidden>Ver historial</a>

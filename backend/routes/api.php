@@ -17,6 +17,7 @@ use App\Http\Controllers\AnimalAsignacionController;
 use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
 use App\Http\Controllers\HogarController;
 use App\Http\Controllers\CompatibilidadController;
+use App\Http\Controllers\SolicitudController;
 
 
 // AUTENTICACIÓN Y PERFIL
@@ -368,4 +369,15 @@ Route::prefix('compatibilidad')
     ])
     ->group(function () {
         Route::get('/', [CompatibilidadController::class, 'index']);
+    });
+
+// SOLICITUDES DE ADOPCIÓN
+Route::prefix('solicitudes')
+    ->middleware([
+        'auth:sanctum',
+        CuentaActiva::class
+    ])
+    ->group(function () {
+        Route::post('/', [SolicitudController::class, 'store'])
+            ->middleware('abilities:solicitudes:crear');
     });
