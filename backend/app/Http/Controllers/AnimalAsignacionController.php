@@ -6,25 +6,15 @@ use App\Models\AnimalAsignacion;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 
+// T33: asignación de VETERINARIOS a los animales.
+// Los responsables (cuidadores) se asignan con T17 (animales.cuidador_id).
+// Crear y retirar asignaciones solo lo puede hacer el administrador
+// (las rutas exigen la ability asignaciones:gestionar).
 class AnimalAsignacionController extends Controller
 {
 
 public function veterinariosDisponibles(Request $request)
 {
-    $usuario = $request->user();
-
-    // EL PERSONAL NECESITA UNA FICHA LABORAL ACTIVA
-    if (!$usuario->tokenCan('asignaciones:administrar')) {
-        $empleado = $usuario->empleado;
-
-        if (!$empleado || $empleado->estado_laboral !== 'activo') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Necesitas una ficha laboral activa.'
-            ], 403);
-        }
-    }
-
     // BUSCAR EMPLEADOS CON PERFIL VETERINARIO Y CUENTA ACTIVA
     $veterinarios = Empleado::with('user:id,name,email,rol')
         ->where('estado_laboral', 'activo')
@@ -47,43 +37,18 @@ public function store(Request $request)
 {
     $usuario = $request->user();
 
-    $esAdministrador = $usuario->tokenCan('asignaciones:administrar');
-
-    // EL PERSONAL NECESITA UNA FICHA LABORAL ACTIVA
-    if (!$esAdministrador) {
-        $fichaLaboral = $usuario->empleado;
-
-        if (!$fichaLaboral || $fichaLaboral->estado_laboral !== 'activo') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Necesitas una ficha laboral activa.'
-            ], 403);
-        }
-    }
-
     // VALIDAR LOS DATOS Y EL ESTADO DE LOS REGISTROS
     $datos = $request->validate([
         'animal_id' => 'required|integer|exists:animales,id,activo,1',
-        'empleado_id' => 'required|integer|exists:empleados,id,estado_laboral,activo',
-        'tipo_asignacion' => 'required|in:responsable,veterinario'
+        'empleado_id' => 'required|integer|exists:empleados,id,estado_laboral,activo'
     ], [
         'animal_id.required' => 'Debes seleccionar un animal.',
         'animal_id.integer' => 'El identificador del animal no es válido.',
         'animal_id.exists' => 'El animal no existe o está dado de baja.',
-        'empleado_id.required' => 'Debes seleccionar un empleado.',
+        'empleado_id.required' => 'Debes seleccionar un veterinario.',
         'empleado_id.integer' => 'El identificador del empleado no es válido.',
-        'empleado_id.exists' => 'El empleado no existe o su ficha laboral está inactiva.',
-        'tipo_asignacion.required' => 'Debes indicar el tipo de asignación.',
-        'tipo_asignacion.in' => 'El tipo de asignación no es válido.'
+        'empleado_id.exists' => 'El empleado no existe o su ficha laboral está inactiva.'
     ]);
-
-    // SOLO EL ADMINISTRADOR PUEDE ASIGNAR RESPONSABLES
-    if (!$esAdministrador && $datos['tipo_asignacion'] === 'responsable') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Solo puedes asignar veterinarios.'
-        ], 403);
-    }
 
     $empleado = Empleado::findOrFail($datos['empleado_id']);
 
@@ -93,31 +58,22 @@ public function store(Request $request)
     if (!$cuenta || $cuenta->estado !== 'activo') {
         return response()->json([
             'success' => false,
-            'message' => 'El empleado debe tener una cuenta activa.'
+            'message' => 'El veterinario debe tener una cuenta activa.'
         ], 422);
     }
 
-    // COMPROBAR QUE LA CUENTA CORRESPONDE A LA ASIGNACIÓN
-    if ($datos['tipo_asignacion'] === 'responsable') {
-        if ($cuenta->rol !== 'personal') {
-            return response()->json([
-                'success' => false,
-                'message' => 'El responsable debe tener una cuenta de personal.'
-            ], 422);
-        }
-    } else {
-        if ($cuenta->rol !== 'veterinario' || !$empleado->veterinario) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Debes seleccionar una cuenta con perfil veterinario.'
-            ], 422);
-        }
+    // SOLO SE ASIGNAN CUENTAS VETERINARIAS CON PERFIL VETERINARIO
+    if ($cuenta->rol !== 'veterinario' || !$empleado->veterinario) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Debes seleccionar una cuenta con perfil veterinario.'
+        ], 422);
     }
 
     // EVITAR ASIGNACIONES DUPLICADAS MEDIANTE LA RELACIÓN
     $yaAsignado = $empleado->asignaciones()
         ->where('animal_id', $datos['animal_id'])
-        ->where('tipo_asignacion', $datos['tipo_asignacion'])
+        ->where('tipo_asignacion', 'veterinario')
         ->exists();
 
     if ($yaAsignado) {
@@ -127,10 +83,10 @@ public function store(Request $request)
         ], 422);
     }
 
-    // GUARDAR LA ASIGNACIÓN DEL EMPLEADO
+    // GUARDAR LA ASIGNACIÓN DEL VETERINARIO
     $asignacion = new AnimalAsignacion();
     $asignacion->animal_id = $datos['animal_id'];
-    $asignacion->tipo_asignacion = $datos['tipo_asignacion'];
+    $asignacion->tipo_asignacion = 'veterinario';
     $asignacion->asignado_por_user_id = $usuario->id;
 
     $empleado->asignaciones()->save($asignacion);
@@ -158,7 +114,8 @@ public function index(Request $request)
         'animal_id.exists' => 'El animal no existe.'
     ]);
 
-    $consulta = AnimalAsignacion::query();
+    $consulta = AnimalAsignacion::query()
+        ->where('tipo_asignacion', 'veterinario');
 
     // EL ADMINISTRADOR PUEDE CONSULTAR TODAS LAS ASIGNACIONES
     if (!$usuario->tokenCan('asignaciones:administrar')) {
@@ -171,19 +128,16 @@ public function index(Request $request)
             ], 403);
         }
 
-        if ($usuario->tokenCan('asignaciones:gestionar')) {
-            // EL PERSONAL CONSULTA LOS VETERINARIOS DE UN ANIMAL
-            if (isset($datos['animal_id'])) {
-                $consulta->where('tipo_asignacion', 'veterinario');
-            } else {
-                // SIN FILTRO, CONSULTA SUS ANIMALES COMO RESPONSABLE
-                $consulta = $empleado->asignaciones()
-                    ->where('tipo_asignacion', 'responsable');
-            }
-        } else {
+        if ($usuario->rol === 'veterinario') {
             // EL VETERINARIO SOLO CONSULTA SUS ASIGNACIONES
             $consulta = $empleado->asignaciones()
                 ->where('tipo_asignacion', 'veterinario');
+        } elseif (!isset($datos['animal_id'])) {
+            // EL PERSONAL SOLO CONSULTA LOS VETERINARIOS DE UN ANIMAL
+            return response()->json([
+                'success' => false,
+                'message' => 'Debes indicar el animal.'
+            ], 422);
         }
     }
 
@@ -208,22 +162,6 @@ public function index(Request $request)
 
 public function retirarasignaciones(Request $request, int $id)
 {
-    $usuario = $request->user();
-
-    $esAdministrador = $usuario->tokenCan('asignaciones:administrar');
-
-    // EL PERSONAL NECESITA UNA FICHA LABORAL ACTIVA
-    if (!$esAdministrador) {
-        $empleado = $usuario->empleado;
-
-        if (!$empleado || $empleado->estado_laboral !== 'activo') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Necesitas una ficha laboral activa.'
-            ], 403);
-        }
-    }
-
     $asignacion = AnimalAsignacion::find($id);
 
     if (!$asignacion) {
@@ -231,14 +169,6 @@ public function retirarasignaciones(Request $request, int $id)
             'success' => false,
             'message' => 'No se encontró esa asignación.'
         ], 404);
-    }
-
-    // SOLO EL ADMINISTRADOR PUEDE RETIRAR RESPONSABLES
-    if (!$esAdministrador && $asignacion->tipo_asignacion !== 'veterinario') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Solo puedes retirar asignaciones de veterinarios.'
-        ], 403);
     }
 
     $asignacion->delete();
@@ -250,3 +180,4 @@ public function retirarasignaciones(Request $request, int $id)
 }
 
 }
+

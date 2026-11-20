@@ -13,6 +13,7 @@
     >
 
     <link rel="stylesheet" href="/src/style.css">
+    
 </head>
 
 <body class="pagina-perfil pagina-usuarios">
@@ -214,7 +215,7 @@
 
             </div>
 
-            <section id="seccionFichaLaboral" hidden>
+            <section id="seccionFichaLaboral" class="seccion-personal" hidden>
     <hr>
     <h3>Ficha laboral</h3>
     <p id="mensajeFichaLaboral" role="status"></p>
@@ -235,13 +236,107 @@
             <dd id="estadoFichaLaboral"></dd>
         </div>
 
-        <div class="dato-perfil">
-            <dt>Disponibilidad</dt>
-            <dd id="disponibilidadFichaLaboral">
-                Se consulta desde el módulo de disponibilidad (T32).
-            </dd>
-        </div>
     </dl>
+    <section class="bloque-jornada" aria-labelledby="tituloJornadaEmpleado">
+    <h4 id="tituloJornadaEmpleado">Jornada semanal</h4>
+
+    <p id="mensajeJornadaEmpleado" role="status"></p>
+
+    <dl id="resumenJornadaEmpleado" class="lista-datos-perfil"></dl>
+
+    <button type="button" id="botonEditarJornadaEmpleado" hidden>
+        Editar jornada
+    </button>
+
+    <form id="formularioJornadaEmpleado" hidden>
+        <div class="fila-jornada" data-dia="1">
+            <label><input type="checkbox" value="1"> Lunes</label>
+            <label>Desde <input type="time" aria-label="Inicio del lunes" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del lunes" disabled></label>
+        </div>
+
+        <div class="fila-jornada" data-dia="2">
+            <label><input type="checkbox" value="2"> Martes</label>
+            <label>Desde <input type="time" aria-label="Inicio del martes" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del martes" disabled></label>
+        </div>
+
+        <div class="fila-jornada" data-dia="3">
+            <label><input type="checkbox" value="3"> Miércoles</label>
+            <label>Desde <input type="time" aria-label="Inicio del miércoles" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del miércoles" disabled></label>
+        </div>
+
+        <div class="fila-jornada" data-dia="4">
+            <label><input type="checkbox" value="4"> Jueves</label>
+            <label>Desde <input type="time" aria-label="Inicio del jueves" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del jueves" disabled></label>
+        </div>
+
+        <div class="fila-jornada" data-dia="5">
+            <label><input type="checkbox" value="5"> Viernes</label>
+            <label>Desde <input type="time" aria-label="Inicio del viernes" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del viernes" disabled></label>
+        </div>
+
+        <div class="fila-jornada" data-dia="6">
+            <label><input type="checkbox" value="6"> Sábado</label>
+            <label>Desde <input type="time" aria-label="Inicio del sábado" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del sábado" disabled></label>
+        </div>
+
+        <div class="fila-jornada" data-dia="7">
+            <label><input type="checkbox" value="7"> Domingo</label>
+            <label>Desde <input type="time" aria-label="Inicio del domingo" disabled></label>
+            <label>Hasta <input type="time" aria-label="Fin del domingo" disabled></label>
+        </div>
+
+        <div class="acciones-jornada">
+            <button type="submit" id="botonGuardarJornadaEmpleado">
+                Guardar jornada
+            </button>
+
+            <button type="button" id="botonCancelarJornadaEmpleado">
+                Cancelar
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="bloque-ausencias" aria-labelledby="tituloAusenciasEmpleado">
+    <h4 id="tituloAusenciasEmpleado">Ausencias</h4>
+
+    <p id="mensajeAusenciasEmpleado" role="status"></p>
+
+    <ul id="listaAusenciasEmpleado" aria-live="polite"></ul>
+
+    <form id="formularioAusenciaEmpleado">
+        <label for="inicioAusenciaEmpleado">Desde</label>
+        <input
+            type="datetime-local"
+            id="inicioAusenciaEmpleado"
+            required
+        >
+
+        <label for="finAusenciaEmpleado">Hasta</label>
+        <input
+            type="datetime-local"
+            id="finAusenciaEmpleado"
+            required
+        >
+
+        <label for="motivoAusenciaEmpleado">Motivo (opcional)</label>
+        <input
+            type="text"
+            id="motivoAusenciaEmpleado"
+            maxlength="255"
+        >
+
+        <button type="submit" id="botonGuardarAusenciaEmpleado">
+            Registrar ausencia
+        </button>
+    </form>
+</section>
 
     <button type="button" id="botonCrearFichaLaboral" hidden>
         Crear ficha laboral
@@ -273,7 +368,7 @@
 </section>
 
 
-<section id="seccionPerfilVeterinario" hidden>
+<section id="seccionPerfilVeterinario" class="seccion-personal" hidden>
     <hr>
     <h3>Información profesional veterinaria</h3>
     <p id="mensajePerfilVeterinario" role="status"></p>
@@ -292,11 +387,6 @@
         <div class="dato-perfil">
         <dt>Estado laboral</dt>
         <dd id="estadoLaboralVeterinario"></dd>
-        </div>
-
-        <div class="dato-perfil">
-            <dt>Disponibilidad</dt>
-            <dd id="disponibilidadVeterinario">Sin datos registrados</dd>
         </div>
 
     </dl>

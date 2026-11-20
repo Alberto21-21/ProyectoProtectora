@@ -47,8 +47,9 @@ return [
             'animales:gestionar',
             'disponibilidad:consultar',
             'asignaciones:consultar',
-            'asignaciones:gestionar',
             'instalaciones:consultar',
+
+
         ],
 
         'veterinario' => [
