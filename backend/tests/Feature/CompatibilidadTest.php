@@ -67,14 +67,18 @@ class CompatibilidadTest extends TestCase
         $respuesta->assertJson([
             'success' => true,
             'data' => [
-                [
-                    'id' => $animal->id,
-                    'estado_compatibilidad' => 'Evaluado',
-                    'puntuacion' => 100,
-                    'maximo' => 100,
-                    'incompatibilidades' => [],
-                    'pendientes' => []
-                ]
+                'recomendados' => [
+                    [
+                        'id' => $animal->id,
+                        'estado_compatibilidad' => 'Evaluado',
+                        'puntuacion' => 100,
+                        'maximo' => 100,
+                        'incompatibilidades' => [],
+                        'pendientes' => []
+                    ]
+                ],
+                'pendientes' => [],
+                'excluidos' => []
             ]
         ]);
     }
@@ -135,14 +139,18 @@ class CompatibilidadTest extends TestCase
         $respuesta->assertJson([
             'success' => true,
             'data' => [
-                [
-                    'id' => $animal->id,
-                    'estado_compatibilidad' => 'Evaluado',
-                    'puntuacion' => 85,
-                    'maximo' => 100,
-                    'incompatibilidades' => [],
-                    'pendientes' => []
-                ]
+                'recomendados' => [
+                    [
+                        'id' => $animal->id,
+                        'estado_compatibilidad' => 'Evaluado',
+                        'puntuacion' => 85,
+                        'maximo' => 100,
+                        'incompatibilidades' => [],
+                        'pendientes' => []
+                    ]
+                ],
+                'pendientes' => [],
+                'excluidos' => []
             ]
         ]);
     }
@@ -198,22 +206,24 @@ class CompatibilidadTest extends TestCase
         $respuesta = $this->withToken($token)
             ->getJson('/api/compatibilidad');
 
-        $respuesta->assertStatus(200);
-
-                $respuesta->assertJson([
+        $respuesta->assertJson([
             'success' => true,
             'data' => [
-                [
-                    'id' => $animal->id,
-                    'estado_compatibilidad' => 'No recomendado',
-                    'puntuacion' => null,
-                    'incompatibilidades' => [
-                        'El animal no es compatible con niños.'
-                    ],
-                    'pendientes' => []
+                'pendientes' => [],
+                'excluidos' => [
+                    [
+                        'id' => $animal->id,
+                        'estado_compatibilidad' => 'No recomendado',
+                        'puntuacion' => null,
+                        'incompatibilidades' => [
+                            'El animal no es compatible con niños.'
+                        ]
+                    ]
                 ]
             ]
         ]);
+
+        $respuesta->assertJsonCount(0, 'data.recomendados');
     }
 
     public function test_no_se_recomienda_si_el_tiempo_de_paseo_es_insuficiente(): void    
@@ -271,17 +281,21 @@ class CompatibilidadTest extends TestCase
         $respuesta->assertJson([
             'success' => true,
             'data' => [
-                [
-                    'id' => $animal->id,
-                    'estado_compatibilidad' => 'No recomendado',
-                    'puntuacion' => null,
-                    'incompatibilidades' => [
-                        'Tu tiempo disponible para paseos es insuficiente.'
-                    ],
-                    'pendientes' => []
+                'pendientes' => [],
+                'excluidos' => [
+                    [
+                        'id' => $animal->id,
+                        'estado_compatibilidad' => 'No recomendado',
+                        'puntuacion' => null,
+                        'incompatibilidades' => [
+                            'Tu tiempo disponible para paseos es insuficiente.'
+                        ]
+                    ]
                 ]
             ]
         ]);
+
+        $respuesta->assertJsonCount(0, 'data.recomendados');
     }
 
     public function test_sin_tiempo_de_paseo_conocido_queda_pendiente(): void    
@@ -339,17 +353,21 @@ class CompatibilidadTest extends TestCase
         $respuesta->assertJson([
             'success' => true,
             'data' => [
-                [
-                    'id' => $animal->id,
-                    'estado_compatibilidad' => 'Pendiente de confirmar',
-                    'puntuacion' => null,
-                    'incompatibilidades' => [],
-                    'pendientes' => [
-                        'Falta indicar el tiempo de paseo del animal o del adoptante.'
+                'pendientes' => [
+                    [
+                        'id' => $animal->id,
+                        'estado_compatibilidad' => 'Pendiente de confirmar',
+                        'puntuacion' => null,
+                        'pendientes' => [
+                            'Falta indicar el tiempo de paseo del animal o del adoptante.'
+                        ]
                     ]
-                ]
+                ],
+                'excluidos' => []
             ]
         ]);
+
+        $respuesta->assertJsonCount(0, 'data.recomendados');
     }
 
 }

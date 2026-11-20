@@ -108,10 +108,38 @@ class CompatibilidadController extends Controller
             ->values()
             ->all();
 
+        $recomendados = [];
+        $pendientes = [];
+        $excluidos = [];
+
+        foreach ($resultados as $resultado) {
+            if ($resultado['estado_compatibilidad'] === 'No recomendado') {
+                $excluidos[] = $resultado;
+            } elseif ($resultado['estado_compatibilidad'] === 'Pendiente de confirmar') {
+                $pendientes[] = $resultado;
+            } else {
+                $recomendados[] = $resultado;
+            }
+        }
+
+        $mensaje = 'Compatibilidad consultada correctamente.';
+
+        if (count($recomendados) === 0) {
+            $mensaje = 'No hay animales recomendados con los datos actuales.';
+
+            if (count($pendientes) > 0) {
+                $mensaje .= ' Hay animales pendientes de valoración.';
+            }
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Compatibilidad calculada. El resultado es orientativo y no supone la aprobación de la adopción.',
-            'data' => $resultados
+            'message' => $mensaje,
+            'data' => [
+                'recomendados' => $recomendados,
+                'pendientes' => $pendientes,
+                'excluidos' => $excluidos
+            ]
         ], 200);
     }
 

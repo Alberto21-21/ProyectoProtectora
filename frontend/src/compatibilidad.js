@@ -19,7 +19,7 @@ function mostrarResultados(animales) {
     tabla.replaceChildren();
 
     if (animales.length === 0) {
-        mensaje.textContent = "No hay animales disponibles para valorar.";
+        mensaje.textContent = "No hay animales recomendados con los datos actuales.";        
         seccion.hidden = true;
         return;
     }
@@ -108,8 +108,12 @@ async function cargarCompatibilidad() {
 
         const resultado = await obtenerCompatibilidad(token);
 
-        mostrarResultados(resultado.data);
+        mostrarResultados(resultado.data.recomendados);
 
+        if (resultado.data.recomendados.length === 0) {
+            mensaje.textContent = resultado.message;
+        }
+        
     } catch (error) {
         mensaje.textContent = error.message;
     }
