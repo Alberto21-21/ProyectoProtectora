@@ -36,12 +36,45 @@ class AusenciaController extends Controller
             ->orderBy('fecha_inicio')
             ->get();
 
+        // EL MOTIVO SOLO LO VE EL ADMINISTRADOR
+        if (!$request->user()->tokenCan('disponibilidad:gestionar')) {
+            $ausencias->makeHidden('motivo');
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Ausencias consultadas correctamente.',
             'data' => $ausencias,
         ], 200);
     }
+
+
+public function listarPorUsuario(string $userId)
+{
+    $empleado = Empleado::where('user_id', $userId)
+        ->whereHas('user', function ($consulta) {
+            $consulta->where('rol', 'personal');
+        })
+        ->first();
+
+    if (!$empleado) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No se encontró una ficha de personal para esa cuenta.',
+        ], 404);
+    }
+
+    $ausencias = $empleado->ausencias()
+        ->orderBy('fecha_inicio')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Ausencias consultadas correctamente.',
+        'data' => $ausencias,
+    ], 200);
+}
+
 
     public function store(Request $request)
 {
@@ -64,6 +97,34 @@ class AusenciaController extends Controller
     ]);
 
     $empleado = Empleado::findOrFail($datos['empleado_id']);
+    $cuenta = $empleado->user;
+
+    if ($empleado->estado_laboral !== 'activo') {
+        return response()->json([
+            'success' => false,
+            'message' => 'La ficha laboral del empleado está inactiva.'
+        ], 422);
+    }
+
+    if (!$cuenta || $cuenta->estado !== 'activo' || $cuenta->rol !== 'personal') {
+        return response()->json([
+            'success' => false,
+            'message' => 'La ausencia solo se puede registrar a personal con cuenta activa.'
+        ], 422);
+    }
+
+    // EVITAR AUSENCIAS SOLAPADAS
+    $haySolapamiento = $empleado->ausencias()
+        ->where('fecha_inicio', '<', $datos['fecha_fin'])
+        ->where('fecha_fin', '>', $datos['fecha_inicio'])
+        ->exists();
+
+    if ($haySolapamiento) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ese empleado ya tiene una ausencia en ese periodo.'
+        ], 422);
+    }
 
     $ausencia = new Ausencia();
     $ausencia->fecha_inicio = $datos['fecha_inicio'];

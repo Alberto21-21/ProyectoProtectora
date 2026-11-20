@@ -42,7 +42,6 @@ return [
             'animales:gestionar',
             'disponibilidad:consultar',
             'asignaciones:consultar',
-            'asignaciones:gestionar',
         ],
 
         'veterinario' => [

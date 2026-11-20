@@ -9,11 +9,14 @@ class Disponibilidad extends Model
 {
     protected $table = 'disponibilidades';
 
-    protected $fillable = [
-        'empleado_id',
-        'fecha_inicio',
-        'fecha_fin',
-    ];
+   protected $fillable = [
+    'empleado_id',
+    'fecha_inicio',
+    'fecha_fin',
+    'dia_semana',
+    'hora_inicio',
+    'hora_fin',
+];
 
     public function empleado(): BelongsTo
     {

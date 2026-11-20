@@ -54,8 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const bloqueAsignacionesAnimal = document.querySelector("#bloqueAsignacionesAnimal");
     const listaAsignacionesAnimal = document.querySelector("#listaAsignacionesAnimal");
     const formularioAsignacionAnimal = document.querySelector("#formularioAsignacionAnimal");
-    const campoTipoAsignacion = document.querySelector("#campoTipoAsignacion");
-    const tipoAsignacionAnimal = document.querySelector("#tipoAsignacionAnimal");
     const empleadoAsignacionAnimal = document.querySelector("#empleadoAsignacionAnimal");
     const mensajeAsignacionAnimal = document.querySelector("#mensajeAsignacionAnimal");
 
@@ -573,22 +571,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    const tipo = usuarioActual.rol === "admin"
-        ? tipoAsignacionAnimal.value
-        : "veterinario";
-
-    let personas = [];
-
-    if (tipo === "responsable") {
-        const resultado = await obtenerEmpleadosParaDisponibilidad(token);
-
-        personas = resultado.data.filter(persona =>
-            persona.user && persona.user.rol === "personal"
-        );
-    } else {
-        const resultado = await obtenerVeterinariosDisponibles(token);
-        personas = resultado.data;
+    // T33: solo el administrador asigna veterinarios
+    if (usuarioActual.rol !== "admin") {
+        return;
     }
+
+    const resultado = await obtenerVeterinariosDisponibles(token);
+    const personas = resultado.data;
 
     empleadoAsignacionAnimal.replaceChildren();
 
@@ -623,42 +612,33 @@ async function cargarAsignacionesEnFicha(animalId) {
     bloqueAsignacionesAnimal.hidden = false;
     listaAsignacionesAnimal.replaceChildren();
 
-    const puedeGestionar = ["admin", "personal"].includes(rol);
+    // T33: solo el administrador asigna y retira veterinarios
+    const puedeGestionar = rol === "admin";
 
     if (formularioAsignacionAnimal) {
         formularioAsignacionAnimal.hidden = !puedeGestionar;
-    }
-
-    if (campoTipoAsignacion) {
-        campoTipoAsignacion.hidden = rol !== "admin";
-    }
-
-    if (rol !== "admin" && tipoAsignacionAnimal) {
-        tipoAsignacionAnimal.value = "veterinario";
     }
 
     const resultado = await obtenerAsignacionesAnimal(animalId, token);
 
     if (resultado.data.length === 0) {
         const elementoVacio = document.createElement("li");
-        elementoVacio.textContent = "No hay asignaciones registradas para mostrar.";
+        elementoVacio.textContent = "Este animal no tiene veterinarios asignados.";
         listaAsignacionesAnimal.appendChild(elementoVacio);
     } else {
        resultado.data.forEach(asignacion => {
     const elemento = document.createElement("li");
     const nombre = asignacion.empleado?.user?.name || "Sin nombre";
     const puesto = asignacion.empleado?.puesto || "Sin puesto";
-    const tipoAsignacion = asignacion.tipo_asignacion === "responsable"
-        ? "Responsable"
-        : "Veterinario";
 
     const texto = document.createElement("span");
-    texto.textContent = `${tipoAsignacion}: ${nombre} — ${puesto}`;
+    texto.textContent = `${nombre} — ${puesto}`;
     elemento.appendChild(texto);
 
     if (puedeGestionar) {
         const botonRetirar = document.createElement("button");
         botonRetirar.type = "button";
+        botonRetirar.className = "boton-retirar-asignacion";
         botonRetirar.textContent = "Retirar asignación";
 
         botonRetirar.addEventListener("click", async function () {
@@ -676,14 +656,14 @@ async function cargarAsignacionesEnFicha(animalId) {
 
                 if (mensajeAsignacionAnimal) {
                     mensajeAsignacionAnimal.textContent = resultado.message;
-                    mensajeAsignacionAnimal.style.color = "green";
+                    mensajeAsignacionAnimal.className = "mensaje-estado mensaje-ok";
                 }
 
                 await cargarAsignacionesEnFicha(animalId);
             } catch (error) {
                 if (mensajeAsignacionAnimal) {
                     mensajeAsignacionAnimal.textContent = error.message;
-                    mensajeAsignacionAnimal.style.color = "red";
+                    mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
                 }
             } finally {
                 botonRetirar.disabled = false;
@@ -867,7 +847,7 @@ async function cargarAsignacionesEnFicha(animalId) {
 
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = error.message;
-                mensajeAsignacionAnimal.style.color = "red";
+                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
             }
             }
 
@@ -881,23 +861,6 @@ async function cargarAsignacionesEnFicha(animalId) {
         }
     }
 
-    if (tipoAsignacionAnimal) {
-    tipoAsignacionAnimal.addEventListener("change", async function () {
-        try {
-            await cargarPersonasAsignables();
-
-            if (mensajeAsignacionAnimal) {
-                mensajeAsignacionAnimal.textContent = "";
-            }
-        } catch (error) {
-            if (mensajeAsignacionAnimal) {
-                mensajeAsignacionAnimal.textContent = error.message;
-                mensajeAsignacionAnimal.style.color = "red";
-            }
-        }
-    });
-}
-
 
 if (formularioAsignacionAnimal) {
     formularioAsignacionAnimal.addEventListener("submit", async function (evento) {
@@ -905,24 +868,20 @@ if (formularioAsignacionAnimal) {
 
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
-        if (!token || !usuarioActual || !["admin", "personal"].includes(usuarioActual.rol)) {
+        if (!token || !usuarioActual || usuarioActual.rol !== "admin") {
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = "No tienes permiso para crear asignaciones.";
-                mensajeAsignacionAnimal.style.color = "red";
+                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
             }
             return;
         }
-
-        const tipo = usuarioActual.rol === "admin"
-            ? tipoAsignacionAnimal.value
-            : "veterinario";
 
         const empleadoId = empleadoAsignacionAnimal.value;
 
         if (!empleadoId || !animalSeleccionadoId) {
             if (mensajeAsignacionAnimal) {
-                mensajeAsignacionAnimal.textContent = "Selecciona una persona para asignar.";
-                mensajeAsignacionAnimal.style.color = "red";
+                mensajeAsignacionAnimal.textContent = "Selecciona un veterinario para asignar.";
+                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
             }
             return;
         }
@@ -937,20 +896,19 @@ if (formularioAsignacionAnimal) {
         try {
             const resultado = await crearAsignacionAnimal({
                 animal_id: Number(animalSeleccionadoId),
-                empleado_id: Number(empleadoId),
-                tipo_asignacion: tipo
+                empleado_id: Number(empleadoId)
             }, token);
 
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = resultado.message;
-                mensajeAsignacionAnimal.style.color = "green";
+                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-ok";
             }
 
             await cargarAsignacionesEnFicha(animalSeleccionadoId);
         } catch (error) {
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = error.message;
-                mensajeAsignacionAnimal.style.color = "red";
+                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
             }
         } finally {
             if (botonGuardarAsignacion) {

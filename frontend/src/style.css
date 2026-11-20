@@ -2159,3 +2159,422 @@ button:focus-visible {
     border-radius: 14px;
     margin-bottom: 16px;
 }
+
+
+
+.mensaje-estado {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.mensaje-ok {
+    color: #2E7D32;
+}
+
+.mensaje-error {
+    color: #B3261E;
+}
+
+.seccion-personal [role="status"],
+.bloque-asignaciones [role="status"] {
+    min-height: 1.2em;
+    margin: 0;
+    color: #8B5C4A;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ---------- SECCIONES DEL DETALLE DE USUARIO ---------- */
+
+.seccion-personal {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.seccion-personal hr {
+    width: 100%;
+    margin: 6px 0 0;
+    border: none;
+    border-top: 2px solid #F5F5F5;
+}
+
+.seccion-personal h3 {
+    margin: 0;
+    color: #300E28;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.seccion-personal h4 {
+    margin: 0;
+    color: #300E28;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.seccion-personal .lista-datos-perfil {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 20px;
+    margin: 0;
+}
+
+.seccion-personal .dato-perfil {
+    min-width: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.seccion-personal .dato-perfil dt {
+    margin-bottom: 6px;
+    color: #8B5C4A;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.seccion-personal .dato-perfil dd {
+    margin: 0;
+    color: #300E28;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+
+/* ---------- BOTONES ---------- */
+
+.seccion-personal button {
+    align-self: flex-start;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.seccion-personal button:hover {
+    background-color: #8B5C4A;
+}
+
+.seccion-personal button:focus-visible {
+    outline: 2px solid #FFAC16;
+    outline-offset: 2px;
+}
+
+.seccion-personal button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.seccion-personal button[hidden] {
+    display: none;
+}
+
+/* Botones secundarios: cancelar */
+#cancelarFichaLaboral,
+#cancelarPerfilVeterinario,
+#botonCancelarJornadaEmpleado {
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+#cancelarFichaLaboral:hover,
+#cancelarPerfilVeterinario:hover,
+#botonCancelarJornadaEmpleado:hover {
+    background-color: #FFAC16;
+}
+
+
+/* ---------- FORMULARIOS (ficha laboral, perfil veterinario) ---------- */
+
+#formularioFichaLaboral,
+#formularioPerfilVeterinario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+#formularioFichaLaboral[hidden],
+#formularioPerfilVeterinario[hidden],
+#formularioJornadaEmpleado[hidden] {
+    display: none;
+}
+
+.seccion-personal label {
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.seccion-personal input[type="text"],
+.seccion-personal input[type="tel"],
+.seccion-personal input[type="time"],
+.seccion-personal input[type="datetime-local"],
+.seccion-personal select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.seccion-personal input:focus,
+.seccion-personal select:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.seccion-personal input:disabled {
+    border-color: #E0D6D2;
+    background-color: #F5F5F5;
+    cursor: not-allowed;
+}
+
+
+/* ---------- JORNADA SEMANAL (T32) ---------- */
+
+.bloque-jornada,
+.bloque-ausencias {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    border: 1px solid #F5F5F5;
+}
+
+#resumenJornadaEmpleado {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+#formularioJornadaEmpleado {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fila-jornada {
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr);
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+.fila-jornada label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* En las filas de la jornada el texto "Desde"/"Hasta" va encima del campo */
+.fila-jornada label:not(:first-child) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #8B5C4A;
+}
+
+.fila-jornada input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #300E28;
+}
+
+#formularioJornadaEmpleado button[type="submit"] {
+    align-self: flex-start;
+}
+
+#formularioJornadaEmpleado .acciones-jornada {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/* ---------- AUSENCIAS (T32) ---------- */
+
+#listaAusenciasEmpleado {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#listaAusenciasEmpleado li {
+    padding: 10px 12px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#formularioAusenciaEmpleado {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 14px;
+    padding-top: 6px;
+}
+
+#formularioAusenciaEmpleado label:nth-of-type(3),
+#motivoAusenciaEmpleado {
+    grid-column: 1 / -1;
+}
+
+#formularioAusenciaEmpleado button {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+}
+
+
+/* ---------- VETERINARIOS ASIGNADOS A UN ANIMAL (T33) ---------- */
+
+.bloque-asignaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.bloque-asignaciones[hidden] {
+    display: none;
+}
+
+.bloque-asignaciones hr {
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-top: 2px solid #F5F5F5;
+}
+
+.bloque-asignaciones h3 {
+    margin: 0;
+    color: #300E28;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.lista-asignaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-asignaciones li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.boton-retirar-asignacion {
+    padding: 8px 14px;
+    border: 1px solid #B3261E;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    color: #B3261E;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-retirar-asignacion:hover {
+    background-color: #B3261E;
+    color: #FFFFFF;
+}
+
+.boton-retirar-asignacion:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.formulario-asignacion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.formulario-asignacion[hidden] {
+    display: none;
+}
+
+.formulario-asignacion label {
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.formulario-asignacion select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.formulario-asignacion select:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.formulario-asignacion button {
+    align-self: flex-start;
+}
+
+
+/* ---------- PANTALLAS PEQUEÑAS ---------- */
+
+@media (max-width: 600px) {
+    .seccion-personal .lista-datos-perfil,
+    #formularioAusenciaEmpleado {
+        grid-template-columns: 1fr;
+    }
+
+    .fila-jornada {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .fila-jornada label:first-child {
+        grid-column: 1 / -1;
+    }
+}

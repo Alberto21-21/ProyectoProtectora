@@ -7,6 +7,7 @@
     <title>Animales - Salvando Huellas</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/style.css">
+    
 </head>
 
 <body class="pagina-perfil">
@@ -424,27 +425,19 @@
                 </small>
             </div>
 
-<section id="bloqueAsignacionesAnimal" hidden>
+<section id="bloqueAsignacionesAnimal" class="bloque-asignaciones" hidden>
     <hr>
-    <h3>Responsables y veterinarios asignados</h3>
+    <h3>Veterinarios asignados</h3>
 
-    <ul id="listaAsignacionesAnimal"></ul>
+    <ul id="listaAsignacionesAnimal" class="lista-asignaciones"></ul>
 
-    <form id="formularioAsignacionAnimal">
-        <div id="campoTipoAsignacion" hidden>
-            <label for="tipoAsignacionAnimal">Tipo de asignación</label>
-            <select id="tipoAsignacionAnimal">
-                <option value="responsable">Empleado responsable</option>
-                <option value="veterinario">Veterinario</option>
-            </select>
-        </div>
-
-        <label for="empleadoAsignacionAnimal">Persona que se asignará</label>
+    <form id="formularioAsignacionAnimal" class="formulario-asignacion">
+        <label for="empleadoAsignacionAnimal">Veterinario que se asignará</label>
         <select id="empleadoAsignacionAnimal" required>
-            <option value="">Selecciona una persona</option>
+            <option value="">Selecciona un veterinario</option>
         </select>
 
-        <button type="submit">Guardar asignación</button>
+        <button type="submit" class="boton-detalle">Asignar veterinario</button>
     </form>
 
     <p id="mensajeAsignacionAnimal" role="status"></p>

@@ -110,6 +110,21 @@ Route::prefix('empleados')
             'actualizarPorUsuario'
         ])->whereNumber('userId');
 
+        Route::get('/usuario/{userId}/jornada', [
+        DisponibilidadController::class,
+        'jornadaEmpleado'
+        ])->whereNumber('userId');
+
+        Route::put('/usuario/{userId}/jornada', [
+        DisponibilidadController::class,
+        'actualizarJornadaEmpleado'
+        ])->whereNumber('userId');
+
+        Route::get('/usuario/{userId}/ausencias', [
+        AusenciaController::class,
+        'listarPorUsuario'
+        ])->whereNumber('userId');
+
     });
 
 // PERFILES VETERINARIOS
@@ -135,7 +150,7 @@ Route::prefix('veterinarios')
 
     });
     
-// DISPONIBILIDAD
+// EMPLEADOS ACTIVOS (la jornada semanal se gestiona en /empleados/usuario/{id}/jornada)
 Route::prefix('disponibilidades')
     ->middleware(['auth:sanctum', CuentaActiva::class])
     ->group(function () {
@@ -145,14 +160,6 @@ Route::prefix('disponibilidades')
             DisponibilidadController::class,
             'empleados'
         ])->middleware('abilities:disponibilidad:gestionar');
-
-        // CONSULTAR DISPONIBILIDAD
-        Route::get('/', [DisponibilidadController::class, 'index'])
-            ->middleware('abilities:disponibilidad:consultar');
-
-        // REGISTRAR DISPONIBILIDAD
-        Route::post('/', [DisponibilidadController::class, 'store'])
-            ->middleware('abilities:disponibilidad:gestionar');
 
     });
 

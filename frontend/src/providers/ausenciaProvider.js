@@ -53,3 +53,25 @@ export async function crearAusencia(datos, token) {
 
     return resultado;
 }
+
+export async function obtenerAusenciasEmpleado(userId, token) {
+    const respuesta = await fetch(
+        `http://127.0.0.1:8000/api/empleados/usuario/${userId}/ausencias`,
+        {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudieron consultar las ausencias."
+        );
+    }
+
+    return resultado;
+}

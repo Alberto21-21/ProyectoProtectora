@@ -19,6 +19,15 @@ import {
 } from "./providers/usuariosProvider.js";
 
 import {obtenerPerfilVeterinario,crearPerfilVeterinario,actualizarPerfilVeterinario} from "./providers/veterinariosProvider.js";
+import {
+    obtenerJornadaEmpleado,
+    actualizarJornadaEmpleado
+} from "./providers/disponibilidadProvider.js";
+
+import {
+    obtenerAusenciasEmpleado,
+    crearAusencia
+} from "./providers/ausenciaProvider.js";
 
 // ELEMENTOS DEL LISTADO
 const mensaje = document.querySelector("#mensajeUsuarios");
@@ -92,17 +101,33 @@ let desactivandoUsuario = false;
 // ESTADO DE LAS FICHAS LABORALES
 let fichaLaboralActual = null;
 let usuarioFichaActualId = null;
+let guardandoAusenciaEmpleado = false;
 let guardandoFicha = false;
+let jornadaEmpleadoActual = [];
+let guardandoJornada = false;
 let perfilVeterinarioActual = null;
 let usuarioVeterinarioActualId = null;
 let guardandoPerfilVeterinario = false;
-
+const resumenJornadaEmpleado = document.querySelector("#resumenJornadaEmpleado");
+const mensajeJornadaEmpleado = document.querySelector("#mensajeJornadaEmpleado");
+const botonEditarJornadaEmpleado = document.querySelector("#botonEditarJornadaEmpleado");
+const formularioJornadaEmpleado = document.querySelector("#formularioJornadaEmpleado");
+const botonGuardarJornadaEmpleado = document.querySelector("#botonGuardarJornadaEmpleado");
+const botonCancelarJornadaEmpleado = document.querySelector("#botonCancelarJornadaEmpleado");
+const mensajeAusenciasEmpleado = document.querySelector("#mensajeAusenciasEmpleado");
+const listaAusenciasEmpleado = document.querySelector("#listaAusenciasEmpleado");
+const formularioAusenciaEmpleado = document.querySelector("#formularioAusenciaEmpleado");
+const inicioAusenciaEmpleado = document.querySelector("#inicioAusenciaEmpleado");
+const finAusenciaEmpleado = document.querySelector("#finAusenciaEmpleado");
+const motivoAusenciaEmpleado = document.querySelector("#motivoAusenciaEmpleado");
+const botonGuardarAusenciaEmpleado = document.querySelector("#botonGuardarAusenciaEmpleado");
 // FILTROS APLICADOS
 let filtrosActuales = {
     buscar: "",
     rol: "",
     estado: ""
 };
+
 
 // COMPROBAR EL ACCESO
 async function comprobarAcceso() {
@@ -402,6 +427,142 @@ async function cargarPerfilVeterinario(usuario) {
         }
     }
 }
+
+
+function mostrarJornadaEmpleado(jornada) {
+    const nombresDias = {
+        1: "Lunes",
+        2: "Martes",
+        3: "Miércoles",
+        4: "Jueves",
+        5: "Viernes",
+        6: "Sábado",
+        7: "Domingo"
+    };
+
+    resumenJornadaEmpleado.replaceChildren();
+
+    if (jornada.length === 0) {
+        const dato = document.createElement("div");
+        dato.className = "dato-perfil";
+
+        const texto = document.createElement("dd");
+        texto.textContent = "No hay jornada registrada.";
+
+        dato.appendChild(texto);
+        resumenJornadaEmpleado.appendChild(dato);
+        return;
+    }
+
+    jornada.forEach(function (horario) {
+        const dato = document.createElement("div");
+        dato.className = "dato-perfil";
+
+        const dia = document.createElement("dt");
+        dia.textContent = nombresDias[horario.dia_semana] || "Día";
+
+        const horas = document.createElement("dd");
+        horas.textContent =
+            `${horario.hora_inicio.slice(0, 5)} – ${horario.hora_fin.slice(0, 5)}`;
+
+        dato.append(dia, horas);
+        resumenJornadaEmpleado.appendChild(dato);
+    });
+}
+
+async function cargarJornadaEmpleado(userId) {
+    const token = sessionStorage.getItem("token");
+
+    resumenJornadaEmpleado.replaceChildren();
+    botonEditarJornadaEmpleado.hidden = true;
+    mensajeJornadaEmpleado.textContent = "Cargando jornada...";
+
+    try {
+        const resultado = await obtenerJornadaEmpleado(userId, token);
+        jornadaEmpleadoActual = resultado.data;
+
+        mostrarJornadaEmpleado(resultado.data);
+        mensajeJornadaEmpleado.textContent = "";
+        botonEditarJornadaEmpleado.hidden = false;
+    } catch (error) {
+        mensajeJornadaEmpleado.textContent =
+            `No se pudo cargar la jornada: ${error.message}`;
+    }
+}
+
+function abrirEdicionJornadaEmpleado() {
+    formularioJornadaEmpleado.reset();
+
+    const horariosPorDia = new Map(
+        jornadaEmpleadoActual.map(function (horario) {
+            return [Number(horario.dia_semana), horario];
+        })
+    );
+
+    formularioJornadaEmpleado
+        .querySelectorAll(".fila-jornada")
+        .forEach(function (fila) {
+            const dia = Number(fila.dataset.dia);
+            const horario = horariosPorDia.get(dia);
+            const casilla = fila.querySelector('input[type="checkbox"]');
+            const horas = fila.querySelectorAll('input[type="time"]');
+
+            casilla.checked = Boolean(horario);
+
+            horas[0].disabled = !horario;
+            horas[1].disabled = !horario;
+
+            horas[0].value = horario
+                ? horario.hora_inicio.slice(0, 5)
+                : "";
+
+            horas[1].value = horario
+                ? horario.hora_fin.slice(0, 5)
+                : "";
+        });
+
+    formularioJornadaEmpleado.hidden = false;
+    mensajeJornadaEmpleado.textContent = "";
+}
+
+function mostrarAusenciasEmpleado(ausencias) {
+    listaAusenciasEmpleado.replaceChildren();
+
+    if (!ausencias || ausencias.length === 0) {
+        const elemento = document.createElement("li");
+        elemento.textContent = "No hay ausencias registradas.";
+        listaAusenciasEmpleado.appendChild(elemento);
+        return;
+    }
+
+    ausencias.forEach((ausencia) => {
+        const elemento = document.createElement("li");
+        const inicio = new Date(ausencia.fecha_inicio).toLocaleString("es-ES");
+        const fin = new Date(ausencia.fecha_fin).toLocaleString("es-ES");
+        const motivo = ausencia.motivo ? ` — ${ausencia.motivo}` : "";
+
+        elemento.textContent = `${inicio} a ${fin}${motivo}`;
+        listaAusenciasEmpleado.appendChild(elemento);
+    });
+}
+
+async function cargarAusenciasEmpleado(userId) {
+    try {
+        mensajeAusenciasEmpleado.textContent = "Cargando ausencias…";
+
+        const resultado = await obtenerAusenciasEmpleado(
+            userId,
+           sessionStorage.getItem("token")
+        );
+
+        mostrarAusenciasEmpleado(resultado.data);
+        mensajeAusenciasEmpleado.textContent = "";
+    } catch (error) {
+        mensajeAusenciasEmpleado.textContent = error.message;
+    }
+}
+
+
 
 function abrirAltaPerfilVeterinario() {
     const formulario = document.querySelector("#formularioPerfilVeterinario");
@@ -778,6 +939,8 @@ async function cargarFichaLaboral(usuario) {
             empleado.estado_laboral;
 
         botonEditar.hidden = false;
+        await cargarJornadaEmpleado(usuario.id);
+        await cargarAusenciasEmpleado(usuario.id);
         mensajeFicha.textContent = "";
 
     } catch (error) {
@@ -867,6 +1030,86 @@ async function guardarFichaLaboral(evento) {
     } finally {
         guardandoFicha = false;
         botonGuardar.disabled = false;
+    }
+}
+
+async function guardarJornadaEmpleado(evento) {
+    evento.preventDefault();
+
+    if (guardandoJornada) {
+        return;
+    }
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        mensajeJornadaEmpleado.textContent =
+            "Debes iniciar sesión para guardar la jornada.";
+        return;
+    }
+
+    const jornada = [];
+    const filas = formularioJornadaEmpleado.querySelectorAll(".fila-jornada");
+
+    for (const fila of filas) {
+        const casilla = fila.querySelector('input[type="checkbox"]');
+
+        if (!casilla.checked) {
+            continue;
+        }
+
+        const camposHora = fila.querySelectorAll('input[type="time"]');
+        const horaInicio = camposHora[0];
+        const horaFin = camposHora[1];
+
+        if (!horaInicio.value || !horaFin.value) {
+            mensajeJornadaEmpleado.textContent =
+                "Completa la hora de inicio y fin de cada día seleccionado.";
+            return;
+        }
+
+        if (horaFin.value <= horaInicio.value) {
+            mensajeJornadaEmpleado.textContent =
+                "La hora de fin debe ser posterior a la hora de inicio.";
+            return;
+        }
+
+        jornada.push({
+            dia_semana: Number(fila.dataset.dia),
+            hora_inicio: horaInicio.value,
+            hora_fin: horaFin.value
+        });
+    }
+
+    if (jornada.length === 0) {
+        mensajeJornadaEmpleado.textContent =
+            "Selecciona al menos un día de trabajo.";
+        return;
+    }
+
+    guardandoJornada = true;
+    botonGuardarJornadaEmpleado.disabled = true;
+    mensajeJornadaEmpleado.textContent = "Guardando jornada...";
+
+    try {
+        const resultado = await actualizarJornadaEmpleado(
+            usuarioFichaActualId,
+            { jornada: jornada },
+            token
+        );
+
+        jornadaEmpleadoActual = resultado.data;
+        mostrarJornadaEmpleado(jornadaEmpleadoActual);
+        formularioJornadaEmpleado.hidden = true;
+        mensajeJornadaEmpleado.textContent = resultado.message;
+
+    } catch (error) {
+        mensajeJornadaEmpleado.textContent =
+            `No se pudo guardar la jornada: ${error.message}`;
+
+    } finally {
+        guardandoJornada = false;
+        botonGuardarJornadaEmpleado.disabled = false;
     }
 }
 
@@ -1037,7 +1280,80 @@ modalEditarUsuario.addEventListener("cancel", function (evento) {
 
 formularioEditarUsuario.addEventListener("submit", guardarEdicionUsuario);
 
+
+
+async function guardarAusenciaEmpleado(evento) {
+    evento.preventDefault();
+
+    if (guardandoAusenciaEmpleado) {
+        return;
+    }
+
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+        mensajeAusenciasEmpleado.textContent =
+            "Debes iniciar sesión para guardar una ausencia.";
+        return;
+    }
+
+    guardandoAusenciaEmpleado = true;
+    botonGuardarAusenciaEmpleado.disabled = true;
+    mensajeAusenciasEmpleado.textContent = "Guardando ausencia…";
+
+    try {
+        await crearAusencia(
+            {
+                empleado_id: fichaLaboralActual.id,
+                fecha_inicio: inicioAusenciaEmpleado.value,
+                fecha_fin: finAusenciaEmpleado.value,
+                motivo: motivoAusenciaEmpleado.value.trim() || null
+            },
+            token
+        );
+
+        formularioAusenciaEmpleado.reset();
+        await cargarAusenciasEmpleado(usuarioFichaActualId);
+        mensajeAusenciasEmpleado.textContent =
+            "Ausencia guardada correctamente.";
+    } catch (error) {
+        mensajeAusenciasEmpleado.textContent = error.message;
+    } finally {
+        guardandoAusenciaEmpleado = false;
+        botonGuardarAusenciaEmpleado.disabled = false;
+    }
+}
+
 // EVENTOS DE LA FICHA LABORAL
+
+botonEditarJornadaEmpleado.addEventListener("click",abrirEdicionJornadaEmpleado);
+
+formularioJornadaEmpleado.querySelectorAll(".fila-jornada").forEach(function (fila) {
+        const casilla = fila.querySelector('input[type="checkbox"]');
+        const camposHora = fila.querySelectorAll('input[type="time"]');
+
+        casilla.addEventListener("change", function () {
+            camposHora.forEach(function (campo) {
+                campo.disabled = !casilla.checked;
+
+                if (!casilla.checked) {
+                    campo.value = "";
+                }
+            });
+        });
+    });
+
+botonCancelarJornadaEmpleado.addEventListener("click", function () {
+    formularioJornadaEmpleado.reset();
+    formularioJornadaEmpleado.hidden = true;
+    mensajeJornadaEmpleado.textContent = "";
+});
+
+
+formularioJornadaEmpleado.addEventListener( "submit", guardarJornadaEmpleado);
+
+formularioAusenciaEmpleado.addEventListener("submit", guardarAusenciaEmpleado);
+
 document.querySelector("#botonCrearFichaLaboral")
     .addEventListener("click", abrirAltaFichaLaboral);
 
