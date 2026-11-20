@@ -26,6 +26,7 @@ class SolicitudController extends Controller
             'user_id.prohibited' => 'El usuario se obtiene de la sesión.',
             'estado.prohibited' => 'El estado lo establece el servidor.'
         ]);
+
         return DB::transaction(function () use ($request, $datos) {
 
             $animal = Animal::where('id', $datos['animal_id'])
