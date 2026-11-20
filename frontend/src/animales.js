@@ -7,7 +7,7 @@ import {
     actualizarEstadoAnimal,
     darDeBajaAnimal,
     eliminarAnimal,
-    asignarCuidadorAnimal
+    asignarCuidadorAnimal,
 } from "./providers/animalesProvider.js";
 
 import {
@@ -18,6 +18,8 @@ import {
 } from "./providers/asignacionProvider.js";
 
 import { obtenerEmpleadosParaDisponibilidad } from "./providers/disponibilidadProvider.js";
+
+import { crearSolicitud } from "./providers/solicitudesProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     // -------------------------------------------------------------
@@ -107,6 +109,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
     const btnGuardarAsignacion = document.querySelector("#btnGuardarAsignacion");
     const mensajeAsignacion = document.querySelector("#mensajeAsignacion");
+
+    // FORMULARIO DE SOLICITUD DE ADOPCIÓN
+    const formularioSolicitud = document.querySelector("#formularioSolicitud");
+    const observacionesSolicitud = document.querySelector("#observacionesSolicitud");
+    const mensajeSolicitud = document.querySelector("#mensajeSolicitud");
+    const botonEnviarSolicitud = document.querySelector("#botonEnviarSolicitud");
 
     const rolesAutorizados = ["admin", "personal", "veterinario", "empleado"];
     let usuarioActual = null;
@@ -558,11 +566,40 @@ document.addEventListener("DOMContentLoaded", function () {
                 verFichaAnimal(animal.id);
             });
 
+            // BOTONES DE LA TARJETA
+            const acciones = document.createElement("div");
+            acciones.className = "acciones-tarjeta-adopcion";
+
+            acciones.appendChild(botonFicha);
+
+            if (
+                usuarioActual &&
+                usuarioActual.rol === "adoptante" &&
+                animal.estado === "Disponible"
+            ) {
+                const botonSolicitud = document.createElement("button");
+
+                botonSolicitud.type = "button";
+                botonSolicitud.className = "boton-solicitar-adopcion";
+                botonSolicitud.textContent = "Solicitar adopción";
+
+                botonSolicitud.setAttribute(
+                    "aria-label",
+                    "Solicitar la adopción de " + animal.nombre
+                );
+
+                botonSolicitud.addEventListener("click", function () {
+                    verFichaAnimal(animal.id, true);
+                });
+
+                acciones.appendChild(botonSolicitud);
+            }
+
             contenido.append(
                 nombre,
                 descripcion,
                 caracter,
-                botonFicha
+                acciones
             );
 
             tarjeta.appendChild(contenido);
@@ -694,9 +731,9 @@ async function cargarAsignacionesEnFicha(animalId) {
     // -------------------------------------------------------------
     // CONSULTA DE FICHA DETALLADA Y CAMBIO DE ESTADO (T15)
     // -------------------------------------------------------------
-    async function verFichaAnimal(id) {
-        if (!modalDetalleAnimal) return;
+    async function verFichaAnimal(id, irASolicitud = false) {
 
+        if (!modalDetalleAnimal) return;
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
         animalSeleccionadoId = id;
 
@@ -709,6 +746,19 @@ async function cargarAsignacionesEnFicha(animalId) {
         try {
 
             const animal = await obtenerAnimal(id, token);
+
+            // MOSTRAR LA SOLICITUD SOLO AL ADOPTANTE
+            formularioSolicitud.reset();
+            mensajeSolicitud.textContent = "";
+            botonEnviarSolicitud.disabled = false;
+
+            formularioSolicitud.hidden = !(
+                usuarioActual &&
+                usuarioActual.rol === "adoptante" &&
+                animal.estado === "Disponible" &&
+                animal.activo !== false &&
+                animal.activo !== 0
+            );
 
             document.querySelector("#fichaTamano").textContent =
                 animal.tamano || "No indicado";
@@ -861,6 +911,15 @@ async function cargarAsignacionesEnFicha(animalId) {
 
             if (!modalDetalleAnimal.open) {
                 modalDetalleAnimal.showModal();
+            }
+
+            if (irASolicitud && !formularioSolicitud.hidden) {
+                observacionesSolicitud.focus();
+                formularioSolicitud.scrollIntoView({
+                    block: "center"
+                });
+            } else {
+                modalDetalleAnimal.scrollTop = 0;
             }
 
         } catch (error) {
@@ -1165,6 +1224,46 @@ if (formularioAsignacionAnimal) {
             }
         });
     }
+
+    // ENVIAR LA SOLICITUD DE ADOPCIÓN
+    formularioSolicitud.addEventListener("submit", async function (evento) {
+
+        evento.preventDefault();
+
+        const token = sessionStorage.getItem("token")
+            || localStorage.getItem("token");
+
+        if (!token) {
+            mensajeSolicitud.textContent =
+                "Debes iniciar sesión para solicitar una adopción.";
+            return;
+        }
+
+        const idAnimal = animalSeleccionadoId;
+
+        const datos = {
+            animal_id: idAnimal,
+            observaciones: observacionesSolicitud.value.trim()
+        };
+
+        mensajeSolicitud.textContent = "Enviando solicitud...";
+        botonEnviarSolicitud.disabled = true;
+
+        try {
+            const resultado = await crearSolicitud(datos, token);
+
+            if (animalSeleccionadoId === idAnimal) {
+                mensajeSolicitud.textContent = resultado.message;
+                formularioSolicitud.reset();
+            }
+
+        } catch (error) {
+            if (animalSeleccionadoId === idAnimal) {
+                mensajeSolicitud.textContent = error.message;
+                botonEnviarSolicitud.disabled = false;
+            }
+        }
+    });
 
     // COMPROBAR EL ACCESO Y ABRIR EL ANIMAL INDICADO EN EL ENLACE
     comprobarAcceso().then(function () {

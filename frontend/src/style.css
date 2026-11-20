@@ -2887,3 +2887,110 @@ button:focus-visible {
 #avisoPendientesCompatibilidad:empty {
     display: none;
 }
+
+/* SOLICITUD DE ADOPCIÓN EN LA FICHA */
+.formulario-solicitud {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+    background-color: #F5F5F5;
+}
+
+.formulario-solicitud h3 {
+    margin: 0;
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.formulario-solicitud > p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.formulario-solicitud label {
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.formulario-solicitud textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.formulario-solicitud textarea:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#mensajeSolicitud:empty {
+    display: none;
+}
+
+#botonEnviarSolicitud {
+    align-self: flex-start;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonEnviarSolicitud:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+#botonEnviarSolicitud:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* BOTONES DE LAS TARJETAS DE ADOPCIÓN */
+.acciones-tarjeta-adopcion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.acciones-tarjeta-adopcion .boton-ficha-adopcion {
+    margin-top: 0;
+}
+
+.boton-solicitar-adopcion {
+    padding: 11px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-solicitar-adopcion:hover {
+    background-color: #8B5C4A;
+}

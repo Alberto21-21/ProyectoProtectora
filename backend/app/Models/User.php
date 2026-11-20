@@ -68,4 +68,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Hogar::class, 'user_id');
     }
+
+    // SOLICITUDES DE ADOPCIÓN DEL USUARIO
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'user_id');
+    }
 }

@@ -47,7 +47,7 @@ class Animal extends Model
         'minutos_cuidados',
         'tiene_necesidades_especiales',
     ];
-    
+
     protected $casts = [
         'activo' => 'boolean',
         'minutos_paseos' => 'integer',
@@ -88,5 +88,11 @@ class Animal extends Model
     public function alojamientos()
     {
         return $this->hasMany(Alojamiento::class, 'animal_id')->orderByDesc('fecha_movimiento');
+    }
+
+        // SOLICITUDES DE ADOPCIÓN DEL ANIMAL
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'animal_id');
     }
 }
