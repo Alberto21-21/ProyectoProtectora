@@ -3153,3 +3153,99 @@ button:focus-visible {
         font-size: 13px;
     }
 }
+
+/* CANCELAR SOLICITUD */
+#tablaMisSolicitudes .boton-cancelar-solicitud {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-left: 12px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: #FDECEC;
+    color: #B42318;
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+#tablaMisSolicitudes .boton-ficha-solicitud {
+    vertical-align: middle;
+}
+
+#tablaMisSolicitudes .boton-cancelar-solicitud:hover {
+    background-color: #B42318;
+    color: #FFFFFF;
+}
+
+#tablaMisSolicitudes .boton-cancelar-solicitud:focus-visible {
+    outline: 2px solid #B42318;
+    outline-offset: 3px;
+}
+
+#tablaMisSolicitudes .boton-cancelar-solicitud:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+/* ESTADOS DE LAS SOLICITUDES */
+.estado-solicitud {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.estado-cancelada {
+    background-color: #FDECEC;
+    color: #B42318;
+}
+
+.estado-pendiente {
+    background-color: #FFF3D6;
+    color: #805000;
+}
+
+.cabecera-mis-solicitudes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 35px;
+}
+
+.cabecera-mis-solicitudes .titulo-perfil {
+    margin-bottom: 0;
+}
+
+.cabecera-mis-solicitudes .boton-volver-perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 14px 26px;
+    border-radius: 30px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.cabecera-mis-solicitudes .boton-volver-perfil:hover {
+    background-color: #8B5C4A;
+}
+
+@media (max-width: 700px) {
+    .cabecera-mis-solicitudes {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

@@ -42,6 +42,7 @@ return [
             'compatibilidad:consultar',
             'solicitudes:crear',
             'solicitudes:consultar-propias',
+            'solicitudes:cancelar-propias',
         ],
 
         'personal' => [

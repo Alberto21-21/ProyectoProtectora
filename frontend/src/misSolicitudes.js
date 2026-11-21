@@ -4,7 +4,8 @@ import {
 } from "./providers/autenticacionProvider.js";
 
 import {
-    obtenerMisSolicitudes
+    obtenerMisSolicitudes,
+    cancelarSolicitud
 } from "./providers/solicitudesProvider.js";
 
 import { obtenerAnimal } from "./providers/animalesProvider.js";
@@ -60,7 +61,20 @@ function mostrarSolicitudes(solicitudes) {
             : "Animal no disponible";
 
         const estado = document.createElement("td");
-        estado.textContent = solicitud.estado;
+        const etiquetaEstado = document.createElement("span");
+
+        etiquetaEstado.textContent = solicitud.estado;
+        etiquetaEstado.className = "estado-solicitud";
+
+        if (solicitud.estado === "cancelada") {
+            etiquetaEstado.classList.add("estado-cancelada");
+        }
+
+        if (solicitud.estado === "pendiente") {
+            etiquetaEstado.classList.add("estado-pendiente");
+        }
+
+        estado.appendChild(etiquetaEstado);
 
         const fechaSolicitud = document.createElement("td");
         fechaSolicitud.textContent = formatearFecha(solicitud.created_at);
@@ -83,6 +97,61 @@ function mostrarSolicitudes(solicitudes) {
             });
 
             acciones.appendChild(botonFicha);
+        }
+
+        // SOLO SE PUEDEN CANCELAR SOLICITUDES EN CURSO
+        if (
+            solicitud.estado === "pendiente"
+            || solicitud.estado === "en_revision"
+        ) {
+            const botonCancelar = document.createElement("button");
+
+            botonCancelar.type = "button";
+            botonCancelar.className = "boton-cancelar-solicitud";
+            botonCancelar.title = "Cancelar solicitud";
+            botonCancelar.setAttribute("aria-label", "Cancelar solicitud");
+
+            botonCancelar.textContent = "×";
+
+            botonCancelar.addEventListener("click", async function () {
+
+                const confirmar = window.confirm(
+                    "¿Quieres cancelar esta solicitud de adopción?"
+                );
+
+                if (!confirmar) {
+                    return;
+                }
+
+                const token = sessionStorage.getItem("token");
+
+                if (!token) {
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                botonCancelar.disabled = true;
+                mensaje.textContent = "Cancelando solicitud...";
+
+                try {
+                    const resultado = await cancelarSolicitud(
+                        solicitud.id,
+                        token
+                    );
+
+                    solicitud.estado = resultado.data.estado;
+                    solicitud.updated_at = resultado.data.updated_at;
+
+                    mostrarSolicitudes(solicitudes);
+                    mensaje.textContent = resultado.message;
+
+                } catch (error) {
+                    mensaje.textContent = error.message;
+                    botonCancelar.disabled = false;
+                }
+            });
+
+            acciones.appendChild(botonCancelar);
         }
 
         fila.append(

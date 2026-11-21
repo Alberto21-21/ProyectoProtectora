@@ -49,3 +49,28 @@ export async function obtenerMisSolicitudes(token) {
 
     return resultado;
 }
+
+// CANCELAR UNA SOLICITUD PROPIA
+export async function cancelarSolicitud(id, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/solicitudes/" + id + "/cancelar",
+        {
+            method: "PATCH",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo cancelar la solicitud."
+        );
+    }
+
+    return resultado;
+}
