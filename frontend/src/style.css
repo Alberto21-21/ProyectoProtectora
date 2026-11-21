@@ -2062,42 +2062,6 @@ button:focus-visible {
 
 }
 
-/* MODAL DE LA FICHA DEL ANIMAL */
-#modalDetalleAnimal {
-    position: fixed;
-    inset: 0;
-    margin: auto;
-    transform: none;
-    width: min(520px, calc(100% - 32px));
-    height: fit-content;
-    max-height: 75dvh;
-    box-sizing: border-box;
-    overflow-y: auto;
-    border: none;
-    border-radius: 24px;
-    padding: 24px;
-}
-
-#modalDetalleAnimal h2 {
-    margin: 0 0 16px;
-    font-size: 24px;
-}
-
-#fichaImagen[hidden] {
-    display: none;
-}
-
-#fichaImagen {
-    display: block;
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 14px;
-    margin-bottom: 16px;
-
-    object-position: center;
-}
-
 /* FORMULARIO DEL HOGAR */
 #seccionHogar {
     width: 100%;
@@ -2195,8 +2159,6 @@ button:focus-visible {
     cursor: pointer;
 }
 
-
-
 .mensaje-estado {
     margin: 0;
     font-size: 13px;
@@ -2219,7 +2181,6 @@ button:focus-visible {
     font-size: 13px;
     line-height: 1.5;
 }
-
 
 /* ---------- SECCIONES DEL DETALLE DE USUARIO ---------- */
 
@@ -2279,7 +2240,6 @@ button:focus-visible {
     overflow-wrap: anywhere;
 }
 
-
 /* ---------- BOTONES ---------- */
 
 .seccion-personal button {
@@ -2295,7 +2255,6 @@ button:focus-visible {
     cursor: pointer;
 }
 
-
 #botonGuardarHogar:hover {
     background-color: #8B5C4A;
 }
@@ -2308,11 +2267,6 @@ button:focus-visible {
 .acciones-hogar a {
     color: #300E28;
     font-weight: 600;
-}
-
-#seccionHogar[hidden],
-.campo-hogar[hidden] {
-    display: none;
 }
 
 @media (max-width: 700px) {
@@ -2373,10 +2327,6 @@ button:focus-visible {
     outline: 3px solid #300E28;
     outline-offset: 4px;
     border-radius: 8px;
-}
-
-.acceso-hogar[hidden] {
-    display: none;
 }
 
 @media (max-width: 700px) {
@@ -2549,10 +2499,6 @@ button:focus-visible {
     cursor: not-allowed;
 }
 
-.seccion-personal button[hidden] {
-    display: none;
-}
-
 /* Botones secundarios: cancelar */
 #cancelarFichaLaboral,
 #cancelarPerfilVeterinario,
@@ -2567,7 +2513,6 @@ button:focus-visible {
     background-color: #FFAC16;
 }
 
-
 /* ---------- FORMULARIOS (ficha laboral, perfil veterinario) ---------- */
 
 #formularioFichaLaboral,
@@ -2579,12 +2524,6 @@ button:focus-visible {
     border-left: 4px solid #FFAC16;
     border-radius: 12px;
     background-color: #F5F5F5;
-}
-
-#formularioFichaLaboral[hidden],
-#formularioPerfilVeterinario[hidden],
-#formularioJornadaEmpleado[hidden] {
-    display: none;
 }
 
 .seccion-personal label {
@@ -2619,7 +2558,6 @@ button:focus-visible {
     background-color: #F5F5F5;
     cursor: not-allowed;
 }
-
 
 /* ---------- JORNADA SEMANAL (T32) ---------- */
 
@@ -2686,7 +2624,6 @@ button:focus-visible {
     gap: 10px;
 }
 
-
 /* ---------- AUSENCIAS (T32) ---------- */
 
 #listaAusenciasEmpleado {
@@ -2725,7 +2662,6 @@ button:focus-visible {
     margin-top: 6px;
 }
 
-
 /* ---------- VETERINARIOS ASIGNADOS A UN ANIMAL (T33) ---------- */
 
 .bloque-asignaciones {
@@ -2733,10 +2669,6 @@ button:focus-visible {
     flex-direction: column;
     gap: 12px;
     margin-top: 8px;
-}
-
-.bloque-asignaciones[hidden] {
-    display: none;
 }
 
 .bloque-asignaciones hr {
@@ -2807,10 +2739,6 @@ button:focus-visible {
     background-color: #F5F5F5;
 }
 
-.formulario-asignacion[hidden] {
-    display: none;
-}
-
 .formulario-asignacion label {
     color: #300E28;
     font-size: 13px;
@@ -2836,7 +2764,6 @@ button:focus-visible {
 .formulario-asignacion button {
     align-self: flex-start;
 }
-
 
 /* ---------- PANTALLAS PEQUEÑAS ---------- */
 
@@ -2993,4 +2920,236 @@ button:focus-visible {
 
 .boton-solicitar-adopcion:hover {
     background-color: #8B5C4A;
+}
+
+/* ACCESO A LAS SOLICITUDES DESDE EL PERFIL */
+.enlace-mis-solicitudes {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 24px;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+}
+
+.enlace-mis-solicitudes:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+/* BOTÓN DE FICHA EN MIS SOLICITUDES */
+.boton-ficha-solicitud {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* FICHAS DE ANIMALES: CATÁLOGO Y MIS SOLICITUDES */
+#modalAnimalSolicitud,
+#modalDetalleAnimal {
+    position: fixed;
+    inset: 0;
+    width: min(500px, calc(100% - 32px));
+    height: fit-content;
+    max-height: 85dvh;
+    margin: auto;
+    padding: 30px 24px 24px;
+    overflow-y: auto;
+    transform: none;
+    border: none;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    box-shadow: 0 20px 60px rgba(48, 14, 40, 0.22);
+    scrollbar-width: none;
+}
+
+#modalAnimalSolicitud::-webkit-scrollbar,
+#modalDetalleAnimal::-webkit-scrollbar {
+    display: none;
+}
+
+#modalAnimalSolicitud::backdrop,
+#modalDetalleAnimal::backdrop {
+    background-color: rgba(48, 14, 40, 0.65);
+}
+
+#modalAnimalSolicitud h2,
+#modalDetalleAnimal h2 {
+    margin: 8px 32px 22px;
+    padding: 0;
+    font-size: 25px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+#cerrarAnimalSolicitud {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 24px;
+}
+
+#cerrarAnimalSolicitud:hover {
+    background-color: #FFAC16;
+}
+
+/* FOTOGRAFÍAS */
+#fotoAnimalSolicitud,
+#fichaImagen {
+    display: block;
+    width: 100%;
+    height: 240px;
+    max-height: none;
+    margin: 0 0 10px;
+    padding: 0;
+    border-radius: 16px;
+    background-color: #F5F5F5;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* DATOS EN DOS COLUMNAS */
+#contenidoAnimalSolicitud,
+#contenidoFichaAnimal {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#contenidoAnimalSolicitud > :not(p),
+#contenidoFichaAnimal > :not(p),
+#contenidoFichaAnimal > .aviso-baja-modal {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+#contenidoAnimalSolicitud > p,
+#contenidoFichaAnimal > p:not(.aviso-baja-modal) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 5px;
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#contenidoAnimalSolicitud > p strong,
+#contenidoFichaAnimal > p:not(.aviso-baja-modal) strong {
+    color: #8B5C4A;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#contenidoAnimalSolicitud > p span,
+#contenidoFichaAnimal > p:not(.aviso-baja-modal) span {
+    color: #300E28;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#estadoAnimalSolicitud,
+#fichaEstado {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background-color: #FFAC16;
+    font-size: 12px;
+}
+
+/* HISTORIA Y CUIDADOS SIN BORDE LATERAL */
+#modalAnimalSolicitud .informacion-publica-animal,
+#modalDetalleAnimal .informacion-publica-animal {
+    margin: 6px 0 0;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+#modalAnimalSolicitud .informacion-publica-animal h3,
+#modalDetalleAnimal .informacion-publica-animal h3 {
+    margin: 18px 0 8px;
+    color: #300E28;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+#modalAnimalSolicitud .informacion-publica-animal h3:first-child,
+#modalDetalleAnimal .informacion-publica-animal h3:first-child {
+    margin-top: 0;
+}
+
+#modalAnimalSolicitud .texto-publico-animal,
+#modalDetalleAnimal .texto-publico-animal {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+#contenidoFichaAnimal > .separador-ficha {
+    width: 100%;
+}
+
+#mensajeAnimalSolicitud {
+    margin: 0;
+    color: #8B5C4A;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#mensajeAnimalSolicitud:empty {
+    display: none;
+}
+
+/* FICHAS EN MÓVILES */
+@media (max-width: 480px) {
+    #modalAnimalSolicitud,
+    #modalDetalleAnimal {
+        padding: 28px 18px 18px;
+        border-radius: 20px;
+    }
+
+    #modalAnimalSolicitud h2,
+    #modalDetalleAnimal h2 {
+        margin-left: 0;
+        margin-right: 32px;
+        font-size: 22px;
+    }
+
+    #fotoAnimalSolicitud,
+    #fichaImagen {
+        height: 200px;
+    }
+
+    #contenidoAnimalSolicitud,
+    #contenidoFichaAnimal {
+        gap: 10px;
+    }
+
+    #contenidoAnimalSolicitud > p,
+    #contenidoFichaAnimal > p:not(.aviso-baja-modal) {
+        padding: 12px;
+        font-size: 13px;
+    }
 }

@@ -380,4 +380,7 @@ Route::prefix('solicitudes')
     ->group(function () {
         Route::post('/', [SolicitudController::class, 'store'])
             ->middleware('abilities:solicitudes:crear');
+
+        Route::get('/', [SolicitudController::class, 'index'])
+            ->middleware('abilities:solicitudes:consultar-propias');
     });

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mis solicitudes - Salvando Huellas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/misSolicitudes.js"></script>
+</head>
+
+<body class="pagina-perfil">
+
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas"
+                    class="logo-protectora"
+                >
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html">Mi perfil</a>
+
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>ADOPCIÓN</span>
+            <h1>Mis solicitudes</h1>
+            <p>Consulta el estado de tus solicitudes de adopción.</p>
+        </div>
+
+        <p id="mensajeMisSolicitudes" role="status"></p>
+
+        <section
+            id="seccionMisSolicitudes"
+            class="tabla-usuarios"
+            hidden
+        >
+            <table>
+                <caption>Solicitudes de adopción</caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">Animal</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha de solicitud</th>
+                        <th scope="col">Última actualización</th>
+                        <th scope="col">Ficha</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaMisSolicitudes"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <!-- FICHA DEL ANIMAL SOLICITADO -->
+    <dialog
+        id="modalAnimalSolicitud"
+        class="modal-acceso modal-detalle"
+        aria-labelledby="tituloAnimalSolicitud"
+    >
+        <button
+            type="button"
+            id="cerrarAnimalSolicitud"
+            class="cerrar-modal"
+            aria-label="Cerrar ficha"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloAnimalSolicitud">Ficha del animal</h2>
+
+        <p id="mensajeAnimalSolicitud" role="status"></p>
+
+        <div
+            id="contenidoAnimalSolicitud"
+            class="detalle-animal-body"
+            hidden
+        >
+            <img
+                id="fotoAnimalSolicitud"
+                src=""
+                alt=""
+                hidden
+            >
+
+            <p>
+                <strong>Especie:</strong>
+                <span id="especieAnimalSolicitud"></span>
+            </p>
+
+            <p>
+                <strong>Raza:</strong>
+                <span id="razaAnimalSolicitud"></span>
+            </p>
+
+            <p>
+                <strong>Sexo:</strong>
+                <span id="sexoAnimalSolicitud"></span>
+            </p>
+
+            <p>
+                <strong>Estado actual:</strong>
+                <span id="estadoAnimalSolicitud"></span>
+            </p>
+
+            <section class="informacion-publica-animal">
+                <h3>Su historia</h3>
+                <p
+                    id="historiaAnimalSolicitud"
+                    class="texto-publico-animal"
+                ></p>
+
+                <h3>Cuidados que necesita</h3>
+                <p
+                    id="cuidadosAnimalSolicitud"
+                    class="texto-publico-animal"
+                ></p>
+            </section>
+        </div>
+    </dialog>
+
+</body>
+</html>

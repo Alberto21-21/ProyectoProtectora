@@ -14,6 +14,7 @@ const email = document.querySelector("#emailPerfil");
 const fechaNacimiento = document.querySelector("#fechaNacimientoPerfil");
 const rol = document.querySelector("#rolPerfil");
 const enlaceHogar = document.querySelector("#enlaceHogar");
+const enlaceMisSolicitudes = document.querySelector("#enlaceMisSolicitudes");
 
 // FORMULARIO DE EDICIÓN
 const formulario = document.querySelector("#formularioEditarPerfil");
@@ -91,6 +92,8 @@ function mostrarPerfil(usuario) {
     nombreEditar.value = usuario.name;
     emailEditar.value = usuario.email;
     fechaNacimientoEditar.value = fecha;
+
+    enlaceMisSolicitudes.hidden = usuario.rol !== "adoptante";
 }
 
 // CONSULTAR EL PERFIL

@@ -4,7 +4,6 @@ const enlacesMenu = [
     { href: "animales.html", texto: "Animales" },
     { href: "perfil.html", texto: "Mi perfil", id: "enlacePerfil", roles: ["admin", "adoptante", "personal", "veterinario"] },
     { href: "usuarios.html", texto: "Usuarios", id: "enlaceUsuarios", roles: ["admin"] },
-    { href: "disponibilidad.html", texto: "Disponibilidad", id: "enlaceDisponibilidad", roles: ["admin"] },
     { href: "misAnimales.html", texto: "Mis animales", id: "enlaceMisAnimales", roles: ["personal", "veterinario"] },
     { href: "instalaciones.html", texto: "Instalaciones", id: "enlaceInstalaciones", roles: ["admin"] },
     { href: "habitaculos.html", texto: "Habitáculos", id: "enlaceHabitaculos", roles: ["admin", "personal", "veterinario"] }
