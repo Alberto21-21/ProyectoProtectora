@@ -1,12 +1,11 @@
-// Mantiene los mismos enlaces y el estado activo en las cabeceras de la app.
+
 const enlacesMenu = [
     { href: "index.html", texto: "Inicio" },
     { href: "animales.html", texto: "Animales" },
     { href: "perfil.html", texto: "Mi perfil", id: "enlacePerfil", roles: ["admin", "adoptante", "personal", "veterinario"] },
     { href: "usuarios.html", texto: "Usuarios", id: "enlaceUsuarios", roles: ["admin"] },
     { href: "misAnimales.html", texto: "Mis animales", id: "enlaceMisAnimales", roles: ["personal", "veterinario"] },
-    { href: "instalaciones.html", texto: "Instalaciones", id: "enlaceInstalaciones", roles: ["admin"] },
-    { href: "habitaculos.html", texto: "Habitáculos", id: "enlaceHabitaculos", roles: ["admin", "personal", "veterinario"] }
+    { href: "instalaciones.html", texto: "Instalaciones", id: "enlaceInstalaciones", roles: ["admin"] }
 ];
 
 const paginaActual = window.location.pathname.split("/").pop() || "index.html";

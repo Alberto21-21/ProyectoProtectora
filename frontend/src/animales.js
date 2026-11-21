@@ -7,7 +7,7 @@ import {
     actualizarEstadoAnimal,
     darDeBajaAnimal,
     eliminarAnimal,
-    asignarCuidadorAnimal,
+    asignarCuidadorAnimal
 } from "./providers/animalesProvider.js";
 
 import {
@@ -19,12 +19,7 @@ import {
 
 import { obtenerEmpleadosParaDisponibilidad } from "./providers/disponibilidadProvider.js";
 
-import { crearSolicitud } from "./providers/solicitudesProvider.js";
-
 document.addEventListener("DOMContentLoaded", function () {
-    // -------------------------------------------------------------
-    // ELEMENTOS DEL DOM
-    // -------------------------------------------------------------
     const mensajeAnimal = document.querySelector("#mensajeAnimal");
     const gestionAnimales = document.querySelector("#gestionAnimales");
     const formularioAnimal = document.querySelector("#formularioAnimal");
@@ -52,15 +47,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const enlaceHistorialAnimal = document.querySelector("#enlaceHistorialAnimal");
 
-    
     const bloqueAsignacionesAnimal = document.querySelector("#bloqueAsignacionesAnimal");
     const listaAsignacionesAnimal = document.querySelector("#listaAsignacionesAnimal");
     const formularioAsignacionAnimal = document.querySelector("#formularioAsignacionAnimal");
+    const campoTipoAsignacion = document.querySelector("#campoTipoAsignacion");
+    const tipoAsignacionAnimal = document.querySelector("#tipoAsignacionAnimal");
     const empleadoAsignacionAnimal = document.querySelector("#empleadoAsignacionAnimal");
     const mensajeAsignacionAnimal = document.querySelector("#mensajeAsignacionAnimal");
 
-
-    // Elementos de la ficha modal
     const fichaNombre = document.querySelector("#fichaNombre");
     const fichaImagen = document.querySelector("#fichaImagen");
     const fichaEspecie = document.querySelector("#fichaEspecie");
@@ -78,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const datosEntradaInternos = document.querySelector("#datosEntradaInternos");
     const datosCuidadosInternos = document.querySelector("#datosCuidadosInternos");
 
-    // Elementos de transición de estado (T15)
     const bloqueCambioEstado = document.querySelector("#bloqueCambioEstado");
     const controlesTransicionEstado = document.querySelector("#controlesTransicionEstado");
     const selectNuevoEstado = document.querySelector("#selectNuevoEstado");
@@ -86,7 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensajeEstadoModal = document.querySelector("#mensajeEstadoModal");
     const avisoEstadoFinal = document.querySelector("#avisoEstadoFinal");
 
-    // Elementos de baja / eliminación (T16)
     const contenedorFiltroBajas = document.querySelector("#contenedorFiltroBajas");
     const filtroBajas = document.querySelector("#filtroBajas");
     const bloqueBajaAnimal = document.querySelector("#bloqueBajaAnimal");
@@ -99,22 +91,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const fichaFechaBaja = document.querySelector("#fichaFechaBaja");
     const fichaMotivoBaja = document.querySelector("#fichaMotivoBaja");
 
-    // Elementos de asignación de cuidador (T17) y enlaces de navegación
     const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
     const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
     const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
-    const enlaceHabitaculos = document.querySelector("#enlaceHabitaculos");
     const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
     const selectCuidador = document.querySelector("#selectCuidador");
     const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
     const btnGuardarAsignacion = document.querySelector("#btnGuardarAsignacion");
     const mensajeAsignacion = document.querySelector("#mensajeAsignacion");
-
-    // FORMULARIO DE SOLICITUD DE ADOPCIÓN
-    const formularioSolicitud = document.querySelector("#formularioSolicitud");
-    const observacionesSolicitud = document.querySelector("#observacionesSolicitud");
-    const mensajeSolicitud = document.querySelector("#mensajeSolicitud");
-    const botonEnviarSolicitud = document.querySelector("#botonEnviarSolicitud");
 
     const rolesAutorizados = ["admin", "personal", "veterinario", "empleado"];
     let usuarioActual = null;
@@ -139,13 +123,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "necesidades_especiales",
         "observaciones",
         "historia_publica",
-        "cuidados_publicos",
-        "minutos_paseos",
-        "minutos_cuidados",
-        "tiene_necesidades_especiales"
+        "cuidados_publicos"
     ];
 
-    // TRANSICIONES PERMITIDAS SEGÚN EL ESTADO ACTUAL (T15)
     function obtenerTransicionesPermitidas(estadoActual) {
         const transiciones = {
             "En acogida": ["En tratamiento", "Disponible"],
@@ -157,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return transiciones[estadoActual] || [];
     }
 
-    // OBTENER LA FECHA DE HOY (AAAA-MM-DD)
     function fechaDeHoy() {
         const hoy = new Date();
         const mes = String(hoy.getMonth() + 1).padStart(2, "0");
@@ -165,7 +144,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return hoy.getFullYear() + "-" + mes + "-" + dia;
     }
 
-    // CONFIGURAR VISTA PARA ADOPTANTE O VISITANTE (SOLO CONSULTA Y FILTROS)
     function activarVistaAdoptante(haySesion) {
         tablaGestionAnimales.hidden = true;
         catalogoAdopcion.hidden = false;
@@ -183,7 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (mensajeAnimal) mensajeAnimal.textContent = "";
     }
 
-    // CONFIGURAR VISTA PARA PERSONAL AUTORIZADO (ALTA + GESTIÓN + ESTADOS)
     function activarVistaPersonal() {
         tablaGestionAnimales.hidden = false;
         catalogoAdopcion.hidden = true;
@@ -192,16 +169,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = false;
         if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = false;
         if (enlaceMisAnimales) {
-            // Solo el personal y los veterinarios pueden tener animales asignados
             enlaceMisAnimales.hidden = usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
         }
         if (enlaceUsuarios) {
             enlaceUsuarios.hidden = usuarioActual.rol !== "admin";
-        }
-        // Instalaciones: solo el administrador (T23)
-        // Habitáculos: admin, personal y veterinarios (T24)
-        if (enlaceHabitaculos) {
-            enlaceHabitaculos.hidden = usuarioActual.rol !== "admin" && usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
         }
         if (enlaceInstalaciones) {
             enlaceInstalaciones.hidden = usuarioActual.rol !== "admin";
@@ -216,7 +187,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (mensajeAnimal) mensajeAnimal.textContent = "";
     }
 
-    // COMPROBAR PERFIL Y ADAPTAR LA INTERFAZ
     async function comprobarAcceso() {
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
@@ -230,7 +200,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const usuario = await obtenerUsuario(token);
             usuarioActual = usuario;
 
-            // El administrador necesita la lista de trabajadores para asignar animales (T17)
             if (usuario.rol === "admin") {
                 cargarTrabajadores(token);
             }
@@ -252,7 +221,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // LIMPIAR MENSAJES DE ERROR CAMPO A CAMPO
     function limpiarErrores() {
         campos.forEach(campo => {
             const el = document.querySelector("#error-" + campo);
@@ -260,7 +228,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // MOSTRAR ERRORES DE VALIDACIÓN BAJO CADA CAMPO
     function mostrarErrores(errores) {
         campos.forEach(campo => {
             if (errores[campo]) {
@@ -270,9 +237,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // -------------------------------------------------------------
-    // ENVÍO DEL FORMULARIO DE ALTA DE ANIMAL
-    // -------------------------------------------------------------
     if (formularioAnimal) {
         formularioAnimal.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -323,9 +287,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // -------------------------------------------------------------
-    // BÚSQUEDA Y FILTRADO
-    // -------------------------------------------------------------
     if (formularioFiltros) {
         formularioFiltros.addEventListener("submit", function (e) {
             e.preventDefault();
@@ -333,7 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // RECARGAR LA TABLA AL MARCAR O DESMARCAR "VER DADOS DE BAJA" (T16)
     if (filtroBajas) {
         filtroBajas.addEventListener("change", function () {
             cargarAnimales();
@@ -350,9 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // -------------------------------------------------------------
-    // CONSULTA Y CARGA DE ANIMALES DESDE LA API (DOM PURO)
-    // -------------------------------------------------------------
     async function cargarAnimales() {
         if (!tablaCuerpoAnimales) return;
 
@@ -373,7 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            
             const filtros = Object.fromEntries(params);
 
             const animales = await obtenerAnimales(filtros, token);
@@ -381,12 +337,10 @@ document.addEventListener("DOMContentLoaded", function () {
             tablaCuerpoAnimales.replaceChildren();
             catalogoAdopcion.replaceChildren();
 
-            // VISITANTES Y ADOPTANTES VEN LAS TARJETAS
             if (!catalogoAdopcion.hidden) {
                 mostrarTarjetasAdopcion(animales);
                 return;
             }
-
 
             if (animales.length === 0) {
                 const filaVacia = document.createElement("tr");
@@ -439,10 +393,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
-    // CALCULAR LA EDAD DESDE EL NACIMIENTO APROXIMADO
     function calcularEdadAnimal(fechaNacimiento) {
-
         if (!fechaNacimiento) {
             return "Edad no indicada";
         }
@@ -479,9 +430,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return anos + (anos === 1 ? " año" : " años");
     }
 
-    // MOSTRAR LAS TARJETAS DEL CATÁLOGO
     function mostrarTarjetasAdopcion(animales) {
-
         if (animales.length === 0) {
             const aviso = document.createElement("p");
 
@@ -494,11 +443,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         animales.forEach(function (animal) {
-
             const tarjeta = document.createElement("article");
             tarjeta.className = "tarjeta-adopcion";
 
-            // FOTOGRAFÍA
             const rutaImagen = animal.imagen || animal.fotografia;
 
             const urlImagen = animal.imagen_url
@@ -532,7 +479,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 tarjeta.appendChild(imagenPredeterminada);
             }
 
-            // INFORMACIÓN
             const contenido = document.createElement("div");
             contenido.className = "contenido-tarjeta-adopcion";
 
@@ -550,7 +496,6 @@ document.addEventListener("DOMContentLoaded", function () {
             caracter.textContent =
                 animal.caracter || "Conoce su carácter en la protectora.";
 
-            // ABRIR LA FICHA
             const botonFicha = document.createElement("button");
 
             botonFicha.type = "button";
@@ -566,48 +511,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 verFichaAnimal(animal.id);
             });
 
-            // BOTONES DE LA TARJETA
-            const acciones = document.createElement("div");
-            acciones.className = "acciones-tarjeta-adopcion";
-
-            acciones.appendChild(botonFicha);
-
-            if (
-                usuarioActual &&
-                usuarioActual.rol === "adoptante" &&
-                animal.estado === "Disponible"
-            ) {
-                const botonSolicitud = document.createElement("button");
-
-                botonSolicitud.type = "button";
-                botonSolicitud.className = "boton-solicitar-adopcion";
-                botonSolicitud.textContent = "Solicitar adopción";
-
-                botonSolicitud.setAttribute(
-                    "aria-label",
-                    "Solicitar la adopción de " + animal.nombre
-                );
-
-                botonSolicitud.addEventListener("click", function () {
-                    verFichaAnimal(animal.id, true);
-                });
-
-                acciones.appendChild(botonSolicitud);
-            }
-
             contenido.append(
                 nombre,
                 descripcion,
                 caracter,
-                acciones
+                botonFicha
             );
 
             tarjeta.appendChild(contenido);
             catalogoAdopcion.appendChild(tarjeta);
         });
     }
-
-
 
     async function cargarPersonasAsignables() {
     const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -616,13 +530,22 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // T33: solo el administrador asigna veterinarios
-    if (usuarioActual.rol !== "admin") {
-        return;
-    }
+    const tipo = usuarioActual.rol === "admin"
+        ? tipoAsignacionAnimal.value
+        : "veterinario";
 
-    const resultado = await obtenerVeterinariosDisponibles(token);
-    const personas = resultado.data;
+    let personas = [];
+
+    if (tipo === "responsable") {
+        const resultado = await obtenerEmpleadosParaDisponibilidad(token);
+
+        personas = resultado.data.filter(persona =>
+            persona.user && persona.user.rol === "personal"
+        );
+    } else {
+        const resultado = await obtenerVeterinariosDisponibles(token);
+        personas = resultado.data;
+    }
 
     empleadoAsignacionAnimal.replaceChildren();
 
@@ -657,33 +580,42 @@ async function cargarAsignacionesEnFicha(animalId) {
     bloqueAsignacionesAnimal.hidden = false;
     listaAsignacionesAnimal.replaceChildren();
 
-    // T33: solo el administrador asigna y retira veterinarios
-    const puedeGestionar = rol === "admin";
+    const puedeGestionar = ["admin", "personal"].includes(rol);
 
     if (formularioAsignacionAnimal) {
         formularioAsignacionAnimal.hidden = !puedeGestionar;
+    }
+
+    if (campoTipoAsignacion) {
+        campoTipoAsignacion.hidden = rol !== "admin";
+    }
+
+    if (rol !== "admin" && tipoAsignacionAnimal) {
+        tipoAsignacionAnimal.value = "veterinario";
     }
 
     const resultado = await obtenerAsignacionesAnimal(animalId, token);
 
     if (resultado.data.length === 0) {
         const elementoVacio = document.createElement("li");
-        elementoVacio.textContent = "Este animal no tiene veterinarios asignados.";
+        elementoVacio.textContent = "No hay asignaciones registradas para mostrar.";
         listaAsignacionesAnimal.appendChild(elementoVacio);
     } else {
        resultado.data.forEach(asignacion => {
     const elemento = document.createElement("li");
     const nombre = asignacion.empleado?.user?.name || "Sin nombre";
     const puesto = asignacion.empleado?.puesto || "Sin puesto";
+    const tipoAsignacion = asignacion.tipo_asignacion === "responsable"
+        ? "Responsable"
+        : "Veterinario";
 
     const texto = document.createElement("span");
-    texto.textContent = `${nombre} — ${puesto}`;
+    texto.textContent = `${tipoAsignacion}: ${nombre} — ${puesto}`;
     elemento.appendChild(texto);
 
     if (puedeGestionar) {
         const botonRetirar = document.createElement("button");
         botonRetirar.type = "button";
-        botonRetirar.className = "boton-retirar-asignacion";
         botonRetirar.textContent = "Retirar asignación";
 
         botonRetirar.addEventListener("click", async function () {
@@ -701,14 +633,14 @@ async function cargarAsignacionesEnFicha(animalId) {
 
                 if (mensajeAsignacionAnimal) {
                     mensajeAsignacionAnimal.textContent = resultado.message;
-                    mensajeAsignacionAnimal.className = "mensaje-estado mensaje-ok";
+                    mensajeAsignacionAnimal.style.color = "green";
                 }
 
                 await cargarAsignacionesEnFicha(animalId);
             } catch (error) {
                 if (mensajeAsignacionAnimal) {
                     mensajeAsignacionAnimal.textContent = error.message;
-                    mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
+                    mensajeAsignacionAnimal.style.color = "red";
                 }
             } finally {
                 botonRetirar.disabled = false;
@@ -727,38 +659,19 @@ async function cargarAsignacionesEnFicha(animalId) {
     }
 }
 
-
-    // -------------------------------------------------------------
-    // CONSULTA DE FICHA DETALLADA Y CAMBIO DE ESTADO (T15)
-    // -------------------------------------------------------------
-    async function verFichaAnimal(id, irASolicitud = false) {
-
+    async function verFichaAnimal(id) {
         if (!modalDetalleAnimal) return;
+
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
         animalSeleccionadoId = id;
 
-        // Enlace al historial del animal: solo para personal autorizado (T18)
         if (enlaceHistorialAnimal) {
             enlaceHistorialAnimal.href = "historial.html?id=" + id;
             enlaceHistorialAnimal.hidden = !(usuarioActual && rolesAutorizados.includes(usuarioActual.rol));
         }
 
         try {
-
             const animal = await obtenerAnimal(id, token);
-
-            // MOSTRAR LA SOLICITUD SOLO AL ADOPTANTE
-            formularioSolicitud.reset();
-            mensajeSolicitud.textContent = "";
-            botonEnviarSolicitud.disabled = false;
-
-            formularioSolicitud.hidden = !(
-                usuarioActual &&
-                usuarioActual.rol === "adoptante" &&
-                animal.estado === "Disponible" &&
-                animal.activo !== false &&
-                animal.activo !== 0
-            );
 
             document.querySelector("#fichaTamano").textContent =
                 animal.tamano || "No indicado";
@@ -782,7 +695,6 @@ async function cargarAsignacionesEnFicha(animalId) {
                 animal.cuidados_publicos ||
                 "Consulta con la protectora los cuidados que necesita.";
 
-            // PRIORIZAR LA IMAGEN MÁS RECIENTE
             const rutaImagen = animal.imagen || animal.fotografia;
 
             const urlImagen = animal.imagen_url
@@ -820,12 +732,10 @@ async function cargarAsignacionesEnFicha(animalId) {
             if (fichaNecesidades) fichaNecesidades.textContent = animal.necesidades_especiales || "Ninguna";
             if (fichaObservaciones) fichaObservaciones.textContent = animal.observaciones || "Sin observaciones";
 
-            // Configurar bloque de cambio de estado (solo para personal autorizado)
             const esAutorizado = usuarioActual && rolesAutorizados.includes(usuarioActual.rol);
             datosEntradaInternos.hidden = !esAutorizado;
             datosCuidadosInternos.hidden = !esAutorizado;
 
-            // Comprobar si el animal está dado de baja (T16)
             const estaDeBaja = animal.activo === false || animal.activo === 0;
 
             if (avisoAnimalBaja) {
@@ -837,7 +747,6 @@ async function cargarAsignacionesEnFicha(animalId) {
             if (bloqueBajaAnimal) {
                 bloqueBajaAnimal.hidden = !esAutorizado;
 
-                // Si ya está dado de baja, solo se muestra la opción de eliminar
                 if (etiquetaMotivoBaja) etiquetaMotivoBaja.hidden = estaDeBaja;
                 if (motivoBajaAnimal) motivoBajaAnimal.hidden = estaDeBaja;
                 if (btnBajaAnimal) btnBajaAnimal.hidden = estaDeBaja;
@@ -886,8 +795,6 @@ async function cargarAsignacionesEnFicha(animalId) {
                 enlaceEditarAnimal.hidden = !esAutorizado;
             }
 
-
-            // Bloque de asignación: solo el administrador y si el animal no está de baja (T17)
             if (bloqueAsignacion) {
                 const esAdmin = usuarioActual && usuarioActual.rol === "admin";
                 bloqueAsignacion.hidden = !esAdmin || estaDeBaja;
@@ -905,21 +812,12 @@ async function cargarAsignacionesEnFicha(animalId) {
 
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = error.message;
-                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
+                mensajeAsignacionAnimal.style.color = "red";
             }
             }
 
             if (!modalDetalleAnimal.open) {
                 modalDetalleAnimal.showModal();
-            }
-
-            if (irASolicitud && !formularioSolicitud.hidden) {
-                observacionesSolicitud.focus();
-                formularioSolicitud.scrollIntoView({
-                    block: "center"
-                });
-            } else {
-                modalDetalleAnimal.scrollTop = 0;
             }
 
         } catch (error) {
@@ -928,6 +826,22 @@ async function cargarAsignacionesEnFicha(animalId) {
         }
     }
 
+    if (tipoAsignacionAnimal) {
+    tipoAsignacionAnimal.addEventListener("change", async function () {
+        try {
+            await cargarPersonasAsignables();
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "";
+            }
+        } catch (error) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+        }
+    });
+}
 
 if (formularioAsignacionAnimal) {
     formularioAsignacionAnimal.addEventListener("submit", async function (evento) {
@@ -935,20 +849,24 @@ if (formularioAsignacionAnimal) {
 
         const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
-        if (!token || !usuarioActual || usuarioActual.rol !== "admin") {
+        if (!token || !usuarioActual || !["admin", "personal"].includes(usuarioActual.rol)) {
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = "No tienes permiso para crear asignaciones.";
-                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
+                mensajeAsignacionAnimal.style.color = "red";
             }
             return;
         }
+
+        const tipo = usuarioActual.rol === "admin"
+            ? tipoAsignacionAnimal.value
+            : "veterinario";
 
         const empleadoId = empleadoAsignacionAnimal.value;
 
         if (!empleadoId || !animalSeleccionadoId) {
             if (mensajeAsignacionAnimal) {
-                mensajeAsignacionAnimal.textContent = "Selecciona un veterinario para asignar.";
-                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
+                mensajeAsignacionAnimal.textContent = "Selecciona una persona para asignar.";
+                mensajeAsignacionAnimal.style.color = "red";
             }
             return;
         }
@@ -963,19 +881,20 @@ if (formularioAsignacionAnimal) {
         try {
             const resultado = await crearAsignacionAnimal({
                 animal_id: Number(animalSeleccionadoId),
-                empleado_id: Number(empleadoId)
+                empleado_id: Number(empleadoId),
+                tipo_asignacion: tipo
             }, token);
 
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = resultado.message;
-                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-ok";
+                mensajeAsignacionAnimal.style.color = "green";
             }
 
             await cargarAsignacionesEnFicha(animalSeleccionadoId);
         } catch (error) {
             if (mensajeAsignacionAnimal) {
                 mensajeAsignacionAnimal.textContent = error.message;
-                mensajeAsignacionAnimal.className = "mensaje-estado mensaje-error";
+                mensajeAsignacionAnimal.style.color = "red";
             }
         } finally {
             if (botonGuardarAsignacion) {
@@ -985,12 +904,6 @@ if (formularioAsignacionAnimal) {
     });
 }
 
-
-
-
-
-
-    // EVENTO PARA GUARDAR EL CAMBIO DE ESTADO (T15)
     if (btnGuardarEstadoAnimal && selectNuevoEstado) {
         btnGuardarEstadoAnimal.addEventListener("click", async function () {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -1037,7 +950,6 @@ if (formularioAsignacionAnimal) {
         });
     }
 
-    // EVENTO PARA DAR DE BAJA UN ANIMAL - BAJA LÓGICA (T16)
     if (btnBajaAnimal && motivoBajaAnimal) {
         btnBajaAnimal.addEventListener("click", async function () {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -1088,7 +1000,6 @@ if (formularioAsignacionAnimal) {
         });
     }
 
-    // EVENTO PARA ELIMINAR UN ANIMAL DEFINITIVAMENTE (T16)
     if (btnEliminarAnimal) {
         btnEliminarAnimal.addEventListener("click", async function () {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -1116,7 +1027,6 @@ if (formularioAsignacionAnimal) {
                 await cargarAnimales();
 
             } catch (error) {
-                // Si tiene registros, el servidor rechaza y explica el motivo
                 if (mensajeBajaModal) {
                     mensajeBajaModal.textContent = error.message || "No se pudo eliminar el animal.";
                     mensajeBajaModal.style.color = "red";
@@ -1127,11 +1037,6 @@ if (formularioAsignacionAnimal) {
         });
     }
 
-    // -------------------------------------------------------------
-    // ASIGNACIÓN DE CUIDADOR E INSTRUCCIONES (T17)
-    // -------------------------------------------------------------
-
-    // CARGAR LOS TRABAJADORES ACTIVOS EN EL DESPLEGABLE
     async function cargarTrabajadores(token) {
         if (!selectCuidador) return;
 
@@ -1151,7 +1056,6 @@ if (formularioAsignacionAnimal) {
         }
     }
 
-    // GUARDAR LA ASIGNACIÓN DEL ANIMAL
     if (btnGuardarAsignacion && selectCuidador && instruccionesCuidado) {
         btnGuardarAsignacion.addEventListener("click", async function () {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -1198,9 +1102,6 @@ if (formularioAsignacionAnimal) {
         });
     }
 
-    // -------------------------------------------------------------
-    // CERRAR SESIÓN
-    // -------------------------------------------------------------
     if (botonCerrarSesion) {
         botonCerrarSesion.addEventListener("click", async function () {
             const token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -1225,54 +1126,5 @@ if (formularioAsignacionAnimal) {
         });
     }
 
-    // ENVIAR LA SOLICITUD DE ADOPCIÓN
-    formularioSolicitud.addEventListener("submit", async function (evento) {
-
-        evento.preventDefault();
-
-        const token = sessionStorage.getItem("token")
-            || localStorage.getItem("token");
-
-        if (!token) {
-            mensajeSolicitud.textContent =
-                "Debes iniciar sesión para solicitar una adopción.";
-            return;
-        }
-
-        const idAnimal = animalSeleccionadoId;
-
-        const datos = {
-            animal_id: idAnimal,
-            observaciones: observacionesSolicitud.value.trim()
-        };
-
-        mensajeSolicitud.textContent = "Enviando solicitud...";
-        botonEnviarSolicitud.disabled = true;
-
-        try {
-            const resultado = await crearSolicitud(datos, token);
-
-            if (animalSeleccionadoId === idAnimal) {
-                mensajeSolicitud.textContent = resultado.message;
-                formularioSolicitud.reset();
-            }
-
-        } catch (error) {
-            if (animalSeleccionadoId === idAnimal) {
-                mensajeSolicitud.textContent = error.message;
-                botonEnviarSolicitud.disabled = false;
-            }
-        }
-    });
-
-    // COMPROBAR EL ACCESO Y ABRIR EL ANIMAL INDICADO EN EL ENLACE
-    comprobarAcceso().then(function () {
-
-        const parametros = new URLSearchParams(window.location.search);
-        const idAnimal = Number(parametros.get("animal"));
-
-        if (Number.isInteger(idAnimal) && idAnimal > 0) {
-            verFichaAnimal(idAnimal);
-        }
-    });
+    comprobarAcceso();
 });
