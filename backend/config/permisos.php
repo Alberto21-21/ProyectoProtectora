@@ -33,6 +33,7 @@ return [
             'asignaciones:administrar',
             'instalaciones:gestionar',
             'instalaciones:consultar',
+            'solicitudes:revisar',
         ],
 
         'adoptante' => [

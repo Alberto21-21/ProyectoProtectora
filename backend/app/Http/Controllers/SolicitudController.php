@@ -136,4 +136,111 @@ class SolicitudController extends Controller
             ]
         ], 200);
     }
+
+    // LISTAR SOLICITUDES PARA SU REVISIÓN
+    public function listarRevision(Request $request)
+    {
+        $filtros = $request->validate([
+            'buscar' => 'nullable|string|max:100',
+            'estado' => 'nullable|in:pendiente,en_revision,aprobada,rechazada,cancelada'
+        ]);
+
+        $consulta = Solicitud::with([
+            'usuario:id,name,email',
+            'animal:id,nombre'
+        ]);
+
+        if (!empty($filtros['buscar'])) {
+            $buscar = $filtros['buscar'];
+
+            $consulta->whereHas('usuario', function ($consultaUsuario) use ($buscar) {
+                $consultaUsuario->where('name', 'like', '%' . $buscar . '%')
+                    ->orWhere('email', 'like', '%' . $buscar . '%');
+            });
+        }
+
+        if (!empty($filtros['estado'])) {
+            $consulta->where('estado', $filtros['estado']);
+        }
+
+        $solicitudes = $consulta
+            ->select('id', 'user_id', 'animal_id', 'estado', 'created_at', 'updated_at')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitudes consultadas correctamente.',
+            'data' => $solicitudes
+        ], 200);
+    }
+
+    // CONSULTAR UNA SOLICITUD PARA SU REVISIÓN
+    public function mostrarRevision($id)
+    {
+        $solicitud = Solicitud::with([
+            'usuario:id,name,email,fecha_nacimiento',
+            'usuario.hogar',
+            'animal:id,nombre,especie,raza,estado'
+        ])
+            ->select(
+                'id',
+                'user_id',
+                'animal_id',
+                'estado',
+                'observaciones',
+                'observaciones_internas',
+                'created_at',
+                'updated_at'
+            )
+            ->find($id);
+
+        if (!$solicitud) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La solicitud no existe.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitud consultada correctamente.',
+            'data' => $solicitud
+        ], 200);
+    }
+
+    // GUARDAR LAS OBSERVACIONES INTERNAS
+    public function guardarObservacionesInternas(Request $request, $id)
+    {
+        $datos = $request->validate([
+            'observaciones_internas' => 'present|nullable|string|max:2000'
+        ], [
+            'observaciones_internas.present' => 'Debes enviar el campo de observaciones internas.',
+            'observaciones_internas.string' => 'Las observaciones internas deben ser un texto.',
+            'observaciones_internas.max' => 'Las observaciones internas no pueden superar los 2000 caracteres.'
+        ]);
+
+        $solicitud = Solicitud::find($id);
+
+        if (!$solicitud) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La solicitud no existe.'
+            ], 404);
+        }
+
+        $solicitud->observaciones_internas = $datos['observaciones_internas'];
+        $solicitud->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Observaciones internas guardadas correctamente.',
+            'data' => [
+                'id' => $solicitud->id,
+                'observaciones_internas' => $solicitud->observaciones_internas,
+                'updated_at' => $solicitud->updated_at
+            ]
+        ], 200);
+    }
 }

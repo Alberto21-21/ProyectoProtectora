@@ -383,8 +383,19 @@ Route::prefix('solicitudes')
 
         Route::get('/', [SolicitudController::class, 'index'])
             ->middleware('abilities:solicitudes:consultar-propias');
-            
+
         Route::patch('/{id}/cancelar', [SolicitudController::class, 'cancelar'])
             ->whereNumber('id')
             ->middleware('abilities:solicitudes:cancelar-propias');
+
+        Route::get('/revision', [SolicitudController::class, 'listarRevision'])
+            ->middleware('abilities:solicitudes:revisar');
+
+        Route::get('/revision/{id}', [SolicitudController::class, 'mostrarRevision'])
+            ->whereNumber('id')
+            ->middleware('abilities:solicitudes:revisar');
+
+        Route::patch('/revision/{id}/observaciones', [SolicitudController::class, 'guardarObservacionesInternas'])
+            ->whereNumber('id')
+            ->middleware('abilities:solicitudes:revisar');
     });
