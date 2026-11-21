@@ -3559,3 +3559,147 @@ button:focus-visible {
 #modalRevision::-webkit-scrollbar {
     display: none;
 }
+
+/* SOBRE NOSOTROS */
+.presentacion-protectora {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 32px;
+}
+
+.imagen-protectora {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border-radius: 24px;
+    background-color: #FFAC16;
+}
+
+.imagen-protectora img {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    height: 330px;
+    object-fit: contain;
+}
+
+.texto-protectora {
+    padding: 36px;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+}
+
+.texto-protectora h2 {
+    margin: 0 0 20px;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.texto-protectora p {
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.texto-protectora p:last-child {
+    margin-bottom: 0;
+}
+
+/* VALORES */
+.valores-protectora {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.tarjeta-valor {
+    padding: 28px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+}
+
+.tarjeta-valor h2 {
+    margin: 0 0 14px;
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.tarjeta-valor p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* ENLACES DE LAS PÁGINAS INFORMATIVAS */
+.acciones-protectora {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.acciones-protectora .boton-informacion,
+.acciones-protectora .boton-contacto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 26px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.boton-informacion {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.boton-contacto {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-protectora a:hover {
+    background-color: #8B5C4A;
+    color: #FFFFFF;
+}
+
+@media (max-width: 800px) {
+    .presentacion-protectora,
+    .valores-protectora {
+        grid-template-columns: 1fr;
+    }
+
+    .presentacion-protectora {
+        gap: 24px;
+    }
+
+    .texto-protectora {
+        padding: 26px;
+    }
+}
+
+.imagen-protectora {
+    overflow: hidden;
+    border-radius: 24px;
+    background-color: transparent;
+}
+
+.imagen-protectora img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: 390px;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+@media (max-width: 800px) {
+    .imagen-protectora img {
+        height: 300px;
+    }
+}

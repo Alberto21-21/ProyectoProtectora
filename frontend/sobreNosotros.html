@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sobre nosotros - Salvando Huellas</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+
+    <script type="module" src="/src/menu.js"></script>
+    <script type="module" src="/src/informacion.js"></script>
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas"
+                    class="logo-protectora"
+                >
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+
+                <a href="sobreNosotros.html" aria-current="page">
+                    Sobre nosotros
+                </a>
+
+                <a href="contacto.html">Contacto</a>
+
+                <a href="index.html?login=1" id="enlaceIniciarSesion">
+                    Iniciar sesión
+                </a>
+
+                <button type="button" id="botonCerrarSesion" hidden>
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>LA PROTECTORA</span>
+            <h1>Sobre nosotros</h1>
+            <p>Conoce Salvando Huellas y el propósito de este proyecto.</p>
+        </div>
+
+        <section class="presentacion-protectora">
+
+            <div class="imagen-protectora">
+                <img
+                    src="/src/assets/imagen-conocenos.png"
+                    alt="Perro"
+                >
+            </div>
+
+            <div class="texto-protectora">
+                <h2>¿Quiénes somos?</h2>
+
+                <p>
+                    Salvando Huellas es un proyecto académico de una
+                    aplicación para gestionar una protectora de animales.
+                </p>
+
+                <p>
+                    La aplicación reúne la información de los animales
+                    y permite consultar sus fichas, conocer sus necesidades
+                    y solicitar su adopción.
+                </p>
+
+                <p>
+                    También ayuda al personal a organizar el trabajo
+                    de la protectora y revisar las solicitudes de
+                    las personas interesadas en adoptar.
+                </p>
+            </div>
+
+        </section>
+
+        <section class="valores-protectora">
+
+            <article class="tarjeta-valor">
+                <h2>Bienestar animal</h2>
+                <p>
+                    Las necesidades y los cuidados de cada animal
+                    son una parte fundamental de su ficha.
+                </p>
+            </article>
+
+            <article class="tarjeta-valor">
+                <h2>Adopción responsable</h2>
+                <p>
+                    Conocer el hogar y las posibilidades del adoptante
+                    ayuda a valorar cada solicitud.
+                </p>
+            </article>
+
+            <article class="tarjeta-valor">
+                <h2>Una segunda oportunidad</h2>
+                <p>
+                    El catálogo permite conocer a los animales
+                    disponibles y dar el primer paso hacia su adopción.
+                </p>
+            </article>
+
+        </section>
+
+        <div class="acciones-protectora">
+            <a href="animales.html" class="boton-informacion">
+                Conocer a los animales
+            </a>
+
+            <a href="contacto.html" class="boton-contacto">
+                Contacto
+            </a>
+        </div>
+
+        <p id="mensajeInformacion" role="status"></p>
+
+    </main>
+
+</body>
+
+</html>

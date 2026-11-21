@@ -19,6 +19,8 @@ export default defineConfig({
                 compatibilidad: "compatibilidad.html",
                 misSolicitudes: "misSolicitudes.html",
                 revisionSolicitudes: "revisionSolicitudes.html",
+                sobreNosotros: "sobreNosotros.html",
+                contacto: "contacto.html",
             }
         }
     }

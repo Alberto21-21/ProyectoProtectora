@@ -209,3 +209,14 @@ function crearParrafoConFormato(etiqueta, valor) {
 
 // Cargar catálogo al inicio
 cargarAnimales();
+
+// ABRIR EL LOGIN DESDE LAS PÁGINAS INFORMATIVAS
+const parametrosInformacion = new URLSearchParams(window.location.search);
+
+if (parametrosInformacion.get("login") === "1") {
+    const ventanaLogin = document.querySelector("#modalLogin");
+
+    if (ventanaLogin && !ventanaLogin.open) {
+        ventanaLogin.showModal();
+    }
+}
