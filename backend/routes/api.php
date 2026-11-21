@@ -383,4 +383,8 @@ Route::prefix('solicitudes')
 
         Route::get('/', [SolicitudController::class, 'index'])
             ->middleware('abilities:solicitudes:consultar-propias');
+            
+        Route::patch('/{id}/cancelar', [SolicitudController::class, 'cancelar'])
+            ->whereNumber('id')
+            ->middleware('abilities:solicitudes:cancelar-propias');
     });

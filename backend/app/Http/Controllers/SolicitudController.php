@@ -101,4 +101,39 @@ class SolicitudController extends Controller
             'data' => $solicitudes
         ], 200);
     }
+
+    // CANCELAR UNA SOLICITUD PROPIA
+    public function cancelar(Request $request, $id)
+    {
+        $solicitud = $request->user()->solicitudes()
+            ->where('id', $id)
+            ->first();
+
+        if (!$solicitud) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La solicitud no existe o no te pertenece.'
+            ], 404);
+        }
+
+        if (!in_array($solicitud->estado, ['pendiente', 'en_revision'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo puedes cancelar solicitudes pendientes o en revisión.'
+            ], 422);
+        }
+
+        $solicitud->estado = 'cancelada';
+        $solicitud->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitud cancelada correctamente.',
+            'data' => [
+                'id' => $solicitud->id,
+                'estado' => $solicitud->estado,
+                'updated_at' => $solicitud->updated_at
+            ]
+        ], 200);
+    }
 }
