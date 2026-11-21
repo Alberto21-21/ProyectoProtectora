@@ -17,7 +17,6 @@
 
 <body class="pagina-perfil pagina-usuarios">
 
-    <!-- CABECERA -->
     <header class="cabecera-perfil">
         <div class="interior-cabecera">
 
@@ -38,7 +37,6 @@
                 <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
                 <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
                 <a href="instalaciones.html" id="enlaceInstalaciones" aria-current="page" hidden>Instalaciones</a>
-                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
                 <button type="button" id="botonCerrarSesion">
                     Cerrar sesión
                 </button>
@@ -49,7 +47,6 @@
 
     <main class="contenido-perfil">
 
-        <!-- TÍTULO -->
         <div class="titulo-perfil">
             <span>ADMINISTRACIÓN</span>
             <h1>Instalaciones</h1>
@@ -58,11 +55,8 @@
 
         <p id="mensajeInstalaciones" role="status"></p>
 
-        <!-- CONTENIDO EXCLUSIVO PARA ADMINISTRADORES -->
         <section id="contenidoInstalaciones" hidden>
 
-             <!-- Estos filtros solo afectan al listado de habitáculos. -->
-            <!-- FILTROS DE LOS HABITÁCULOS -->
             <form id="formularioFiltros">
 
                 <div>
@@ -92,11 +86,8 @@
 
             </form>
 
-            <!-- Se separan los listados para poder gestionar zonas y habitáculos por separado. -->
-            <!-- LISTADOS -->
             <div class="tabla-usuarios">
 
-                 <!-- ZONAS -->
                 <div class="cabecera-listado">
                     <h2 id="tituloListadoZonas">Zonas</h2>
 
@@ -120,13 +111,17 @@
                     <tbody id="tablaZonas"></tbody>
                 </table>
 
-                 <!-- HABITÁCULOS -->
                 <div class="cabecera-listado">
                     <h2 id="tituloListadoHabitaculos">Habitáculos</h2>
 
-                    <button type="button" id="abrirAltaHabitaculo" class="boton-detalle">
-                        Añadir habitáculo
-                    </button>
+                    <div class="acciones-cuenta">
+                        <a href="habitaculos.html" class="boton-detalle">
+                            Gestionar alojamientos
+                        </a>
+                        <button type="button" id="abrirAltaHabitaculo" class="boton-detalle">
+                            Añadir habitáculo
+                        </button>
+                    </div>
                 </div>
 
                 <table aria-labelledby="tituloListadoHabitaculos">
@@ -152,7 +147,6 @@
 
         </section>
 
-        <!-- ALTA Y EDICIÓN DE ZONAS -->
         <dialog
             id="modalZona"
             class="modal-acceso"
@@ -204,7 +198,6 @@
 
         </dialog>
 
-        <!-- ALTA Y EDICIÓN DE HABITÁCULOS -->
         <dialog
             id="modalHabitaculo"
             class="modal-acceso"
@@ -217,7 +210,7 @@
                 class="cerrar-modal"
                 aria-label="Cerrar formulario de habitáculo"
             >
-                ×
+                x
             </button>
 
             <h2 id="tituloModalHabitaculo">Añadir habitáculo</h2>
