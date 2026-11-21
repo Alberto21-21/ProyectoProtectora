@@ -18,6 +18,7 @@ export default defineConfig({
                 habitaculos: "habitaculos.html",
                 compatibilidad: "compatibilidad.html",
                 misSolicitudes: "misSolicitudes.html",
+                revisionSolicitudes: "revisionSolicitudes.html",
             }
         }
     }

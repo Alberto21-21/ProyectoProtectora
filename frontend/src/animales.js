@@ -1221,5 +1221,14 @@ if (formularioAsignacionAnimal) {
         }
     });
 
-    comprobarAcceso();
+    // ABRIR LA FICHA DEL ANIMAL INDICADO EN EL ENLACE
+    comprobarAcceso().then(function () {
+
+        const parametros = new URLSearchParams(window.location.search);
+        const idAnimal = Number(parametros.get("animal"));
+
+        if (Number.isInteger(idAnimal) && idAnimal > 0) {
+            verFichaAnimal(idAnimal);
+        }
+    });
 });
