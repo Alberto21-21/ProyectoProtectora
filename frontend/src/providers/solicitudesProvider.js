@@ -24,3 +24,28 @@ export async function crearSolicitud(datos, token) {
 
     return resultado;
 }
+
+// CONSULTAR LAS SOLICITUDES DEL ADOPTANTE
+export async function obtenerMisSolicitudes(token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/solicitudes",
+        {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudieron consultar tus solicitudes."
+        );
+    }
+
+    return resultado;
+}

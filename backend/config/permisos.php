@@ -41,6 +41,7 @@ return [
             'hogar:editar',
             'compatibilidad:consultar',
             'solicitudes:crear',
+            'solicitudes:consultar-propias',
         ],
 
         'personal' => [

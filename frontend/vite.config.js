@@ -17,6 +17,7 @@ export default defineConfig({
                 instalaciones: "instalaciones.html",
                 habitaculos: "habitaculos.html",
                 compatibilidad: "compatibilidad.html",
+                misSolicitudes: "misSolicitudes.html",
             }
         }
     }

@@ -78,4 +78,27 @@ class SolicitudController extends Controller
             ], 201);
         });
     }
+
+    // CONSULTAR LAS SOLICITUDES DEL ADOPTANTE AUTENTICADO
+    public function index(Request $request)
+    {
+        $solicitudes = $request->user()->solicitudes()
+            ->select(
+                'id',
+                'animal_id',
+                'estado',
+                'created_at',
+                'updated_at'
+            )
+            ->with('animal:id,nombre')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitudes consultadas correctamente.',
+            'data' => $solicitudes
+        ], 200);
+    }
 }
