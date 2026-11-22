@@ -1,0 +1,1234 @@
+import { obtenerUsuario, cerrarSesion } from "./providers/autenticacionProvider.js";
+
+import {
+    crearAnimal,
+    obtenerAnimales,
+    obtenerAnimal,
+    actualizarEstadoAnimal,
+    darDeBajaAnimal,
+    eliminarAnimal,
+    asignarCuidadorAnimal
+} from "./providers/animalesProvider.js";
+
+import {
+    obtenerVeterinariosDisponibles,
+    obtenerAsignacionesAnimal,
+    crearAsignacionAnimal,
+    retirarAsignacionAnimal
+} from "./providers/asignacionProvider.js";
+
+import { obtenerEmpleadosParaDisponibilidad } from "./providers/disponibilidadProvider.js";
+
+import { crearSolicitud } from "./providers/solicitudesProvider.js";
+
+document.addEventListener("DOMContentLoaded", function () {
+    const mensajeAnimal = document.querySelector("#mensajeAnimal");
+    const gestionAnimales = document.querySelector("#gestionAnimales");
+    const formularioAnimal = document.querySelector("#formularioAnimal");
+    const botonGuardar = document.querySelector("#botonGuardarAnimal");
+    const fechaEntrada = document.querySelector("#fechaEntradaAnimal");
+    const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
+
+    const etiquetaSeccionAnimales = document.querySelector("#etiquetaSeccionAnimales");
+    const tituloSeccionAnimales = document.querySelector("#tituloSeccionAnimales");
+    const subtituloAnimales = document.querySelector("#subtituloAnimales");
+
+    const formularioFiltros = document.querySelector("#formularioFiltros");
+    const buscarTexto = document.querySelector("#buscarTexto");
+    const filtroEspecie = document.querySelector("#filtroEspecie");
+    const filtroEstado = document.querySelector("#filtroEstado");
+    const contenedorFiltroEstado = document.querySelector("#contenedorFiltroEstado");
+    const botonLimpiarFiltros = document.querySelector("#botonLimpiarFiltros");
+    const tablaCuerpoAnimales = document.querySelector("#tablaCuerpoAnimales");
+    const tablaGestionAnimales = document.querySelector("#tablaGestionAnimales");
+    const catalogoAdopcion = document.querySelector("#catalogoAdopcion");
+
+    const modalDetalleAnimal = document.querySelector("#modalDetalleAnimal");
+    const cerrarDetalleAnimal = document.querySelector("#cerrarDetalleAnimal");
+    const enlaceEditarAnimal = document.querySelector("#enlaceEditarAnimal");
+
+    const enlaceHistorialAnimal = document.querySelector("#enlaceHistorialAnimal");
+
+    const bloqueAsignacionesAnimal = document.querySelector("#bloqueAsignacionesAnimal");
+    const listaAsignacionesAnimal = document.querySelector("#listaAsignacionesAnimal");
+    const formularioAsignacionAnimal = document.querySelector("#formularioAsignacionAnimal");
+    const campoTipoAsignacion = document.querySelector("#campoTipoAsignacion");
+    const tipoAsignacionAnimal = document.querySelector("#tipoAsignacionAnimal");
+    const empleadoAsignacionAnimal = document.querySelector("#empleadoAsignacionAnimal");
+    const mensajeAsignacionAnimal = document.querySelector("#mensajeAsignacionAnimal");
+
+    const fichaNombre = document.querySelector("#fichaNombre");
+    const fichaImagen = document.querySelector("#fichaImagen");
+    const fichaEspecie = document.querySelector("#fichaEspecie");
+    const fichaRaza = document.querySelector("#fichaRaza");
+    const fichaSexo = document.querySelector("#fichaSexo");
+    const fichaEstado = document.querySelector("#fichaEstado");
+    const fichaPeso = document.querySelector("#fichaPeso");
+    const fichaFechaEntrada = document.querySelector("#fichaFechaEntrada");
+    const fichaMotivo = document.querySelector("#fichaMotivo");
+    const fichaCaracter = document.querySelector("#fichaCaracter");
+    const fichaNecesidades = document.querySelector("#fichaNecesidades");
+    const fichaObservaciones = document.querySelector("#fichaObservaciones");
+    const fichaHistoriaPublica = document.querySelector("#fichaHistoriaPublica");
+    const fichaCuidadosPublicos = document.querySelector("#fichaCuidadosPublicos");
+    const datosEntradaInternos = document.querySelector("#datosEntradaInternos");
+    const datosCuidadosInternos = document.querySelector("#datosCuidadosInternos");
+
+    const bloqueCambioEstado = document.querySelector("#bloqueCambioEstado");
+    const controlesTransicionEstado = document.querySelector("#controlesTransicionEstado");
+    const selectNuevoEstado = document.querySelector("#selectNuevoEstado");
+    const btnGuardarEstadoAnimal = document.querySelector("#btnGuardarEstadoAnimal");
+    const mensajeEstadoModal = document.querySelector("#mensajeEstadoModal");
+    const avisoEstadoFinal = document.querySelector("#avisoEstadoFinal");
+
+    const contenedorFiltroBajas = document.querySelector("#contenedorFiltroBajas");
+    const filtroBajas = document.querySelector("#filtroBajas");
+    const bloqueBajaAnimal = document.querySelector("#bloqueBajaAnimal");
+    const motivoBajaAnimal = document.querySelector("#motivoBajaAnimal");
+    const btnBajaAnimal = document.querySelector("#btnBajaAnimal");
+    const btnEliminarAnimal = document.querySelector("#btnEliminarAnimal");
+    const etiquetaMotivoBaja = document.querySelector("#etiquetaMotivoBaja");
+    const mensajeBajaModal = document.querySelector("#mensajeBajaModal");
+    const avisoAnimalBaja = document.querySelector("#avisoAnimalBaja");
+    const fichaFechaBaja = document.querySelector("#fichaFechaBaja");
+    const fichaMotivoBaja = document.querySelector("#fichaMotivoBaja");
+
+    const enlaceMisAnimales = document.querySelector("#enlaceMisAnimales");
+    const enlaceUsuarios = document.querySelector("#enlaceUsuarios");
+    const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
+    const bloqueAsignacion = document.querySelector("#bloqueAsignacion");
+    const selectCuidador = document.querySelector("#selectCuidador");
+    const instruccionesCuidado = document.querySelector("#instruccionesCuidado");
+    const btnGuardarAsignacion = document.querySelector("#btnGuardarAsignacion");
+    const mensajeAsignacion = document.querySelector("#mensajeAsignacion");
+
+    const rolesAutorizados = ["admin", "personal", "veterinario", "empleado"];
+    let usuarioActual = null;
+    let animalSeleccionadoId = null;
+
+    // FORMULARIO DE SOLICITUD DE ADOPCIÓN
+    const formularioSolicitud = document.querySelector("#formularioSolicitud");
+    const observacionesSolicitud = document.querySelector("#observacionesSolicitud");
+    const mensajeSolicitud = document.querySelector("#mensajeSolicitud");
+    const botonEnviarSolicitud = document.querySelector("#botonEnviarSolicitud");
+
+    const campos = [
+        "nombre",
+        "fotografia",
+        "especie",
+        "raza",
+        "fecha_nacimiento",
+        "sexo",
+        "tamano",
+        "peso",
+        "fecha_entrada",
+        "motivo",
+        "estado",
+        "caracter",
+        "con_ninos",
+        "con_otros_animales",
+        "con_desconocidos",
+        "necesidades_especiales",
+        "observaciones",
+        "historia_publica",
+        "cuidados_publicos"
+    ];
+
+    function obtenerTransicionesPermitidas(estadoActual) {
+        const transiciones = {
+            "En acogida": ["En tratamiento", "Disponible"],
+            "En tratamiento": ["En acogida", "Disponible"],
+            "Disponible": ["En acogida", "En tratamiento", "Reservado"],
+            "Reservado": ["Disponible", "En acogida", "En tratamiento"],
+            "Adoptado": []
+        };
+        return transiciones[estadoActual] || [];
+    }
+
+    function fechaDeHoy() {
+        const hoy = new Date();
+        const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+        const dia = String(hoy.getDate()).padStart(2, "0");
+        return hoy.getFullYear() + "-" + mes + "-" + dia;
+    }
+
+    function activarVistaAdoptante(haySesion) {
+        tablaGestionAnimales.hidden = true;
+        catalogoAdopcion.hidden = false;
+        if (gestionAnimales) gestionAnimales.hidden = true;
+        if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = true;
+        if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = true;
+        if (enlaceUsuarios) enlaceUsuarios.hidden = true;
+        if (botonCerrarSesion) botonCerrarSesion.hidden = !haySesion;
+
+        if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADOPCIÓN";
+        if (tituloSeccionAnimales) tituloSeccionAnimales.textContent = "Nuestros Animales";
+        if (subtituloAnimales) {
+            subtituloAnimales.textContent = "Conoce a nuestros compañeros disponibles y encuentra a tu nuevo mejor amigo.";
+        }
+        if (mensajeAnimal) mensajeAnimal.textContent = "";
+    }
+
+    function activarVistaPersonal() {
+        tablaGestionAnimales.hidden = false;
+        catalogoAdopcion.hidden = true;
+        if (fechaEntrada) fechaEntrada.value = fechaDeHoy();
+        if (gestionAnimales) gestionAnimales.hidden = false;
+        if (contenedorFiltroEstado) contenedorFiltroEstado.hidden = false;
+        if (contenedorFiltroBajas) contenedorFiltroBajas.hidden = false;
+        if (enlaceMisAnimales) {
+            enlaceMisAnimales.hidden = usuarioActual.rol !== "personal" && usuarioActual.rol !== "veterinario";
+        }
+        if (enlaceUsuarios) {
+            enlaceUsuarios.hidden = usuarioActual.rol !== "admin";
+        }
+        if (enlaceInstalaciones) {
+            enlaceInstalaciones.hidden = usuarioActual.rol !== "admin";
+        }
+        if (botonCerrarSesion) botonCerrarSesion.hidden = false;
+
+        if (etiquetaSeccionAnimales) etiquetaSeccionAnimales.textContent = "ADMINISTRACIÓN";
+        if (tituloSeccionAnimales) tituloSeccionAnimales.textContent = "Gestión de Animales";
+        if (subtituloAnimales) {
+            subtituloAnimales.textContent = "Registra la llegada de nuevos animales y actualiza su situación en la protectora.";
+        }
+        if (mensajeAnimal) mensajeAnimal.textContent = "";
+    }
+
+    async function comprobarAcceso() {
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+        if (!token) {
+            activarVistaAdoptante(false);
+            if (tablaCuerpoAnimales) cargarAnimales();
+            return;
+        }
+
+        try {
+            const usuario = await obtenerUsuario(token);
+            usuarioActual = usuario;
+
+            if (usuario.rol === "admin") {
+                cargarTrabajadores(token);
+            }
+
+            if (rolesAutorizados.includes(usuario.rol)) {
+                activarVistaPersonal();
+            } else {
+                activarVistaAdoptante(true);
+            }
+
+            if (tablaCuerpoAnimales) {
+                cargarAnimales();
+            }
+
+        } catch (error) {
+            console.error("Error al comprobar el usuario:", error);
+            activarVistaAdoptante(false);
+            if (tablaCuerpoAnimales) cargarAnimales();
+        }
+    }
+
+    function limpiarErrores() {
+        campos.forEach(campo => {
+            const el = document.querySelector("#error-" + campo);
+            if (el) el.textContent = "";
+        });
+    }
+
+    function mostrarErrores(errores) {
+        campos.forEach(campo => {
+            if (errores[campo]) {
+                const el = document.querySelector("#error-" + campo);
+                if (el) el.textContent = errores[campo][0];
+            }
+        });
+    }
+
+    if (formularioAnimal) {
+        formularioAnimal.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            if (!token) {
+                if (mensajeAnimal) mensajeAnimal.textContent = "Debes iniciar sesión para dar de alta animales.";
+                return;
+            }
+
+            limpiarErrores();
+            const datos = new FormData(formularioAnimal);
+
+            if (mensajeAnimal) mensajeAnimal.textContent = "Guardando animal...";
+            if (botonGuardar) botonGuardar.disabled = true;
+
+            try {
+                const resultado = await crearAnimal(datos, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = `${resultado.message || '¡Animal registrado con éxito!'} (${resultado.data ? resultado.data.nombre : ''})`;
+                    mensajeAnimal.style.color = "green";
+                }
+
+                formularioAnimal.reset();
+                if (fechaEntrada) fechaEntrada.value = fechaDeHoy();
+
+                if (tablaCuerpoAnimales) {
+                    cargarAnimales();
+                }
+
+            } catch (error) {
+                if (error.errores) {
+                    mostrarErrores(error.errores);
+                    if (mensajeAnimal) {
+                        mensajeAnimal.textContent = "Revisa los campos marcados en el formulario.";
+                        mensajeAnimal.style.color = "red";
+                    }
+                } else {
+                    if (mensajeAnimal) {
+                        mensajeAnimal.textContent = `No se pudo registrar el animal: ${error.message}`;
+                        mensajeAnimal.style.color = "red";
+                    }
+                }
+            } finally {
+                if (botonGuardar) botonGuardar.disabled = false;
+            }
+        });
+    }
+
+    if (formularioFiltros) {
+        formularioFiltros.addEventListener("submit", function (e) {
+            e.preventDefault();
+            cargarAnimales();
+        });
+    }
+
+    if (filtroBajas) {
+        filtroBajas.addEventListener("change", function () {
+            cargarAnimales();
+        });
+    }
+
+    if (botonLimpiarFiltros) {
+        botonLimpiarFiltros.addEventListener("click", function () {
+            if (buscarTexto) buscarTexto.value = "";
+            if (filtroEspecie) filtroEspecie.value = "";
+            if (filtroEstado) filtroEstado.value = "";
+            if (filtroBajas) filtroBajas.checked = false;
+            cargarAnimales();
+        });
+    }
+
+    async function cargarAnimales() {
+        if (!tablaCuerpoAnimales) return;
+
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+        const params = new URLSearchParams();
+
+        if (buscarTexto && buscarTexto.value.trim() !== "") {
+            params.append("buscar", buscarTexto.value.trim());
+        }
+        if (filtroEspecie && filtroEspecie.value !== "") {
+            params.append("especie", filtroEspecie.value);
+        }
+        if (filtroEstado && !contenedorFiltroEstado?.hidden && filtroEstado.value !== "") {
+            params.append("estado", filtroEstado.value);
+        }
+        if (filtroBajas && !contenedorFiltroBajas.hidden && filtroBajas.checked) {
+            params.append("bajas", "1");
+        }
+
+        try {
+            const filtros = Object.fromEntries(params);
+
+            const animales = await obtenerAnimales(filtros, token);
+
+            tablaCuerpoAnimales.replaceChildren();
+            catalogoAdopcion.replaceChildren();
+
+            if (!catalogoAdopcion.hidden) {
+                mostrarTarjetasAdopcion(animales);
+                return;
+            }
+
+            if (animales.length === 0) {
+                const filaVacia = document.createElement("tr");
+                const celdaVacia = document.createElement("td");
+                celdaVacia.colSpan = 5;
+                celdaVacia.style.textAlign = "center";
+                celdaVacia.textContent = "No se encontraron animales disponibles con esos filtros.";
+                filaVacia.appendChild(celdaVacia);
+                tablaCuerpoAnimales.appendChild(filaVacia);
+                return;
+            }
+
+            animales.forEach(animal => {
+                const fila = document.createElement("tr");
+
+                const tdNombre = document.createElement("td");
+                const strongNombre = document.createElement("strong");
+                strongNombre.textContent = animal.nombre;
+                tdNombre.appendChild(strongNombre);
+
+                const tdEspecie = document.createElement("td");
+                tdEspecie.textContent = animal.especie;
+
+                const tdRaza = document.createElement("td");
+                tdRaza.textContent = animal.raza || "Sin especificar";
+
+                const tdEstado = document.createElement("td");
+                tdEstado.textContent = animal.estado;
+
+                const tdAcciones = document.createElement("td");
+                const botonDetalle = document.createElement("button");
+                botonDetalle.type = "button";
+                botonDetalle.className = "boton-detalle";
+                botonDetalle.textContent = "Ver Ficha";
+                botonDetalle.addEventListener("click", function () {
+                    verFichaAnimal(animal.id);
+                });
+                tdAcciones.appendChild(botonDetalle);
+
+                fila.append(tdNombre, tdEspecie, tdRaza, tdEstado, tdAcciones);
+                tablaCuerpoAnimales.appendChild(fila);
+            });
+
+        } catch (error) {
+            console.error("Error al cargar la lista de animales:", error);
+            if (mensajeAnimal) {
+                mensajeAnimal.textContent = "Error al conectar con la API de Laravel.";
+                mensajeAnimal.style.color = "red";
+            }
+        }
+    }
+
+    function calcularEdadAnimal(fechaNacimiento) {
+        if (!fechaNacimiento) {
+            return "Edad no indicada";
+        }
+
+        const fecha = fechaNacimiento.slice(0, 10);
+        const nacimiento = new Date(fecha + "T00:00:00");
+        const hoy = new Date();
+
+        if (
+            Number.isNaN(nacimiento.getTime()) ||
+            nacimiento > hoy
+        ) {
+            return "Edad no indicada";
+        }
+
+        let meses =
+            (hoy.getFullYear() - nacimiento.getFullYear()) * 12 +
+            hoy.getMonth() - nacimiento.getMonth();
+
+        if (hoy.getDate() < nacimiento.getDate()) {
+            meses--;
+        }
+
+        if (meses <= 0) {
+            return "Menos de 1 mes";
+        }
+
+        if (meses < 12) {
+            return meses + (meses === 1 ? " mes" : " meses");
+        }
+
+        const anos = Math.floor(meses / 12);
+
+        return anos + (anos === 1 ? " año" : " años");
+    }
+
+    function mostrarTarjetasAdopcion(animales) {
+        if (animales.length === 0) {
+            const aviso = document.createElement("p");
+
+            aviso.className = "aviso-catalogo";
+            aviso.textContent =
+                "No hay animales disponibles con esos filtros.";
+
+            catalogoAdopcion.appendChild(aviso);
+            return;
+        }
+
+        animales.forEach(function (animal) {
+            const tarjeta = document.createElement("article");
+            tarjeta.className = "tarjeta-adopcion";
+
+            const rutaImagen = animal.imagen || animal.fotografia;
+
+            const urlImagen = animal.imagen_url
+                || animal.fotografia_url
+                || (rutaImagen
+                    ? (rutaImagen.startsWith("https://")
+                        ? rutaImagen
+                        : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                    : null);
+
+            if (urlImagen) {
+                const imagen = document.createElement("img");
+
+                imagen.src = urlImagen;
+
+                imagen.alt = "Fotografía de " + animal.nombre;
+                imagen.loading = "lazy";
+                imagen.className = "imagen-tarjeta-adopcion";
+
+                tarjeta.appendChild(imagen);
+
+            } else {
+                const imagenPredeterminada = document.createElement("div");
+
+                imagenPredeterminada.className =
+                    "imagen-predeterminada-adopcion";
+
+                imagenPredeterminada.textContent = "🐾";
+                imagenPredeterminada.setAttribute("aria-hidden", "true");
+
+                tarjeta.appendChild(imagenPredeterminada);
+            }
+
+            const contenido = document.createElement("div");
+            contenido.className = "contenido-tarjeta-adopcion";
+
+            const nombre = document.createElement("h3");
+            nombre.textContent = animal.nombre;
+
+            const descripcion = document.createElement("p");
+                descripcion.textContent =
+                   (animal.sexo || "Sexo no indicado") + " · " +
+                   (animal.raza || "Raza no indicada") + " · " +
+                    calcularEdadAnimal(animal.fecha_nacimiento);
+
+            const caracter = document.createElement("p");
+            caracter.className = "caracter-tarjeta-adopcion";
+            caracter.textContent =
+                animal.caracter || "Conoce su carácter en la protectora.";
+
+            const botonFicha = document.createElement("button");
+
+            botonFicha.type = "button";
+            botonFicha.className = "boton-ficha-adopcion";
+            botonFicha.textContent = "Conóceme";
+
+            botonFicha.setAttribute(
+                "aria-label",
+                "Conocer a " + animal.nombre
+            );
+
+            botonFicha.addEventListener("click", function () {
+                verFichaAnimal(animal.id);
+            });
+
+        // BOTONES DE LA TARJETA
+        const acciones = document.createElement("div");
+        acciones.className = "acciones-tarjeta-adopcion";
+
+        acciones.appendChild(botonFicha);
+
+        if (
+            usuarioActual &&
+            usuarioActual.rol === "adoptante" &&
+            animal.estado === "Disponible"
+        ) {
+            const botonSolicitud = document.createElement("button");
+
+            botonSolicitud.type = "button";
+            botonSolicitud.className = "boton-solicitar-adopcion";
+            botonSolicitud.textContent = "Solicitar adopción";
+
+            botonSolicitud.addEventListener("click", function () {
+                verFichaAnimal(animal.id, true);
+            });
+
+            acciones.appendChild(botonSolicitud);
+        }
+
+        contenido.append(
+            nombre,
+            descripcion,
+            caracter,
+            acciones
+        );
+
+            tarjeta.appendChild(contenido);
+            catalogoAdopcion.appendChild(tarjeta);
+        });
+    }
+
+    async function cargarPersonasAsignables() {
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+    if (!token || !empleadoAsignacionAnimal || !usuarioActual) {
+        return;
+    }
+
+    const tipo = usuarioActual.rol === "admin"
+        ? tipoAsignacionAnimal.value
+        : "veterinario";
+
+    let personas = [];
+
+    if (tipo === "responsable") {
+        const resultado = await obtenerEmpleadosParaDisponibilidad(token);
+
+        personas = resultado.data.filter(persona =>
+            persona.user && persona.user.rol === "personal"
+        );
+    } else {
+        const resultado = await obtenerVeterinariosDisponibles(token);
+        personas = resultado.data;
+    }
+
+    empleadoAsignacionAnimal.replaceChildren();
+
+    const opcionInicial = document.createElement("option");
+    opcionInicial.value = "";
+    opcionInicial.textContent = "Selecciona una persona";
+    empleadoAsignacionAnimal.appendChild(opcionInicial);
+
+    personas.forEach(persona => {
+        const opcion = document.createElement("option");
+        opcion.value = persona.id;
+        opcion.textContent = `${persona.user?.name || "Sin nombre"} — ${persona.puesto || "Sin puesto"}`;
+        empleadoAsignacionAnimal.appendChild(opcion);
+    });
+}
+
+async function cargarAsignacionesEnFicha(animalId) {
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    const rol = usuarioActual?.rol;
+
+    if (!token || !bloqueAsignacionesAnimal || !listaAsignacionesAnimal) {
+        return;
+    }
+
+    const puedeConsultar = ["admin", "personal", "veterinario"].includes(rol);
+
+    if (!puedeConsultar) {
+        bloqueAsignacionesAnimal.hidden = true;
+        return;
+    }
+
+    bloqueAsignacionesAnimal.hidden = false;
+    listaAsignacionesAnimal.replaceChildren();
+
+    const puedeGestionar = ["admin", "personal"].includes(rol);
+
+    if (formularioAsignacionAnimal) {
+        formularioAsignacionAnimal.hidden = !puedeGestionar;
+    }
+
+    if (campoTipoAsignacion) {
+        campoTipoAsignacion.hidden = rol !== "admin";
+    }
+
+    if (rol !== "admin" && tipoAsignacionAnimal) {
+        tipoAsignacionAnimal.value = "veterinario";
+    }
+
+    const resultado = await obtenerAsignacionesAnimal(animalId, token);
+
+    if (resultado.data.length === 0) {
+        const elementoVacio = document.createElement("li");
+        elementoVacio.textContent = "No hay asignaciones registradas para mostrar.";
+        listaAsignacionesAnimal.appendChild(elementoVacio);
+    } else {
+       resultado.data.forEach(asignacion => {
+    const elemento = document.createElement("li");
+    const nombre = asignacion.empleado?.user?.name || "Sin nombre";
+    const puesto = asignacion.empleado?.puesto || "Sin puesto";
+    const tipoAsignacion = asignacion.tipo_asignacion === "responsable"
+        ? "Responsable"
+        : "Veterinario";
+
+    const texto = document.createElement("span");
+    texto.textContent = `${tipoAsignacion}: ${nombre} — ${puesto}`;
+    elemento.appendChild(texto);
+
+    if (puedeGestionar) {
+        const botonRetirar = document.createElement("button");
+        botonRetirar.type = "button";
+        botonRetirar.textContent = "Retirar asignación";
+
+        botonRetirar.addEventListener("click", async function () {
+            const confirmado = confirm("¿Quieres retirar esta asignación?");
+            if (!confirmado) {
+                return;
+            }
+
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            botonRetirar.disabled = true;
+
+            try {
+                const resultado = await retirarAsignacionAnimal(asignacion.id, token);
+
+                if (mensajeAsignacionAnimal) {
+                    mensajeAsignacionAnimal.textContent = resultado.message;
+                    mensajeAsignacionAnimal.style.color = "green";
+                }
+
+                await cargarAsignacionesEnFicha(animalId);
+            } catch (error) {
+                if (mensajeAsignacionAnimal) {
+                    mensajeAsignacionAnimal.textContent = error.message;
+                    mensajeAsignacionAnimal.style.color = "red";
+                }
+            } finally {
+                botonRetirar.disabled = false;
+            }
+        });
+
+        elemento.appendChild(botonRetirar);
+    }
+
+    listaAsignacionesAnimal.appendChild(elemento);
+});
+    }
+
+    if (puedeGestionar) {
+        await cargarPersonasAsignables();
+    }
+}
+
+    async function verFichaAnimal(id, irASolicitud = false) {
+        
+        if (!modalDetalleAnimal) return;
+
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+        animalSeleccionadoId = id;
+
+        if (enlaceHistorialAnimal) {
+            enlaceHistorialAnimal.href = "historial.html?id=" + id;
+            enlaceHistorialAnimal.hidden = !(usuarioActual && rolesAutorizados.includes(usuarioActual.rol));
+        }
+
+        try {
+            const animal = await obtenerAnimal(id, token);
+
+            formularioSolicitud.reset();
+            mensajeSolicitud.textContent = "";
+            botonEnviarSolicitud.disabled = false;
+
+            formularioSolicitud.hidden = !(
+                usuarioActual &&
+                usuarioActual.rol === "adoptante" &&
+                animal.estado === "Disponible" &&
+                animal.activo !== false &&
+                animal.activo !== 0
+            );
+
+            document.querySelector("#fichaTamano").textContent =
+                animal.tamano || "No indicado";
+
+            document.querySelector("#fichaNacimiento").textContent =
+                animal.fecha_nacimiento
+                    ? animal.fecha_nacimiento.slice(0, 10)
+                    : "No indicado";
+
+            document.querySelector("#fichaConNinos").textContent =
+                animal.con_ninos || "Desconocido";
+
+            document.querySelector("#fichaConOtrosAnimales").textContent =
+                animal.con_otros_animales || "Desconocido";
+
+            fichaHistoriaPublica.textContent =
+                animal.historia_publica ||
+                "Todavía no se ha publicado su historia.";
+
+            fichaCuidadosPublicos.textContent =
+                animal.cuidados_publicos ||
+                "Consulta con la protectora los cuidados que necesita.";
+
+            const rutaImagen = animal.imagen || animal.fotografia;
+
+            const urlImagen = animal.imagen_url
+                || animal.fotografia_url
+                || (rutaImagen
+                    ? (rutaImagen.startsWith("https://")
+                        ? rutaImagen
+                        : "http://127.0.0.1:8000/storage/" + rutaImagen)
+                    : null);
+
+            if (fichaNombre) {
+                fichaNombre.textContent = "Ficha de " + animal.nombre;
+            }
+
+            if (fichaImagen) {
+                if (urlImagen) {
+                    fichaImagen.src = urlImagen;
+                    fichaImagen.alt = "Fotografía de " + animal.nombre;
+                    fichaImagen.hidden = false;
+
+                } else {
+                    fichaImagen.removeAttribute("src");
+                    fichaImagen.hidden = true;
+                }
+            }
+
+            if (fichaEspecie) fichaEspecie.textContent = animal.especie;
+            if (fichaRaza) fichaRaza.textContent = animal.raza || "N/A";
+            if (fichaSexo) fichaSexo.textContent = animal.sexo || "N/A";
+            if (fichaEstado) fichaEstado.textContent = animal.estado;
+            if (fichaPeso) fichaPeso.textContent = animal.peso ? `${animal.peso} kg` : "N/A";
+            if (fichaFechaEntrada) fichaFechaEntrada.textContent = animal.fecha_entrada || "N/A";
+            if (fichaMotivo) fichaMotivo.textContent = animal.motivo || "N/A";
+            if (fichaCaracter) fichaCaracter.textContent = animal.caracter || "Sin especificar";
+            if (fichaNecesidades) fichaNecesidades.textContent = animal.necesidades_especiales || "Ninguna";
+            if (fichaObservaciones) fichaObservaciones.textContent = animal.observaciones || "Sin observaciones";
+
+            const esAutorizado = usuarioActual && rolesAutorizados.includes(usuarioActual.rol);
+            datosEntradaInternos.hidden = !esAutorizado;
+            datosCuidadosInternos.hidden = !esAutorizado;
+
+            const estaDeBaja = animal.activo === false || animal.activo === 0;
+
+            if (avisoAnimalBaja) {
+                avisoAnimalBaja.hidden = !estaDeBaja;
+                if (fichaFechaBaja) fichaFechaBaja.textContent = animal.fecha_baja || "N/A";
+                if (fichaMotivoBaja) fichaMotivoBaja.textContent = animal.motivo_baja || "Sin motivo";
+            }
+
+            if (bloqueBajaAnimal) {
+                bloqueBajaAnimal.hidden = !esAutorizado;
+
+                if (etiquetaMotivoBaja) etiquetaMotivoBaja.hidden = estaDeBaja;
+                if (motivoBajaAnimal) motivoBajaAnimal.hidden = estaDeBaja;
+                if (btnBajaAnimal) btnBajaAnimal.hidden = estaDeBaja;
+
+                if (motivoBajaAnimal) motivoBajaAnimal.value = "";
+                if (mensajeBajaModal) mensajeBajaModal.textContent = "";
+            }
+
+            if (bloqueCambioEstado) {
+                if (esAutorizado && !estaDeBaja) {
+                    bloqueCambioEstado.hidden = false;
+                    const transiciones = obtenerTransicionesPermitidas(animal.estado);
+
+                    if (mensajeEstadoModal) mensajeEstadoModal.textContent = "";
+
+                    if (transiciones.length > 0) {
+                        if (controlesTransicionEstado) controlesTransicionEstado.hidden = false;
+                        if (avisoEstadoFinal) avisoEstadoFinal.hidden = true;
+
+                        if (selectNuevoEstado) {
+                            selectNuevoEstado.replaceChildren();
+
+                            const opcionDefault = document.createElement("option");
+                            opcionDefault.value = "";
+                            opcionDefault.textContent = "Selecciona nuevo estado...";
+                            selectNuevoEstado.appendChild(opcionDefault);
+
+                            transiciones.forEach(estado => {
+                                const opcion = document.createElement("option");
+                                opcion.value = estado;
+                                opcion.textContent = estado;
+                                selectNuevoEstado.appendChild(opcion);
+                            });
+                        }
+                    } else {
+                        if (controlesTransicionEstado) controlesTransicionEstado.hidden = true;
+                        if (avisoEstadoFinal) avisoEstadoFinal.hidden = false;
+                    }
+                } else {
+                    bloqueCambioEstado.hidden = true;
+                }
+            }
+
+            if (enlaceEditarAnimal) {
+                enlaceEditarAnimal.href = "editarAnimal.html?id=" + id;
+                enlaceEditarAnimal.hidden = !esAutorizado;
+            }
+
+            if (bloqueAsignacion) {
+                const esAdmin = usuarioActual && usuarioActual.rol === "admin";
+                bloqueAsignacion.hidden = !esAdmin || estaDeBaja;
+
+                if (selectCuidador) selectCuidador.value = animal.cuidador_id || "";
+                if (instruccionesCuidado) instruccionesCuidado.value = animal.instrucciones_cuidado || "";
+                if (mensajeAsignacion) mensajeAsignacion.textContent = "";
+            }
+            try {
+                await cargarAsignacionesEnFicha(id);
+            } catch (error) {
+            if (bloqueAsignacionesAnimal) {
+                 bloqueAsignacionesAnimal.hidden = false;
+            }
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+            }
+
+            if (!modalDetalleAnimal.open) {
+                modalDetalleAnimal.showModal();
+            }
+
+            if (irASolicitud && !formularioSolicitud.hidden) {
+                observacionesSolicitud.focus();
+
+                formularioSolicitud.scrollIntoView({
+                    block: "center"
+                });
+            } else {
+                modalDetalleAnimal.scrollTop = 0;
+            }
+
+        } catch (error) {
+            console.error("Error obteniendo el detalle:", error);
+            alert("No se pudo conectar con el servidor.");
+        }
+    }
+
+    if (tipoAsignacionAnimal) {
+    tipoAsignacionAnimal.addEventListener("change", async function () {
+        try {
+            await cargarPersonasAsignables();
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "";
+            }
+        } catch (error) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+        }
+    });
+}
+
+if (formularioAsignacionAnimal) {
+    formularioAsignacionAnimal.addEventListener("submit", async function (evento) {
+        evento.preventDefault();
+
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+        if (!token || !usuarioActual || !["admin", "personal"].includes(usuarioActual.rol)) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "No tienes permiso para crear asignaciones.";
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+            return;
+        }
+
+        const tipo = usuarioActual.rol === "admin"
+            ? tipoAsignacionAnimal.value
+            : "veterinario";
+
+        const empleadoId = empleadoAsignacionAnimal.value;
+
+        if (!empleadoId || !animalSeleccionadoId) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = "Selecciona una persona para asignar.";
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+            return;
+        }
+
+        const botonGuardarAsignacion =
+            formularioAsignacionAnimal.querySelector('button[type="submit"]');
+
+        if (botonGuardarAsignacion) {
+            botonGuardarAsignacion.disabled = true;
+        }
+
+        try {
+            const resultado = await crearAsignacionAnimal({
+                animal_id: Number(animalSeleccionadoId),
+                empleado_id: Number(empleadoId),
+                tipo_asignacion: tipo
+            }, token);
+
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = resultado.message;
+                mensajeAsignacionAnimal.style.color = "green";
+            }
+
+            await cargarAsignacionesEnFicha(animalSeleccionadoId);
+        } catch (error) {
+            if (mensajeAsignacionAnimal) {
+                mensajeAsignacionAnimal.textContent = error.message;
+                mensajeAsignacionAnimal.style.color = "red";
+            }
+        } finally {
+            if (botonGuardarAsignacion) {
+                botonGuardarAsignacion.disabled = false;
+            }
+        }
+    });
+}
+
+    if (btnGuardarEstadoAnimal && selectNuevoEstado) {
+        btnGuardarEstadoAnimal.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            const nuevoEstado = selectNuevoEstado.value;
+
+            if (!nuevoEstado) {
+                if (mensajeEstadoModal) {
+                    mensajeEstadoModal.textContent = "Selecciona un estado permitido antes de guardar.";
+                    mensajeEstadoModal.style.color = "red";
+                }
+                return;
+            }
+
+            btnGuardarEstadoAnimal.disabled = true;
+            if (mensajeEstadoModal) {
+                mensajeEstadoModal.textContent = "Actualizando estado...";
+                mensajeEstadoModal.style.color = "#333";
+            }
+
+            try {
+                const res = await actualizarEstadoAnimal(animalSeleccionadoId, nuevoEstado, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = res.message || "Estado actualizado correctamente.";
+                    mensajeAnimal.style.color = "green";
+                }
+
+                await cargarAnimales();
+                await verFichaAnimal(animalSeleccionadoId);
+
+                if (mensajeEstadoModal) {
+                    mensajeEstadoModal.textContent = res.message || "Estado actualizado correctamente.";
+                    mensajeEstadoModal.style.color = "green";
+                }
+
+            } catch (error) {
+                if (mensajeEstadoModal) {
+                    mensajeEstadoModal.textContent = error.message || "No se pudo cambiar el estado.";
+                    mensajeEstadoModal.style.color = "red";
+                }
+            } finally {
+                btnGuardarEstadoAnimal.disabled = false;
+            }
+        });
+    }
+
+    if (btnBajaAnimal && motivoBajaAnimal) {
+        btnBajaAnimal.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+            const motivo = motivoBajaAnimal.value.trim();
+
+            if (motivo === "") {
+                if (mensajeBajaModal) {
+                    mensajeBajaModal.textContent = "Debes indicar el motivo de la baja.";
+                    mensajeBajaModal.style.color = "red";
+                }
+                return;
+            }
+
+            const confirmado = confirm("¿Seguro que quieres dar de baja este animal? Se conservarán todos sus registros.");
+            if (!confirmado) {
+                return;
+            }
+
+            btnBajaAnimal.disabled = true;
+            if (mensajeBajaModal) {
+                mensajeBajaModal.textContent = "Dando de baja al animal...";
+                mensajeBajaModal.style.color = "#333";
+            }
+
+            try {
+                const res = await darDeBajaAnimal(animalSeleccionadoId, motivo, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = res.message;
+                    mensajeAnimal.style.color = "green";
+                }
+
+                modalDetalleAnimal.close();
+                await cargarAnimales();
+
+            } catch (error) {
+                if (mensajeBajaModal) {
+                    if (error.errores && error.errores.motivo_baja) {
+                        mensajeBajaModal.textContent = error.errores.motivo_baja[0];
+                    } else {
+                        mensajeBajaModal.textContent = error.message || "No se pudo dar de baja el animal.";
+                    }
+                    mensajeBajaModal.style.color = "red";
+                }
+            } finally {
+                btnBajaAnimal.disabled = false;
+            }
+        });
+    }
+
+    if (btnEliminarAnimal) {
+        btnEliminarAnimal.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            const confirmado = confirm("¿Seguro que quieres eliminar este animal definitivamente? Esta acción no se puede deshacer.");
+            if (!confirmado) {
+                return;
+            }
+
+            btnEliminarAnimal.disabled = true;
+            if (mensajeBajaModal) {
+                mensajeBajaModal.textContent = "Comprobando registros del animal...";
+                mensajeBajaModal.style.color = "#333";
+            }
+
+            try {
+                const res = await eliminarAnimal(animalSeleccionadoId, token);
+
+                if (mensajeAnimal) {
+                    mensajeAnimal.textContent = res.message;
+                    mensajeAnimal.style.color = "green";
+                }
+
+                modalDetalleAnimal.close();
+                await cargarAnimales();
+
+            } catch (error) {
+                if (mensajeBajaModal) {
+                    mensajeBajaModal.textContent = error.message || "No se pudo eliminar el animal.";
+                    mensajeBajaModal.style.color = "red";
+                }
+            } finally {
+                btnEliminarAnimal.disabled = false;
+            }
+        });
+    }
+
+    async function cargarTrabajadores(token) {
+        if (!selectCuidador) return;
+
+        try {
+            const resultado = await obtenerEmpleadosParaDisponibilidad(token);
+            const empleados = resultado.data;
+
+            for (let i = 0; i < empleados.length; i++) {
+                const opcion = document.createElement("option");
+                opcion.value = empleados[i].user.id;
+                opcion.textContent = empleados[i].user.name + " (" + empleados[i].puesto + ")";
+                selectCuidador.appendChild(opcion);
+            }
+
+        } catch (error) {
+            console.error("Error al cargar los trabajadores:", error);
+        }
+    }
+
+    if (btnGuardarAsignacion && selectCuidador && instruccionesCuidado) {
+        btnGuardarAsignacion.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            const datos = {
+                cuidador_id: selectCuidador.value === "" ? null : Number(selectCuidador.value),
+                instrucciones_cuidado: instruccionesCuidado.value.trim()
+            };
+
+            btnGuardarAsignacion.disabled = true;
+            if (mensajeAsignacion) {
+                mensajeAsignacion.textContent = "Guardando asignación...";
+                mensajeAsignacion.style.color = "#333";
+            }
+
+            try {
+                const res = await asignarCuidadorAnimal(animalSeleccionadoId, datos, token);
+
+                if (mensajeAsignacion) {
+                    mensajeAsignacion.textContent = res.message;
+                    mensajeAsignacion.style.color = "green";
+                }
+
+            } catch (error) {
+                if (mensajeAsignacion) {
+                    if (error.errores && error.errores.cuidador_id) {
+                        mensajeAsignacion.textContent = error.errores.cuidador_id[0];
+                    } else if (error.errores && error.errores.instrucciones_cuidado) {
+                        mensajeAsignacion.textContent = error.errores.instrucciones_cuidado[0];
+                    } else {
+                        mensajeAsignacion.textContent = error.message;
+                    }
+                    mensajeAsignacion.style.color = "red";
+                }
+            } finally {
+                btnGuardarAsignacion.disabled = false;
+            }
+        });
+    }
+
+    if (cerrarDetalleAnimal) {
+        cerrarDetalleAnimal.addEventListener("click", function () {
+            modalDetalleAnimal.close();
+        });
+    }
+
+    if (botonCerrarSesion) {
+        botonCerrarSesion.addEventListener("click", async function () {
+            const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+
+            if (!token) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            botonCerrarSesion.disabled = true;
+
+            try {
+                await cerrarSesion(token);
+                sessionStorage.removeItem("token");
+                localStorage.removeItem("token");
+                window.location.href = "index.html";
+            } catch (error) {
+                if (mensajeAnimal) mensajeAnimal.textContent = `No se pudo cerrar sesión: ${error.message}`;
+            } finally {
+                botonCerrarSesion.disabled = false;
+            }
+        });
+    }
+
+    // ENVIAR LA SOLICITUD DE ADOPCIÓN
+    formularioSolicitud.addEventListener("submit", async function (evento) {
+
+        evento.preventDefault();
+
+        const token = sessionStorage.getItem("token")
+            || localStorage.getItem("token");
+
+        if (!token) {
+            mensajeSolicitud.textContent =
+                "Debes iniciar sesión para solicitar una adopción.";
+            return;
+        }
+
+        const idAnimal = animalSeleccionadoId;
+
+        const datos = {
+            animal_id: idAnimal,
+            observaciones: observacionesSolicitud.value.trim()
+        };
+
+        mensajeSolicitud.textContent = "Enviando solicitud...";
+        botonEnviarSolicitud.disabled = true;
+
+        try {
+            const resultado = await crearSolicitud(datos, token);
+
+            if (animalSeleccionadoId === idAnimal) {
+                mensajeSolicitud.textContent = resultado.message;
+                formularioSolicitud.reset();
+            }
+
+        } catch (error) {
+            if (animalSeleccionadoId === idAnimal) {
+                mensajeSolicitud.textContent = error.message;
+                botonEnviarSolicitud.disabled = false;
+            }
+        }
+    });
+
+    // ABRIR LA FICHA DEL ANIMAL INDICADO EN EL ENLACE
+    comprobarAcceso().then(function () {
+
+        const parametros = new URLSearchParams(window.location.search);
+        const idAnimal = Number(parametros.get("animal"));
+
+        if (Number.isInteger(idAnimal) && idAnimal > 0) {
+            verFichaAnimal(idAnimal);
+        }
+    });
+});

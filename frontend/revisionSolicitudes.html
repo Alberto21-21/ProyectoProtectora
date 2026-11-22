@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Revisar solicitudes - Salvando Huellas</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/revisionSolicitudes.js"></script>
+    <script type="module" src="/src/menu.js"></script>
+</head>
+
+<body class="pagina-perfil">
+
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas"
+                    class="logo-protectora"
+                >
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html">Mi perfil</a>
+                <a href="usuarios.html">Usuarios</a>
+
+                <a href="revisionSolicitudes.html" aria-current="page">
+                    Solicitudes
+                </a>
+
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>ADMINISTRACIÓN</span>
+            <h1>Revisar solicitudes</h1>
+            <p>Consulta las solicitudes y valora el hogar de cada adoptante.</p>
+        </div>
+
+        <p id="mensajeRevision" role="status"></p>
+
+        <!-- CONTENIDO PARA CUENTAS AUTORIZADAS -->
+        <div id="contenidoRevision" hidden>
+
+            <!-- FILTROS -->
+            <form id="formularioFiltrosRevision" class="filtros-usuarios">
+
+                <div>
+                    <label for="buscarRevision">Nombre o correo</label>
+                    <input
+                        type="search"
+                        id="buscarRevision"
+                        placeholder="Buscar adoptante"
+                        maxlength="100"
+                    >
+                </div>
+
+                <div>
+                    <label for="estadoRevision">Estado</label>
+                    <select id="estadoRevision">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_revision">En revisión</option>
+                        <option value="aprobada">Aprobada</option>
+                        <option value="rechazada">Rechazada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="botonBuscarRevision">
+                    Buscar
+                </button>
+
+                <button type="button" id="limpiarFiltrosRevision">
+                    Limpiar filtros
+                </button>
+
+            </form>
+
+            <!-- LISTADO -->
+            <section class="tabla-usuarios">
+                <h2>Solicitudes de adopción</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Adoptante</th>
+                            <th>Animal</th>
+                            <th>Estado</th>
+                            <th>Fecha de solicitud</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaRevision"></tbody>
+                </table>
+            </section>
+
+            <!-- PAGINACIÓN -->
+            <div class="paginacion-revision">
+                <button type="button" id="paginaAnteriorRevision" disabled>
+                    Anterior
+                </button>
+
+                <span id="numeroPaginaRevision"></span>
+
+                <button type="button" id="paginaSiguienteRevision" disabled>
+                    Siguiente
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- DETALLE DE LA SOLICITUD -->
+    <dialog
+        id="modalRevision"
+        class="modal-acceso modal-detalle"
+        aria-labelledby="tituloDetalleRevision"
+    >
+
+        <button
+            type="button"
+            id="cerrarModalRevision"
+            class="cerrar-modal"
+            aria-label="Cerrar detalle"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloDetalleRevision">Detalle de la solicitud</h2>
+
+        <p id="mensajeDetalleRevision" role="status"></p>
+
+        <div id="contenidoDetalleRevision" hidden>
+
+            <h3>Solicitud y adoptante</h3>
+            <div id="datosSolicitudRevision"></div>
+
+            <h3>Animal solicitado</h3>
+            <div id="datosAnimalRevision"></div>
+
+            <h3>Hogar y preferencias</h3>
+            <div id="datosHogarRevision"></div>
+
+            <form id="formularioObservacionesRevision">
+
+                <label for="observacionesInternasRevision">
+                    Observaciones internas
+                </label>
+
+                <textarea
+                    id="observacionesInternasRevision"
+                    rows="5"
+                    maxlength="2000"
+                ></textarea>
+
+                <p>Estas anotaciones solo son visibles para personal autorizado.</p>
+
+                <p id="mensajeObservacionesRevision" role="status"></p>
+
+                <button type="submit" id="guardarObservacionesRevision">
+                    Guardar observaciones
+                </button>
+
+            </form>
+
+            <!-- ENTREVISTAS Y DECISIONES -->
+            <section class="seguimiento-solicitud">
+
+                <h3>Registrar actuación</h3>
+
+                <form id="formularioSeguimiento">
+
+                    <label for="tipoSeguimiento">
+                        Tipo de actuación
+                    </label>
+
+                    <select id="tipoSeguimiento" required>
+                        <option value="">Selecciona una actuación</option>
+                        <option value="entrevista">Registrar entrevista</option>
+                        <option value="aprobacion">Aprobar solicitud</option>
+                        <option value="rechazo">Rechazar solicitud</option>
+                    </select>
+
+                    <label for="observacionesSeguimiento">
+                        Observaciones de la actuación
+                    </label>
+
+                    <textarea
+                        id="observacionesSeguimiento"
+                        rows="4"
+                        minlength="5"
+                        maxlength="2000"
+                        required
+                    ></textarea>
+
+                    <p id="mensajeSeguimiento" role="status"></p>
+
+                    <button type="submit" id="guardarSeguimiento">
+                        Guardar actuación
+                    </button>
+
+                </form>
+
+                <h3>Historial de actuaciones</h3>
+
+                <div id="historialSeguimientos"></div>
+
+            </section>
+
+        </div>
+
+    </dialog>
+
+    <!-- FICHA DEL ANIMAL -->
+    <dialog
+        id="modalAnimalRevision"
+        class="modal-acceso modal-detalle"
+        aria-labelledby="tituloAnimalRevision"
+    >
+
+        <button
+            type="button"
+            id="cerrarAnimalRevision"
+            class="cerrar-modal"
+            aria-label="Cerrar ficha del animal"
+        >
+            ×
+        </button>
+
+        <h2 id="tituloAnimalRevision">Ficha del animal</h2>
+
+        <p id="mensajeAnimalRevision" role="status"></p>
+
+        <div id="contenidoAnimalRevision" hidden>
+
+            <img
+                id="fotoAnimalRevision"
+                alt=""
+                hidden
+            >
+
+            <div id="datosFichaAnimalRevision"></div>
+
+            <section class="informacion-publica-animal">
+                <h3>Su historia</h3>
+                <p id="historiaAnimalRevision" class="texto-publico-animal"></p>
+
+                <h3>Cuidados que necesita</h3>
+                <p id="cuidadosAnimalRevision" class="texto-publico-animal"></p>
+            </section>
+
+        </div>
+
+    </dialog>
+
+</body>
+
+</html>

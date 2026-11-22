@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Compatibilidad - Salvando Huellas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/compatibilidad.js"></script>
+</head>
+
+<body class="pagina-perfil">
+
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas"
+                    class="logo-protectora"
+                >
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html">Mi perfil</a>
+
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>ADOPCIÓN</span>
+            <h1>Compatibilidad</h1>
+            <p>
+                Consulta cómo encajan los animales con tus preferencias
+                y el tiempo que puedes dedicarles.
+            </p>
+        </div>
+
+        <p id="mensajeCompatibilidad" role="status"></p>
+        <p id="avisoPendientesCompatibilidad" role="status"></p>
+
+        <section
+            id="seccionCompatibilidad"
+            class="tabla-usuarios"
+            hidden
+        >
+            <table>
+                <caption>Resultados de compatibilidad</caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">Animal</th>
+                        <th scope="col">Resultado</th>
+                        <th scope="col">Puntos sobre 100</th>
+                        <th scope="col">Motivos y observaciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaCompatibilidad"></tbody>
+            </table>
+        </section>
+
+        <div class="acciones-compatibilidad">
+            <p>
+                El resultado es orientativo. La protectora debe valorar
+                cada adopción antes de aprobarla.
+            </p>
+
+            <a href="hogar.html" class="enlace-editar-hogar">
+                Modificar mi hogar y preferencias
+            </a>
+        </div>
+
+    </main>
+
+</body>
+</html>

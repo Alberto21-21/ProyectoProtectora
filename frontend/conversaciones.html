@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversaciones - Salvando Huellas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+            <a href="index.html" class="marca">Salvando Huellas</a>
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="conversaciones.html" id="enlaceConversaciones" aria-current="page" hidden>Conversaciones</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>CONVERSACIONES</span>
+            <h1>Conversaciones</h1>
+            <p>Coordina los cuidados con el personal y los veterinarios.</p>
+        </div>
+
+        <p id="mensajeConversaciones" role="status"></p>
+
+        <div id="contenidoConversaciones" class="distribucion-chat" hidden>
+
+            <!-- LISTA DE CONVERSACIONES -->
+            <aside class="informacion-perfil panel-conversaciones">
+                <div class="cabecera-panel-chat">
+                    <h2>Mis conversaciones</h2>
+                    <button type="button" id="botonNuevaConversacion" class="boton-detalle">
+                        Nueva
+                    </button>
+                </div>
+
+                <ul id="listaConversaciones" class="lista-conversaciones"></ul>
+            </aside>
+
+            <!-- DETALLE Y NUEVA CONVERSACIÓN -->
+            <section class="informacion-perfil panel-detalle-chat">
+
+                <p id="avisoSinSeleccion" class="aviso-chat">
+                    Selecciona una conversación o inicia una nueva.
+                </p>
+
+                <!-- NUEVA CONVERSACIÓN -->
+                <form id="formularioNuevaConversacion" class="formulario-nueva-conversacion" hidden>
+                    <h2>Nueva conversación</h2>
+
+                    <label for="asuntoConversacion">Asunto</label>
+                    <input type="text" id="asuntoConversacion" maxlength="120"
+                        placeholder="Por ejemplo: revisión de Toby">
+
+                    <label for="animalConversacion">Animal (opcional)</label>
+                    <select id="animalConversacion">
+                        <option value="">Sin animal</option>
+                    </select>
+
+                    <fieldset class="lista-contactos">
+                        <legend>Participantes *</legend>
+                        <div id="contactosConversacion"></div>
+                    </fieldset>
+
+                    <label for="mensajeInicialConversacion">Primer mensaje (opcional)</label>
+                    <textarea id="mensajeInicialConversacion" rows="3" maxlength="2000"></textarea>
+
+                    <p id="errorNuevaConversacion" class="error-campo"></p>
+
+                    <div class="acciones-chat">
+                        <button type="submit" id="botonCrearConversacion" class="boton-detalle">
+                            Iniciar conversación
+                        </button>
+                        <button type="button" id="botonCancelarConversacion" class="boton-secundario-chat">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+
+                <!-- CONVERSACIÓN ABIERTA -->
+                <div id="detalleConversacion" hidden>
+                    <div class="cabecera-detalle-chat">
+                        <h2 id="tituloConversacion">Conversación</h2>
+                        <p id="participantesConversacion"></p>
+                        <p id="animalConversacionDetalle"></p>
+                        <p id="estadoTiempoReal" class="estado-tiempo-real" role="status"></p>
+                    </div>
+
+                    <ul id="listaMensajes" class="lista-mensajes"></ul>
+
+                    <form id="formularioMensaje" class="formulario-mensaje">
+                        <label for="textoMensaje">Mensaje</label>
+                        <textarea id="textoMensaje" rows="3" maxlength="2000" required
+                            placeholder="Escribe un mensaje..."></textarea>
+                        <p id="errorMensaje" class="error-campo"></p>
+
+                        <button type="submit" id="botonEnviarMensaje" class="boton-detalle">
+                            Enviar
+                        </button>
+                    </form>
+                </div>
+
+            </section>
+        </div>
+
+    </main>
+
+    <script type="module" src="./src/menu.js"></script>
+    <script type="module" src="./src/conversaciones.js"></script>
+</body>
+
+</html>

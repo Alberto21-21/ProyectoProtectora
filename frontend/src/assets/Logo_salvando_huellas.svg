@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="104" viewBox="0 0 390 104" fill="none" role="img" aria-labelledby="titulo">
+  <title id="titulo">Salvando Huellas</title>
+  <circle cx="50" cy="52" r="44" fill="#300E28"/>
+  <g fill="#FFAC16">
+    <ellipse cx="29" cy="39" rx="6" ry="9" transform="rotate(-28 29 39)"/>
+    <ellipse cx="43" cy="30" rx="6" ry="9" transform="rotate(-8 43 30)"/>
+    <ellipse cx="58" cy="31" rx="6" ry="9" transform="rotate(10 58 31)"/>
+    <ellipse cx="72" cy="40" rx="6" ry="9" transform="rotate(28 72 40)"/>
+    <path d="M50 46C41 46 39 53 31 60C21 70 29 81 39 78C45 76 48 75 50 75C55 75 59 79 65 78C77 76 78 67 69 59C62 53 60 46 50 46Z"/>
+  </g>
+  <path d="M50 68L42 61C37 56 43 50 48 54L50 56L52 54C57 50 63 56 58 61Z" fill="#300E28"/>
+  <g fill="#300E28" font-family="Montserrat, Arial, sans-serif" font-weight="900" font-size="39" letter-spacing="-1">
+    <text x="111" y="49">Salvando</text>
+    <text x="111" y="80">Huellas</text>
+  </g>
+</svg>
+
+

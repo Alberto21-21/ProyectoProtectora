@@ -1,0 +1,311 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
+
+class AuthController extends Controller
+{
+    // METODO REGISTER PARA REGISTRAR USUARIOS
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'fecha_nacimiento' => 'required|date|before_or_equal:today',
+            'password' => 'required|string|min:8|confirmed'
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser un texto.',
+            'name.max' => 'El nombre no puede superar los 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'email.max' => 'El email no puede superar los 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string' => 'La contraseña debe ser un texto.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.'
+        ]);
+
+        $usuario = new User();
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->password = Hash::make($request->password);
+
+        // EL REGISTRO PUBLICO SIEMPRE CREA ADOPTANTES
+        $usuario->rol = 'adoptante';
+        $usuario->save();
+
+        // CREAR EL TOKEN CON LOS PERMISOS DEFINIDOS EN EL SERVIDOR
+        $tokenResultado = $usuario->createToken(
+            'LaravelSanctumAuth',
+            $usuario->obtenerPermisos()
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario registrado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'token' => $tokenResultado->plainTextToken
+            ]
+        ], 201);
+    }
+
+    // METODO LOGIN PARA INICIAR SESION
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string'
+        ], [
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string' => 'La contraseña debe ser un texto.'
+        ]);
+
+        if (!Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email o contraseña incorrectos.'
+            ], 401);
+        }
+
+        $usuario = Auth::user();
+
+        // IMPEDIR EL ACCESO A CUENTAS DESACTIVADAS
+        if ($usuario->estado !== 'activo') {
+
+            Auth::logout();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Tu cuenta está desactivada.'
+            ], 403);
+        }
+
+        // CREAR EL TOKEN CON LOS PERMISOS DEFINIDOS EN EL SERVIDOR
+        $tokenResultado = $usuario->createToken(
+            'LaravelSanctumAuth',
+            $usuario->obtenerPermisos()
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesión iniciada correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'token' => $tokenResultado->plainTextToken
+            ]
+        ], 200);
+    }
+
+    // CERRAR LA SESION DEL TOKEN UTILIZADO
+    public function cerrarSesion(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesión cerrada correctamente.'
+        ], 200);
+    }
+
+    // ACTUALIZAR LOS DATOS DEL USUARIO AUTENTICADO
+    public function actualizarPerfil(Request $request)
+    {
+        $usuario = $request->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
+            'fecha_nacimiento' => 'required|date|before_or_equal:today'
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser un texto.',
+            'name.max' => 'El nombre no puede superar los 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'email.max' => 'El email no puede superar los 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.'
+        ]);
+
+        // SI CAMBIA EL CORREO, QUEDA PENDIENTE DE VERIFICAR
+        if ($usuario->email !== $request->email) {
+            $usuario->email_verified_at = null;
+        }
+
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Perfil actualizado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol
+            ]
+        ], 200);
+    }
+
+    // ACTUALIZAR LA FOTOGRAFÍA DEL USUARIO EN CLOUDINARY
+    public function actualizarFotografia(
+        Request $request,
+        CloudinaryService $cloudinary
+    ) {
+        $request->validate([
+            'fotografia' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048'
+        ], [
+            'fotografia.required' => 'Debes seleccionar una fotografía.',
+            'fotografia.image' => 'El archivo debe ser una imagen.',
+            'fotografia.mimes' => 'La fotografía debe ser JPG, PNG o WEBP.',
+            'fotografia.max' => 'La fotografía no puede superar los 2 MB.'
+        ]);
+
+        $usuario = $request->user();
+
+        $fotografiaAnterior = $usuario->fotografia;
+        $publicIdAnterior = $usuario->fotografia_public_id;
+
+        // SUBIR LA NUEVA FOTOGRAFÍA
+        $resultado = $cloudinary->upload(
+            $request->file('fotografia'),
+            'protectora/perfiles'
+        );
+
+        // GUARDAR LA URL Y EL IDENTIFICADOR EN LA BASE DE DATOS
+        try {
+            $usuario->fotografia = $resultado['secure_url'];
+            $usuario->fotografia_public_id = $resultado['public_id'];
+            $usuario->save();
+
+        } catch (\Throwable $error) {
+
+            // EVITAR DEJAR UNA IMAGEN SIN CUENTA ASOCIADA
+            try {
+                $cloudinary->eliminar($resultado['public_id']);
+            } catch (\Throwable $errorLimpieza) {
+                report($errorLimpieza);
+            }
+
+            throw $error;
+        }
+
+        // ELIMINAR LA FOTOGRAFÍA ANTERIOR DESPUÉS DE GUARDAR
+        try {
+            if ($publicIdAnterior) {
+                $cloudinary->eliminar($publicIdAnterior);
+
+            } elseif (
+                $fotografiaAnterior &&
+                str_starts_with($fotografiaAnterior, 'perfiles/')
+            ) {
+                Storage::disk('public')->delete($fotografiaAnterior);
+            }
+
+        } catch (\Throwable $errorLimpieza) {
+
+            // LA NUEVA FOTO YA ESTÁ GUARDADA: REGISTRAR EL FALLO DE LIMPIEZA
+            report($errorLimpieza);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Fotografía actualizada correctamente.',
+            'data' => [
+                'fotografia_url' => $usuario->fotografia
+            ]
+        ], 200);
+    }
+    
+    // CAMBIAR LA CONTRASEÑA DEL USUARIO AUTENTICADO
+    public function cambiarContrasena(Request $request)
+    {
+        $request->validate([
+            'password_actual' => 'required|string',
+            'password' => 'required|string|min:8|confirmed|different:password_actual'
+        ], [
+            'password_actual.required' => 'La contraseña actual es obligatoria.',
+            'password_actual.string' => 'La contraseña actual debe ser un texto.',
+            'password.required' => 'La nueva contraseña es obligatoria.',
+            'password.string' => 'La nueva contraseña debe ser un texto.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas nuevas no coinciden.',
+            'password.different' => 'La nueva contraseña debe ser diferente de la actual.'
+        ]);
+
+        $usuario = $request->user();
+
+        // COMPROBAR LA CONTRASEÑA ACTUAL
+        if (!Hash::check($request->password_actual, $usuario->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La contraseña actual es incorrecta.'
+            ], 422);
+        }
+
+        // GUARDAR EL HASH DE LA NUEVA CONTRASEÑA
+        $usuario->password = Hash::make($request->password);
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña actualizada correctamente.'
+        ], 200);
+    }
+
+    // CONSULTAR EL PERFIL DEL USUARIO AUTENTICADO
+    public function mostrarPerfil(Request $request)
+    {
+        $usuario = $request->user();
+
+        $fotografiaUrl = null;
+
+        if ($usuario->fotografia) {
+            if ($usuario->fotografia_public_id) {
+                $fotografiaUrl = $usuario->fotografia;
+            } else {
+                $fotografiaUrl = asset('storage/' . $usuario->fotografia);
+            }
+        }
+
+        return response()->json([
+            'id' => $usuario->id,
+            'name' => $usuario->name,
+            'email' => $usuario->email,
+            'fecha_nacimiento' => $usuario->fecha_nacimiento,
+            'rol' => $usuario->rol,
+            'fotografia_url' => $fotografiaUrl
+        ]);
+    }
+}

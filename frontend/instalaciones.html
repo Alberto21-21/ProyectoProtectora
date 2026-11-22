@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Instalaciones - Salvando Huellas</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="pagina-perfil pagina-usuarios">
+
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
+            </a>
+
+             <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" aria-current="page" hidden>Instalaciones</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>ADMINISTRACIÓN</span>
+            <h1>Instalaciones</h1>
+            <p>Gestiona las zonas de la protectora y sus habitáculos.</p>
+        </div>
+
+        <p id="mensajeInstalaciones" role="status"></p>
+
+        <section id="contenidoInstalaciones" hidden>
+
+            <form id="formularioFiltros">
+
+                <div>
+                    <label for="filtroZona">Zona</label>
+                    <select id="filtroZona" name="zona_id">
+                        <option value="">Todas las zonas</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filtroLimpieza">Limpieza</label>
+                    <select id="filtroLimpieza" name="estado_limpieza">
+                        <option value="">Todos los estados</option>
+                        <option value="Limpio">Limpio</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En limpieza">En limpieza</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="botonBuscarHabitaculos">
+                    Buscar
+                </button>
+
+                <button type="button" id="botonLimpiarFiltros">
+                    Limpiar filtros
+                </button>
+
+            </form>
+
+            <div class="tabla-usuarios">
+
+                <div class="cabecera-listado">
+                    <h2 id="tituloListadoZonas">Zonas</h2>
+
+                    <button type="button" id="abrirAltaZona" class="boton-detalle">
+                        Añadir zona
+                    </button>
+                </div>
+
+                <table aria-labelledby="tituloListadoZonas">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Habitáculos activos</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaZonas"></tbody>
+                </table>
+
+                <div class="cabecera-listado">
+                    <h2 id="tituloListadoHabitaculos">Habitáculos</h2>
+
+                    <div class="acciones-cuenta">
+                        <a href="habitaculos.html" class="boton-detalle">
+                            Gestionar alojamientos
+                        </a>
+                        <button type="button" id="abrirAltaHabitaculo" class="boton-detalle">
+                            Añadir habitáculo
+                        </button>
+                    </div>
+                </div>
+
+                <table aria-labelledby="tituloListadoHabitaculos">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Identificador</th>
+                            <th scope="col">Zona</th>
+                            <th scope="col">Capacidad</th>
+                            <th scope="col">Limpieza</th>
+                            <th scope="col">Mantenimiento</th>
+                            <th scope="col">Última limpieza</th>
+                            <th scope="col">Próxima limpieza</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaHabitaculos"></tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+        <dialog
+            id="modalZona"
+            class="modal-acceso"
+            aria-labelledby="tituloModalZona"
+        >
+
+            <button
+                type="button"
+                id="cerrarModalZona"
+                class="cerrar-modal"
+                aria-label="Cerrar formulario de zona"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloModalZona">Añadir zona</h2>
+
+            <form id="formularioZona">
+
+                <input type="hidden" id="zonaId">
+
+                <label for="zonaNombre">Nombre</label>
+                <input
+                    type="text"
+                    id="zonaNombre"
+                    name="nombre"
+                    maxlength="100"
+                    placeholder="Perrera, gatera, cuarentena..."
+                    required
+                >
+                <p class="error-campo" id="error-zona-nombre"></p>
+
+                <label for="zonaDescripcion">Descripción</label>
+                <input
+                    type="text"
+                    id="zonaDescripcion"
+                    name="descripcion"
+                    maxlength="255"
+                >
+                <p class="error-campo" id="error-zona-descripcion"></p>
+
+                <p id="mensajeZona" role="status"></p>
+
+                <button type="submit" id="botonGuardarZona">
+                    Guardar zona
+                </button>
+
+            </form>
+
+        </dialog>
+
+        <dialog
+            id="modalHabitaculo"
+            class="modal-acceso"
+            aria-labelledby="tituloModalHabitaculo"
+        >
+
+            <button
+                type="button"
+                id="cerrarModalHabitaculo"
+                class="cerrar-modal"
+                aria-label="Cerrar formulario de habitáculo"
+            >
+                x
+            </button>
+
+            <h2 id="tituloModalHabitaculo">Añadir habitáculo</h2>
+
+            <form id="formularioHabitaculo">
+
+                <input type="hidden" id="habitaculoId">
+
+                <label for="habitaculoZona">Zona</label>
+                <select id="habitaculoZona" name="zona_id" required>
+                    <option value="">Selecciona una zona</option>
+                </select>
+                <p class="error-campo" id="error-habitaculo-zona_id"></p>
+
+                <label for="habitaculoIdentificador">Identificador</label>
+                <input
+                    type="text"
+                    id="habitaculoIdentificador"
+                    name="identificador"
+                    maxlength="50"
+                    placeholder="P-01"
+                    required
+                >
+                <p class="error-campo" id="error-habitaculo-identificador"></p>
+
+                <label for="habitaculoCapacidad">Capacidad (animales)</label>
+                <input
+                    type="number"
+                    id="habitaculoCapacidad"
+                    name="capacidad"
+                    min="1"
+                    max="50"
+                    required
+                >
+                <p class="error-campo" id="error-habitaculo-capacidad"></p>
+
+                <label for="habitaculoLimpieza">Estado de limpieza</label>
+                <select id="habitaculoLimpieza" name="estado_limpieza" required>
+                    <option value="Limpio">Limpio</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En limpieza">En limpieza</option>
+                </select>
+                <p class="error-campo" id="error-habitaculo-estado_limpieza"></p>
+
+                <label for="habitaculoMantenimiento">Estado de mantenimiento</label>
+                <select id="habitaculoMantenimiento" name="estado_mantenimiento" required>
+                    <option value="Operativo">Operativo</option>
+                    <option value="En mantenimiento">En mantenimiento</option>
+                    <option value="Averiado">Averiado</option>
+                </select>
+                <p class="error-campo" id="error-habitaculo-estado_mantenimiento"></p>
+
+                <label for="habitaculoUltimaLimpieza">Última limpieza</label>
+                <input type="date" id="habitaculoUltimaLimpieza" name="fecha_ultima_limpieza">
+                <p class="error-campo" id="error-habitaculo-fecha_ultima_limpieza"></p>
+
+                <label for="habitaculoProximaLimpieza">Próxima limpieza</label>
+                <input type="date" id="habitaculoProximaLimpieza" name="fecha_proxima_limpieza">
+                <p class="error-campo" id="error-habitaculo-fecha_proxima_limpieza"></p>
+
+                <label for="habitaculoObservaciones">Observaciones</label>
+                <textarea
+                    id="habitaculoObservaciones"
+                    name="observaciones"
+                    rows="3"
+                    maxlength="1000"
+                ></textarea>
+                <p class="error-campo" id="error-habitaculo-observaciones"></p>
+
+                <label for="habitaculoRestricciones">Restricciones</label>
+                <input
+                    type="text"
+                    id="habitaculoRestricciones"
+                    name="restricciones"
+                    maxlength="255"
+                    placeholder="Solo gatos, aislamiento..."
+                >
+                <p class="error-campo" id="error-habitaculo-restricciones"></p>
+
+                <p id="mensajeHabitaculo" role="status"></p>
+
+                <button type="submit" id="botonGuardarHabitaculo">
+                    Guardar habitáculo
+                </button>
+
+            </form>
+
+            <p>
+                Si marcas "Limpio" sin fecha, se guarda la fecha de hoy
+                como última limpieza.
+            </p>
+
+        </dialog>
+
+    </main>
+
+    <script type="module" src="/src/menu.js"></script>
+    <script type="module" src="/src/instalaciones.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animales - Salvando Huellas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/style.css">
+    
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
+            </a>
+            
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html" aria-current="page">Animales</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <button type="button" id="botonCerrarSesion">Cerrar sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span id="etiquetaSeccionAnimales">PROTECTORA</span>
+            <h1 id="tituloSeccionAnimales">Animales</h1>
+            <p id="subtituloAnimales">Consulta los animales disponibles para adopción en nuestra protectora.</p>
+        </div>
+
+        <p id="mensajeAnimal" role="status"></p>
+
+        <!-- SECCIÓN DE ALTA DE ANIMAL (SOLO PERSONAL AUTORIZADO) -->
+        <div id="gestionAnimales" class="distribucion-perfil" hidden>
+
+            <!-- TARJETA IZQUIERDA -->
+            <aside class="resumen-perfil">
+                <div class="avatar-perfil">
+                    🐾
+                </div>
+
+                <h2>Alta de Animales</h2>
+
+                <span>
+                    Un espacio para registrar la llegada de los animales a la protectora.
+                </span>
+            </aside>
+
+            <!-- TARJETA DERECHA CON EL FORMULARIO COMPLETO -->
+            <section class="informacion-perfil">
+
+                <h2>Datos del animal</h2>
+
+                <form id="formularioAnimal" enctype="multipart/form-data">
+
+                    <!-- NOMBRE -->
+                    <label for="nombreAnimal">Nombre *</label>
+                    <input type="text" id="nombreAnimal" name="nombre" placeholder="Nombre" maxlength="255" required>
+                    <p class="error-campo" id="error-nombre"></p>
+
+                    <!-- FOTOGRAFÍA -->
+                    <label for="fotografiaAnimal">Fotografía</label>
+                    <input type="file" id="fotografiaAnimal" name="fotografia" accept="image/jpeg,image/png,image/webp">
+                    <p class="error-campo" id="error-fotografia"></p>
+
+                    <!-- ESPECIE -->
+                    <label for="especieAnimal">Especie *</label>
+                    <select id="especieAnimal" name="especie" required>
+                        <option value="">Selecciona una especie</option>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <p class="error-campo" id="error-especie"></p>
+
+                    <!-- RAZA -->
+                    <label for="razaAnimal">Raza / características</label>
+                    <input type="text" id="razaAnimal" name="raza" placeholder="Raza / características" maxlength="255">
+                    <p class="error-campo" id="error-raza"></p>
+
+                    <!-- FECHA DE NACIMIENTO -->
+                    <label for="nacimientoAnimal">Nacimiento aproximado</label>
+                    <input type="date" id="nacimientoAnimal" name="fecha_nacimiento">
+                    <p class="error-campo" id="error-fecha_nacimiento"></p>
+
+                    <!-- SEXO -->
+                    <label for="sexoAnimal">Sexo *</label>
+                    <select id="sexoAnimal" name="sexo" required>
+                        <option value="">Selecciona el sexo</option>
+                        <option value="Hembra">Hembra</option>
+                        <option value="Macho">Macho</option>
+                    </select>
+                    <p class="error-campo" id="error-sexo"></p>
+
+                    <!-- TAMAÑO -->
+                    <label for="tamanoAnimal">Tamaño *</label>
+                    <select id="tamanoAnimal" name="tamano" required>
+                        <option value="">Selecciona el tamaño</option>
+                        <option value="Pequeño">Pequeño</option>
+                        <option value="Mediano">Mediano</option>
+                        <option value="Grande">Grande</option>
+                    </select>
+                    <p class="error-campo" id="error-tamano"></p>
+
+                    <!-- PESO -->
+                    <label for="pesoAnimal">Peso (kg)</label>
+                    <input type="number" id="pesoAnimal" name="peso" placeholder="Ej. 15.5" min="0" max="999" step="0.01">
+                    <p class="error-campo" id="error-peso"></p>
+
+                    <!-- FECHA DE ENTRADA -->
+                    <label for="fechaEntradaAnimal">Fecha de entrada *</label>
+                    <input type="date" id="fechaEntradaAnimal" name="fecha_entrada" required>
+                    <p class="error-campo" id="error-fecha_entrada"></p>
+
+                    <!-- MOTIVO -->
+                    <label for="motivoAnimal">Motivo / procedencia *</label>
+                    <input type="text" id="motivoAnimal" name="motivo" placeholder="Abandono, rescate..." maxlength="255" required>
+                    <p class="error-campo" id="error-motivo"></p>
+
+                    <!-- ESTADO -->
+                    <label for="estadoAnimal">Estado inicial *</label>
+                    <select id="estadoAnimal" name="estado" required>
+                        <option value="En acogida">En acogida</option>
+                        <option value="En tratamiento">En tratamiento</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Adoptado">Adoptado</option>
+                    </select>
+                    <p class="error-campo" id="error-estado"></p>
+
+                    <label for="minutosPaseosAnimal">
+                        Minutos diarios de paseo
+                    </label>
+                    <input
+                        type="number"
+                        id="minutosPaseosAnimal"
+                        name="minutos_paseos"
+                        min="0"
+                        max="1440"
+                        step="1"
+                        placeholder="Pendiente de valorar"
+                    >
+                    <p class="error-campo" id="error-minutos_paseos"></p>
+
+                    <label for="minutosCuidadosAnimal">
+                        Minutos diarios de cuidados
+                    </label>
+                    <input
+                        type="number"
+                        id="minutosCuidadosAnimal"
+                        name="minutos_cuidados"
+                        min="0"
+                        max="1440"
+                        step="1"
+                        placeholder="Pendiente de valorar"
+                    >
+                    <p class="error-campo" id="error-minutos_cuidados"></p>
+
+                    <label for="necesidadesEspecialesAnimal">
+                        ¿Necesita cuidados especiales?
+                    </label>
+                    <select
+                        id="necesidadesEspecialesAnimal"
+                        name="tiene_necesidades_especiales"
+                    >
+                        <option value="">Pendiente de valorar</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <p
+                        class="error-campo"
+                        id="error-tiene_necesidades_especiales"
+                    ></p>
+
+                    <!-- CARÁCTER -->
+                    <label for="caracterAnimal">Carácter</label>
+                    <input type="text" id="caracterAnimal" name="caracter" placeholder="Cariñoso, juguetón..." maxlength="1000">
+                    <p class="error-campo" id="error-caracter"></p>
+
+                    <!-- COMPATIBILIDAD CON NIÑOS -->
+                    <label for="conNinosAnimal">Compatibilidad con niños *</label>
+                    <select id="conNinosAnimal" name="con_ninos" required>
+                        <option value="Desconocido">Desconocido</option>
+                        <option value="Compatible">Compatible</option>
+                        <option value="No compatible">No compatible</option>
+                    </select>
+                    <p class="error-campo" id="error-con_ninos"></p>
+
+                    <!-- COMPATIBILIDAD CON OTROS ANIMALES -->
+                    <label for="conOtrosAnimales">Compatibilidad con otros animales *</label>
+                    <select id="conOtrosAnimales" name="con_otros_animales" required>
+                        <option value="Desconocido">Desconocido</option>
+                        <option value="Compatible">Compatible</option>
+                        <option value="No compatible">No compatible</option>
+                    </select>
+                    <p class="error-campo" id="error-con_otros_animales"></p>
+
+                    <!-- COMPATIBILIDAD CON DESCONOCIDOS -->
+                    <label for="conDesconocidosAnimal">Compatibilidad con desconocidos *</label>
+                    <select id="conDesconocidosAnimal" name="con_desconocidos" required>
+                        <option value="Desconocido">Desconocido</option>
+                        <option value="Compatible">Compatible</option>
+                        <option value="No compatible">No compatible</option>
+                    </select>
+                    <p class="error-campo" id="error-con_desconocidos"></p>
+
+                    <!-- NECESIDADES ESPECIALES -->
+                    <label for="necesidadesAnimal">Necesidades especiales</label>
+                    <textarea id="necesidadesAnimal" name="necesidades_especiales" rows="3" maxlength="1000" placeholder="Medicación, alimentación especial..."></textarea>
+                    <p class="error-campo" id="error-necesidades_especiales"></p>
+
+                    <!-- OBSERVACIONES -->
+                    <label for="observacionesAnimal">Observaciones</label>
+                    <textarea id="observacionesAnimal" name="observaciones" rows="3" maxlength="1000" placeholder="Notas internas del personal..."></textarea>
+                    <p class="error-campo" id="error-observaciones"></p>
+
+                    <!-- INFORMACIÓN VISIBLE PARA LOS ADOPTANTES -->
+                    <label for="historiaPublicaAnimal">Historia pública</label>
+                    <textarea
+                        id="historiaPublicaAnimal"
+                        name="historia_publica"
+                        rows="4"
+                        maxlength="3000"
+                        placeholder="Cuenta su historia sin incluir datos privados."
+                    ></textarea>
+                    <p class="error-campo" id="error-historia_publica"></p>
+
+                    <label for="cuidadosPublicosAnimal">Cuidados para el adoptante</label>
+                    <textarea
+                        id="cuidadosPublicosAnimal"
+                        name="cuidados_publicos"
+                        rows="4"
+                        maxlength="3000"
+                        placeholder="Explica los cuidados que necesita conocer su futura familia."
+                    ></textarea>
+                    <p class="error-campo" id="error-cuidados_publicos"></p>
+
+                    <!-- BOTÓN GUARDAR -->
+                    <button type="submit" id="botonGuardarAnimal">Guardar animal</button>
+
+                </form>
+
+            </section>
+        </div>
+
+        <!-- CATÁLOGO, BÚSQUEDA Y ACTUALIZACIÓN DE ESTADO -->
+        <section class="informacion-perfil seccion-catalogo-animales">
+            <h2>Catálogo y situación de animales</h2>
+
+            <form id="formularioFiltros">
+                <div>
+                    <label for="buscarTexto">Buscar</label>
+                    <input type="text" id="buscarTexto" placeholder="Nombre o raza...">
+                </div>
+
+                <div>
+                    <label for="filtroEspecie">Especie</label>
+                    <select id="filtroEspecie">
+                        <option value="">Todas las especies</option>
+                        <option value="Perro">Perros</option>
+                        <option value="Gato">Gatos</option>
+                        <option value="Otro">Otros</option>
+                    </select>
+                </div>
+
+                <div id="contenedorFiltroEstado">
+                    <label for="filtroEstado">Estado</label>
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="En acogida">En acogida</option>
+                        <option value="En tratamiento">En tratamiento</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Adoptado">Adoptado</option>
+                    </select>
+                </div>
+
+                <div id="contenedorFiltroBajas" class="filtro-bajas" hidden>
+                    <label for="filtroBajas">
+                        <input type="checkbox" id="filtroBajas">
+                        Ver dados de baja
+                    </label>
+                </div>
+
+                <button type="submit" id="botonBuscarAnimales">Buscar</button>
+                <button type="button" id="botonLimpiarFiltros">Limpiar filtros</button>
+            </form>
+
+            <!-- TARJETAS DEL CATÁLOGO DE ADOPCIÓN -->
+            <div
+                id="catalogoAdopcion"
+                class="catalogo-adopcion"
+                hidden
+            ></div>
+
+            <!-- TABLA DE ANIMALES -->
+            <div class="tabla-usuarios">
+                <table id="tablaGestionAnimales">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Raza</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCuerpoAnimales">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL PARA VER FICHA DETALLADA Y CAMBIAR ESTADO -->
+    <dialog id="modalDetalleAnimal" class="modal-acceso modal-detalle">
+        <div id="contenidoFichaAnimal" class="detalle-animal-body">
+            <h2 id="fichaNombre"></h2>
+            <img id="fichaImagen" alt="" hidden>
+            <p><strong>Especie:</strong> <span id="fichaEspecie"></span></p>
+            <p><strong>Raza / Características:</strong> <span id="fichaRaza"></span></p>
+            <p><strong>Sexo:</strong> <span id="fichaSexo"></span></p>
+            <p>
+                <strong>Tamaño:</strong>
+                <span id="fichaTamano"></span>
+            </p>
+
+            <p>
+                <strong>Nacimiento aproximado:</strong>
+                <span id="fichaNacimiento"></span>
+            </p>
+
+            <p>
+                <strong>Compatibilidad con niños:</strong>
+                <span id="fichaConNinos"></span>
+            </p>
+
+            <p>
+                <strong>Compatibilidad con otros animales:</strong>
+                <span id="fichaConOtrosAnimales"></span>
+            </p>
+            <p><strong>Estado actual:</strong> <span id="fichaEstado"></span></p>
+
+            <!-- BLOQUE DE CAMBIO DE ESTADO (SOLO PERSONAL AUTORIZADO) -->
+            <div id="bloqueCambioEstado" class="bloque-gestion-modal" hidden>
+                <div id="controlesTransicionEstado">
+                    <label for="selectNuevoEstado">
+                        Actualizar situación del animal:
+                    </label>
+                    <div class="fila-control-modal">
+                        <select id="selectNuevoEstado">
+                            <option value="">Selecciona nuevo estado...</option>
+                        </select>
+                        <button type="button" id="btnGuardarEstadoAnimal" class="boton-detalle">
+                            Cambiar estado
+                        </button>
+                    </div>
+                    <p id="mensajeEstadoModal" role="status"></p>
+                    <small>
+                        * La adopción formalizada se gestiona desde su proceso específico.
+                    </small>
+                </div>
+                <p id="avisoEstadoFinal" hidden>
+                    Este animal ya está adoptado y no admite cambios manuales de estado.
+                </p>
+            </div>
+
+            <hr class="separador-ficha">
+            <p><strong>Peso:</strong> <span id="fichaPeso"></span></p>
+        
+            <div id="datosEntradaInternos" hidden>
+                <p>
+                    <strong>Fecha de entrada:</strong>
+                    <span id="fichaFechaEntrada"></span>
+                </p>
+
+                <p>
+                    <strong>Motivo / Procedencia:</strong>
+                    <span id="fichaMotivo"></span>
+                </p>
+            </div>
+            
+            <p><strong>Carácter:</strong> <span id="fichaCaracter"></span></p>
+
+            <!-- INFORMACIÓN PÚBLICA PARA LA ADOPCIÓN -->
+            <section class="informacion-publica-animal">
+                <h3>Su historia</h3>
+                <p id="fichaHistoriaPublica" class="texto-publico-animal"></p>
+
+                <h3>Cuidados que necesita</h3>
+                <p id="fichaCuidadosPublicos" class="texto-publico-animal"></p>
+            </section>
+
+            <div id="datosCuidadosInternos" hidden>
+                <p>
+                    <strong>Necesidades especiales:</strong>
+                    <span id="fichaNecesidades"></span>
+                </p>
+
+                <p>
+                    <strong>Observaciones del personal:</strong>
+                    <span id="fichaObservaciones"></span>
+                </p>
+            </div>
+
+            <!-- BLOQUE DE ASIGNACIÓN DE CUIDADOR (SOLO ADMINISTRADOR) (T17) -->
+            <div id="bloqueAsignacion" class="bloque-gestion-modal bloque-asignacion-modal" hidden>
+                <label for="selectCuidador">
+                    Trabajador asignado:
+                </label>
+                <select id="selectCuidador">
+                    <option value="">Sin asignar</option>
+                </select>
+
+                <label for="instruccionesCuidado">
+                    Instrucciones de cuidado:
+                </label>
+                <textarea id="instruccionesCuidado" rows="3" maxlength="2000" placeholder="Paseos, alimentación, medicación diaria..."></textarea>
+
+                <button type="button" id="btnGuardarAsignacion" class="boton-detalle">
+                    Guardar asignación
+                </button>
+                <p id="mensajeAsignacion" role="status"></p>
+            </div>
+
+            <!-- AVISO DE ANIMAL DADO DE BAJA (T16) -->
+            <p id="avisoAnimalBaja" class="aviso-baja-modal" hidden>
+                Animal dado de baja el <span id="fichaFechaBaja"></span>.
+                Motivo: <span id="fichaMotivoBaja"></span>
+            </p>
+
+            <!-- BLOQUE DE BAJA / ELIMINACIÓN (SOLO PERSONAL AUTORIZADO) (T16) -->
+            <div id="bloqueBajaAnimal" class="bloque-gestion-modal bloque-baja-modal" hidden>
+                <label for="motivoBajaAnimal" id="etiquetaMotivoBaja">
+                    Dar de baja o eliminar el animal:
+                </label>
+                <textarea id="motivoBajaAnimal" rows="2" maxlength="255" placeholder="Motivo de la baja (fallecimiento, traslado, error de registro...)"></textarea>
+                <div class="fila-botones-baja">
+                    <button type="button" id="btnBajaAnimal" class="boton-detalle">
+                        Dar de baja
+                    </button>
+                    <button type="button" id="btnEliminarAnimal" class="boton-detalle boton-eliminar-animal">
+                        Eliminar definitivamente
+                    </button>
+                </div>
+                <p id="mensajeBajaModal" role="status"></p>
+                <small>
+                    * Dar de baja: el animal deja de aparecer pero se conservan su historial, solicitudes y adopciones.<br>
+                    * Eliminar definitivamente: solo se permite si el animal no tiene ningún registro asociado.
+                </small>
+            </div>
+
+<section id="bloqueAsignacionesAnimal" class="bloque-asignaciones" hidden>
+    <hr>
+    <h3>Veterinarios asignados</h3>
+
+    <ul id="listaAsignacionesAnimal" class="lista-asignaciones"></ul>
+
+    <form id="formularioAsignacionAnimal" class="formulario-asignacion">
+        <label for="empleadoAsignacionAnimal">Veterinario que se asignará</label>
+        <select id="empleadoAsignacionAnimal" required>
+            <option value="">Selecciona un veterinario</option>
+        </select>
+
+        <button type="submit" class="boton-detalle">Asignar veterinario</button>
+    </form>
+
+    <p id="mensajeAsignacionAnimal" role="status"></p>
+</section>
+
+        </div>
+
+        <!-- SOLICITUD DE ADOPCIÓN -->
+        <form id="formularioSolicitud" class="formulario-solicitud" hidden>
+
+            <h3>Solicitar adopción</h3>
+
+            <p>
+                Enviar la solicitud inicia el proceso.
+                La protectora deberá valorar y aprobar la adopción.
+            </p>
+
+            <label for="observacionesSolicitud">
+                ¿Quieres contarnos algo? (opcional)
+            </label>
+
+            <textarea
+                id="observacionesSolicitud"
+                name="observaciones"
+                rows="3"
+                maxlength="2000"
+                placeholder="Cuéntanos por qué te gustaría adoptar a este animal."
+            ></textarea>
+
+            <p id="mensajeSolicitud" role="status"></p>
+
+            <button type="submit" id="botonEnviarSolicitud">
+                Solicitar adopción
+            </button>
+
+        </form>
+
+        <div class="acciones-modal-animal">
+            <a href="#" id="enlaceHistorialAnimal" class="boton-portada" hidden>Ver historial</a>
+            <a href="#" id="enlaceEditarAnimal" class="boton-portada" hidden>Editar ficha</a>
+            <button type="button" id="cerrarDetalleAnimal" class="boton-detalle">Cerrar</button>
+        </div>
+    </dialog>
+
+    <script type="module" src="./src/menu.js"></script>
+    <script type="module" src="./src/animales.js"></script>
+</body>
+
+</html>

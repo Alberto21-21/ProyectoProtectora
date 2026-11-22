@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Habitáculos - Salvando Huellas</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="pagina-perfil pagina-usuarios">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
+            </a>
+
+            <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="contenido-perfil">
+
+        <!-- TÍTULO -->
+        <div class="titulo-perfil">
+            <span>INSTALACIONES</span>
+            <h1>Habitáculos</h1>
+            <p>Consulta la ocupación, las condiciones y gestiona el alojamiento o traslado de animales.</p>
+        </div>
+
+        <p id="mensajeHabitaculos" role="status"></p>
+
+        <!-- CONTENIDO PARA EL PERSONAL AUTORIZADO -->
+        <section id="contenidoHabitaculos" hidden>
+
+            <!-- FILTROS -->
+            <form id="formularioFiltros">
+
+                <div>
+                    <label for="filtroZona">Zona</label>
+                    <select id="filtroZona" name="zona_id">
+                        <option value="">Todas las zonas</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filtroLimpieza">Limpieza</label>
+                    <select id="filtroLimpieza" name="estado_limpieza">
+                        <option value="">Todos los estados</option>
+                        <option value="Limpio">Limpio</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En limpieza">En limpieza</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="botonBuscarHabitaculos">
+                    Buscar
+                </button>
+
+                <button type="button" id="botonLimpiarFiltros">
+                    Limpiar filtros
+                </button>
+
+            </form>
+
+            <!-- PLANO / VISTA GENERAL DE INSTALACIONES (T28) -->
+            <section class="bloque-plano-t28" aria-labelledby="tituloPlanoInstalaciones">
+                <div class="cabecera-listado">
+                    <h2 id="tituloPlanoInstalaciones">Plano y estado general de instalaciones</h2>
+                </div>
+
+                <div class="leyenda-plano-t28" aria-label="Leyenda de indicadores">
+                    <span class="indicador-t28 indicador-libre">Libre</span>
+                    <span class="indicador-t28 indicador-ocupado">Ocupado</span>
+                    <span class="indicador-t28 indicador-limpieza">Limpieza pendiente / en proceso</span>
+                    <span class="indicador-t28 indicador-mantenimiento">Mantenimiento / avería</span>
+                    <span class="indicador-t28 indicador-aislamiento">Aislamiento / cuarentena</span>
+                </div>
+
+                <div id="contenedorPlanoHabitaculos" class="contenedor-plano-t28"></div>
+            </section>
+
+            <!-- LISTADO DE HABITÁCULOS -->
+            <div class="tabla-usuarios">
+
+                <div class="cabecera-listado">
+                    <h2 id="tituloListadoHabitaculos">Listado de habitáculos</h2>
+                    <button type="button" id="botonAbrirAlojar">
+                        Alojar / trasladar animal
+                    </button>
+                </div>
+
+                <table aria-labelledby="tituloListadoHabitaculos">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Identificador</th>
+                            <th scope="col">Zona</th>
+                            <th scope="col">Capacidad</th>
+                            <th scope="col">Limpieza</th>
+                            <th scope="col">Mantenimiento</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaHabitaculos"></tbody>
+                </table>
+            </div>
+
+            <!-- HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (T25) -->
+            <div class="tabla-usuarios">
+
+                <div class="cabecera-listado">
+                    <h2 id="tituloHistorialAlojamientos">Historial de alojamientos y traslados</h2>
+                </div>
+
+                <table aria-labelledby="tituloHistorialAlojamientos">
+                    <thead>
+                        <tr>
+                            <th scope="col">Animal</th>
+                            <th scope="col">Origen</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Responsable</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaHistorialAlojamientos"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- FICHA DEL HABITÁCULO -->
+        <dialog
+            id="modalFichaHabitaculo"
+            class="modal-acceso"
+            aria-labelledby="tituloFichaHabitaculo"
+        >
+
+            <button
+                type="button"
+                id="cerrarFichaHabitaculo"
+                class="cerrar-modal"
+                aria-label="Cerrar ficha"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloFichaHabitaculo">Ficha del habitáculo</h2>
+
+            <p id="mensajeFichaHabitaculo" role="status"></p>
+
+            <div id="datosFichaHabitaculo" hidden>
+
+                <dl class="lista-datos-perfil">
+
+                    <div class="dato-perfil">
+                        <dt>Zona</dt>
+                        <dd id="fichaZona"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Plazas</dt>
+                        <dd id="fichaPlazas"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Estado de limpieza</dt>
+                        <dd id="fichaLimpieza"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Estado de mantenimiento</dt>
+                        <dd id="fichaMantenimiento"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Última limpieza</dt>
+                        <dd id="fichaUltimaLimpieza"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Próxima limpieza</dt>
+                        <dd id="fichaProximaLimpieza"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Observaciones</dt>
+                        <dd id="fichaObservaciones"></dd>
+                    </div>
+
+                    <div class="dato-perfil">
+                        <dt>Estado</dt>
+                        <dd id="fichaActivo"></dd>
+                    </div>
+
+                </dl>
+
+                <hr>
+                <h3>Restricciones</h3>
+                <ul id="listaRestricciones"></ul>
+
+                <hr>
+                <h3>Próximas actuaciones</h3>
+                <ul id="listaActuaciones"></ul>
+
+                <hr>
+                <h3>Animales alojados</h3>
+
+                <div class="tabla-usuarios">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Especie</th>
+                                <th scope="col">Sexo</th>
+                                <th scope="col">Tamaño</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaAnimalesAlojados"></tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </dialog>
+
+        <!-- MODAL DE ALOJAR O TRASLADAR ANIMAL (T25) -->
+        <dialog
+            id="modalAlojarAnimal"
+            class="modal-acceso"
+            aria-labelledby="tituloAlojarAnimal"
+        >
+
+            <button
+                type="button"
+                id="cerrarAlojarAnimal"
+                class="cerrar-modal"
+                aria-label="Cerrar formulario de alojamiento"
+            >
+                ×
+            </button>
+
+            <h2 id="tituloAlojarAnimal">Alojar o trasladar animal</h2>
+
+            <form id="formularioAlojarAnimal">
+
+                <div>
+                    <label for="selectAnimalAlojar">Animal</label>
+                    <select id="selectAnimalAlojar" name="animal_id" required>
+                        <option value="">Selecciona un animal</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="selectHabitaculoDestino">Habitáculo de destino</label>
+                    <select id="selectHabitaculoDestino" name="habitaculo_destino_id" required>
+                        <option value="">Selecciona un habitáculo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="observacionesAlojar">Observaciones (opcional)</label>
+                    <textarea
+                        id="observacionesAlojar"
+                        name="observaciones"
+                        rows="3"
+                        maxlength="1000"
+                    ></textarea>
+                </div>
+
+                <p id="mensajeAlojarAnimal" role="status"></p>
+
+                <button type="submit" id="botonGuardarAlojamiento">
+                    Guardar movimiento
+                </button>
+
+            </form>
+
+        </dialog>
+
+    </main>
+
+    <script type="module" src="/src/menu.js"></script>
+    <script type="module" src="/src/habitaculos.js"></script>
+
+</body>
+
+</html>

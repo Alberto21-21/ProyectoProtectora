@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- TIPOGRAFIA CORPORATIVA -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap"
+        rel="stylesheet"
+    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+    <link rel="stylesheet" href="src/style.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/registro.js"></script>
+  </body>
+
+    <!-- FORMULARIO DE REGISTRO -->
+  <main class="registro">
+
+      <section class="ventana-registro">
+
+          <h1>Regístrate</h1>
+          
+          <form id="formularioRegistro">
+
+              <!-- NOMBRE -->
+              <label for="nombreRegistro">Nombre</label>
+              <input
+                  type="text"
+                  id="nombreRegistro"
+                  name="name"
+                  autocomplete="name"
+                  maxlength="255"
+                  required
+              >
+
+              <!-- EMAIL -->
+              <label for="emailRegistro">Correo electrónico</label>
+              <input
+                  type="email"
+                  id="emailRegistro"
+                  name="email"
+                  autocomplete="email"
+                  maxlength="255"
+                  required
+              >
+
+              <!-- FECHA DE NACIMIENTO -->
+              <label for="fechaNacimientoRegistro">Fecha de nacimiento</label>
+              <input
+                  type="date"
+                  id="fechaNacimientoRegistro"
+                  name="fecha_nacimiento"
+                  autocomplete="bday"
+                  required
+              >
+
+              <!-- CONTRASEÑA -->
+              <label for="passwordRegistro">Contraseña</label>
+              <input
+                  type="password"
+                  id="passwordRegistro"
+                  name="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+              >
+
+              <!-- CONFIRMAR CONTRASEÑA -->
+              <label for="confirmarPassword">Repite la contraseña</label>
+              <input
+                  type="password"
+                  id="confirmarPassword"
+                  name="password_confirmation"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+              >
+
+              <!-- MENSAJES DEL REGISTRO -->
+              <p id="mensajeRegistro" role="status"></p>
+
+              <button type="submit" id="botonRegistro">
+                  Crear cuenta
+              </button>
+
+          </form>
+
+      </section>
+
+  </main>
+
+</html>

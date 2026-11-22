@@ -1,0 +1,315 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class UsuarioController extends Controller
+{
+    // LISTAR Y BUSCAR USUARIOS
+    public function index(Request $request)
+    {
+        $datos = $request->validate([
+            'buscar' => 'nullable|string|max:255',
+            'rol' => 'nullable|in:admin,adoptante,personal,veterinario',
+            'estado' => 'nullable|in:activo,inactivo',
+            'page' => 'sometimes|integer|min:1'
+        ], [
+            'buscar.string' => 'La búsqueda debe ser un texto.',
+            'buscar.max' => 'La búsqueda no puede superar los 255 caracteres.',
+            'rol.in' => 'El rol seleccionado no es válido.',
+            'estado.in' => 'El estado seleccionado no es válido.',
+            'page.integer' => 'La página debe ser un número entero.',
+            'page.min' => 'La página debe ser mayor o igual a 1.'
+        ]);
+
+        // SELECCIONAR SOLO LOS DATOS NECESARIOS
+        $consulta = User::select(
+            'id',
+            'name',
+            'email',
+            'rol',
+            'estado'
+        );
+
+        // BUSCAR POR NOMBRE O CORREO
+        if (isset($datos['buscar']) && trim($datos['buscar']) !== '') {
+            $buscar = trim($datos['buscar']);
+
+            $consulta->where(function ($consultaBusqueda) use ($buscar) {
+                $consultaBusqueda->where('name', 'like', '%' . $buscar . '%')
+                    ->orWhere('email', 'like', '%' . $buscar . '%');
+            });
+        }
+
+        // FILTRAR POR ROL
+        if (isset($datos['rol'])) {
+            $consulta->where('rol', $datos['rol']);
+        }
+
+        // FILTRAR POR ESTADO
+        if (isset($datos['estado'])) {
+            $consulta->where('estado', $datos['estado']);
+        }
+
+        $usuarios = $consulta->orderBy('name')
+            ->orderBy('id')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuarios consultados correctamente.',
+            'data' => $usuarios
+        ], 200);
+    }
+
+    // CONSULTAR EL DETALLE DE UN USUARIO
+
+    public function show($id)
+    {
+        $usuario = User::select(
+            'id',
+            'name',
+            'email',
+            'fecha_nacimiento',
+            'rol',
+            'estado',
+            'fotografia',
+            'fotografia_public_id',
+            'created_at'
+        )->find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        // OBTENER LA URL DE CLOUDINARY O DE LA FOTOGRAFÍA LOCAL
+        $fotografiaUrl = null;
+
+        if ($usuario->fotografia) {
+            $fotografiaUrl = str_starts_with(
+                $usuario->fotografia,
+                'https://'
+            )
+                ? $usuario->fotografia
+                : asset('storage/' . $usuario->fotografia);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario consultado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado,
+                'fotografia_url' => $fotografiaUrl,
+                'created_at' => $usuario->created_at
+            ]
+        ], 200);
+    }
+    
+    // DAR DE ALTA PERSONAL Y VETERINARIOS
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'fecha_nacimiento' => 'required|date|before_or_equal:today',
+            'rol' => 'required|in:personal,veterinario',
+            'password' => 'required|string|min:8|confirmed'
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser un texto.',
+            'name.max' => 'El nombre no puede superar los 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'email.max' => 'El email no puede superar los 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.',
+            'rol.required' => 'Debes seleccionar un rol.',
+            'rol.in' => 'Solo puedes crear cuentas de personal o veterinario.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string' => 'La contraseña debe ser un texto.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.'
+        ]);
+
+        $usuario = new User();
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->rol = $request->rol;
+        $usuario->estado = 'activo';
+        $usuario->password = Hash::make($request->password);
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario interno creado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado
+            ]
+        ], 201);
+    }
+
+        // EDITAR LOS DATOS DE UNA CUENTA
+    public function update(Request $request, $id)
+    {
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
+            'fecha_nacimiento' => 'required|date|before_or_equal:today'
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser un texto.',
+            'name.max' => 'El nombre no puede superar los 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe ser un correo válido.',
+            'email.max' => 'El email no puede superar los 255 caracteres.',
+            'email.unique' => 'El email ya está registrado.',
+            'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.'
+        ]);
+
+        // EL CORREO NUEVO QUEDA PENDIENTE DE VERIFICAR
+        if ($usuario->email !== $request->email) {
+            $usuario->email_verified_at = null;
+        }
+
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->fecha_nacimiento = $request->fecha_nacimiento;
+        $usuario->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario actualizado correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'email' => $usuario->email,
+                'fecha_nacimiento' => $usuario->fecha_nacimiento,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado
+            ]
+        ], 200);
+    }
+
+        // DESACTIVAR UNA CUENTA SIN ELIMINARLA
+    public function desactivar(Request $request, $id)
+    {
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        // EVITAR QUE EL ADMINISTRADOR DESACTIVE SU PROPIA CUENTA
+        if ($usuario->id === $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes desactivar tu propia cuenta.'
+            ], 422);
+        }
+
+        // GUARDAR EL ESTADO Y REVOCAR LOS TOKENS
+        $usuario->getConnection()->transaction(function () use ($usuario) {
+            $usuario->estado = 'inactivo';
+            $usuario->save();
+
+            $usuario->tokens()->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cuenta desactivada correctamente.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'estado' => $usuario->estado
+            ]
+        ], 200);
+    }
+
+        // CAMBIAR EL ROL DE UNA CUENTA
+    public function cambiarRol(Request $request, $id)
+    {
+        $request->validate([
+            'rol' => 'required|in:admin,adoptante,personal,veterinario'
+        ], [
+            'rol.required' => 'Debes seleccionar un rol.',
+            'rol.in' => 'El rol seleccionado no es válido.'
+        ]);
+
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no existe.'
+            ], 404);
+        }
+
+        // IMPEDIR QUE EL ADMINISTRADOR CAMBIE SU PROPIO ROL
+        if ($usuario->id === $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes cambiar tu propio rol.'
+            ], 422);
+        }
+
+        if ($usuario->rol === $request->rol) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La cuenta ya tiene ese rol.'
+            ], 422);
+        }
+
+        // GUARDAR EL NUEVO ROL Y REVOCAR LOS TOKENS ANTERIORES
+        $usuario->getConnection()->transaction(function () use ($usuario, $request) {
+            $usuario->rol = $request->rol;
+            $usuario->save();
+
+            $usuario->tokens()->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rol actualizado. El usuario debe iniciar sesión de nuevo.',
+            'data' => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'rol' => $usuario->rol,
+                'estado' => $usuario->estado
+            ]
+        ], 200);
+    }
+}

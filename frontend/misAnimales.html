@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis animales - Salvando Huellas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+            <a href="index.html" class="marca">
+                <img
+                    src="/src/assets/Logo_salvando_huellas.svg"
+                    alt="Salvando Huellas, inicio"
+                    class="logo-protectora"
+                    width="260"
+                    height="69"
+                >
+            </a>
+             <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html">Animales</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" aria-current="page" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>CUIDADOS</span>
+            <h1>Mis animales asignados</h1>
+            <p>Consulta los animales que tienes a tu cargo y las instrucciones para cuidarlos.</p>
+        </div>
+
+        <p id="mensajeMisAnimales" role="status"></p>
+
+        <!-- LISTADO DE ANIMALES ASIGNADOS (SOLO CONSULTA) -->
+        <section id="seccionMisAnimales" class="informacion-perfil" style="max-width: 100%;" hidden>
+            <h2>Animales a tu cargo</h2>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px;">Nombre</th>
+                        <th style="padding: 10px;">Especie</th>
+                        <th style="padding: 10px;">Estado</th>
+                        <th style="padding: 10px;">Carácter</th>
+                        <th style="padding: 10px;">Necesidades especiales</th>
+                        <th style="padding: 10px;">Instrucciones de cuidado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaMisAnimales">
+                </tbody>
+            </table>
+
+            <small style="color:#666; display:block; margin-top:15px;">
+                * Los datos clínicos solo pueden consultarlos y editarlos los veterinarios y el administrador.
+            </small>
+        </section>
+
+    </main>
+
+    <script type="module" src="./src/menu.js"></script>
+    <script type="module" src="./src/misAnimales.js"></script>
+</body>
+
+</html>

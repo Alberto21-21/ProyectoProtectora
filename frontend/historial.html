@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial del animal - Salvando Huellas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body class="pagina-perfil">
+
+    <!-- CABECERA -->
+    <header class="cabecera-perfil">
+        <div class="interior-cabecera">
+            <a href="index.html" class="marca">Salvando Huellas</a>
+             <nav aria-label="Navegación principal">
+                <a href="index.html">Inicio</a>
+                <a href="animales.html" aria-current="page">Animales</a>
+                <a href="perfil.html" id="enlacePerfil" hidden>Mi perfil</a>
+                <a href="usuarios.html" id="enlaceUsuarios" hidden>Usuarios</a>
+                <a href="misAnimales.html" id="enlaceMisAnimales" hidden>Mis animales</a>
+                <a href="instalaciones.html" id="enlaceInstalaciones" hidden>Instalaciones</a>
+                <a href="habitaculos.html" id="enlaceHabitaculos" hidden>Habitáculos</a>
+                <button type="button" id="botonCerrarSesion">
+                    Cerrar sesión
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenido-perfil">
+
+        <div class="titulo-perfil">
+            <span>HISTORIAL</span>
+            <h1 id="tituloHistorial">Historial del animal</h1>
+            <p id="subtituloHistorial">Registros cronológicos del animal en la protectora.</p>
+        </div>
+
+        <p id="mensajeHistorial" role="status"></p>
+
+        <div id="contenidoHistorial" hidden>
+
+            <!-- FORMULARIO DE NUEVA OBSERVACIÓN GENERAL -->
+            <section id="seccionObservacion" class="informacion-perfil">
+                <h2>Nueva observación general</h2>
+
+                <form id="formularioObservacion">
+                    <label for="descripcionObservacion">Observación *</label>
+                    <textarea id="descripcionObservacion" name="descripcion" rows="4" maxlength="2000" required
+                        placeholder="Cambios de comportamiento, apetito, cuidados realizados..."></textarea>
+                    <p class="error-campo" id="error-descripcion"></p>
+
+                    <button type="submit" id="botonGuardarObservacion">Guardar observación</button>
+                    <p id="mensajeObservacion" role="status"></p>
+                </form>
+
+                <small class="nota-observacion">
+                    * La fecha y el autor se guardan automáticamente.
+                    Las observaciones generales no son diagnósticos: los diagnósticos los registra el veterinario.
+                </small>
+            </section>
+
+            <p id="avisoHistorialBaja" class="aviso-baja-modal aviso-historial-baja" hidden>
+                Este animal está dado de baja: se puede consultar su historial, pero no añadir observaciones.
+            </p>
+
+            <!-- HISTORIAL GENERAL -->
+            <section class="informacion-perfil seccion-tabla-historial">
+                <h2>Historial general</h2>
+
+                <div class="tabla-usuarios">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Autor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaHistorial">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+        <p class="enlace-volver-animales"><a href="animales.html">Volver al listado de animales</a></p>
+
+    </main>
+
+    <script type="module" src="./src/menu.js"></script>
+    <script type="module" src="./src/historial.js"></script>
+</body>
+
+</html>

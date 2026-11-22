@@ -1,0 +1,4224 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Montserrat", Arial, sans-serif;
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+html:has(dialog[open]) {
+    overflow: hidden;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
+}
+
+/* MARCA Y LOGO */
+
+.marca {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.logo-protectora {
+    display: block;
+    width: 200px;
+    height: auto;
+}
+
+/* CABECERAS */
+
+.cabecera,
+.cabecera-perfil {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
+    background-color: #FFAC16;
+}
+
+.pagina-inicio .cabecera,
+.pagina-perfil .interior-cabecera {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.pagina-inicio .cabecera {
+    width: 100%;
+}
+
+.pagina-inicio .cabecera:has(.logo-protectora),
+.pagina-perfil .interior-cabecera:has(.logo-protectora) {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.pagina-inicio .cabecera nav,
+.pagina-perfil .cabecera-perfil nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.pagina-inicio .cabecera nav a,
+.pagina-inicio .cabecera nav button,
+.pagina-perfil .cabecera-perfil nav a {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagina-inicio .cabecera nav button {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.pagina-inicio .cabecera nav a:hover,
+.pagina-inicio .cabecera nav button:hover,
+.pagina-inicio .cabecera nav a[aria-current="page"],
+.pagina-perfil .cabecera-perfil nav a:hover,
+.pagina-perfil .cabecera-perfil nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+/* PÁGINA DE INICIO */
+
+.pagina-inicio {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFAC16;
+}
+
+.pagina-inicio > main {
+    flex: 1;
+    display: flex;
+}
+
+#mensajeSesion {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* PORTADA */
+
+.portada {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+.texto-portada,
+.imagen-portada {
+    flex: 1;
+    min-width: 0;
+}
+
+.texto-portada h1 {
+    margin: 0 0 25px;
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 0.95;
+}
+
+.texto-portada p {
+    max-width: 370px;
+    margin: 0 0 30px;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.imagen-portada img {
+    display: block;
+    width: 100%;
+    max-width: 450px;
+    max-height: 65dvh;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.boton-portada {
+    display: inline-block;
+    padding: 14px 35px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.boton-portada:hover {
+    background-color: #8B5C4A;
+}
+
+/* PÁGINAS INDEPENDIENTES DE REGISTRO Y LOGIN */
+
+.registro {
+    min-height: 100vh;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ventana-registro {
+    width: 100%;
+    max-width: 420px;
+    padding: 35px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+}
+
+.ventana-registro h1 {
+    margin: 0 0 15px;
+    font-size: 28px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.ventana-registro > p {
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* VENTANAS MODALES */
+
+.modal-acceso {
+    position: relative;
+    width: calc(100% - 40px);
+    max-width: 420px;
+    max-height: calc(100vh - 40px);
+    max-height: calc(100dvh - 40px);
+    margin: auto;
+    padding: 45px 30px 30px;
+    overflow-y: auto;
+    border: none;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-family: "Montserrat", Arial, sans-serif;
+}
+
+.modal-acceso::backdrop {
+    background-color: rgba(48, 14, 40, 0.6);
+}
+
+.modal-acceso h2 {
+    margin: 0 0 25px;
+    font-size: 26px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.modal-acceso > p {
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.cerrar-modal {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: #300E28;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.cerrar-modal:hover {
+    color: #8B5C4A;
+}
+
+/* Las ventanas nuevas comparten el tamaño de los formularios de usuario. */
+#modalAltaUsuario,
+#modalEditarUsuario,
+#modalRolUsuario,
+#modalEditarPerfil,
+#modalContrasena,
+#modalZona,
+#modalHabitaculo {
+    max-width: 460px;
+}
+
+#modalDetalleUsuario,
+#modalFichaHabitaculo {
+    max-width: 600px;
+}
+
+/* FORMULARIOS COMUNES */
+
+#formularioRegistro,
+#formularioLogin,
+#formularioEditarPerfil,
+#formularioFotografia,
+#formularioContrasena,
+#formularioAnimal,
+#formularioEditarUsuario,
+#formularioAltaUsuario,
+#formularioRolUsuario,
+#formularioZona,
+#formularioHabitaculo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formularioRegistro label,
+#formularioLogin label,
+#formularioEditarPerfil label,
+#formularioFotografia label,
+#formularioContrasena label,
+#formularioAnimal label,
+#formularioEditarUsuario label,
+#formularioAltaUsuario label,
+#formularioZona label,
+#formularioHabitaculo label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioRegistro input,
+#formularioLogin input,
+#formularioEditarPerfil input,
+#formularioFotografia input,
+#formularioContrasena input,
+#formularioAnimal input,
+#formularioAnimal select,
+#formularioAnimal textarea,
+#formularioEditarUsuario input,
+#formularioAltaUsuario input,
+#formularioAltaUsuario select,
+#formularioZona input,
+#formularioHabitaculo input,
+#formularioHabitaculo select,
+#formularioHabitaculo textarea,
+#nuevoRolUsuario {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+#formularioRegistro input:focus,
+#formularioLogin input:focus,
+#formularioEditarPerfil input:focus,
+#formularioFotografia input:focus,
+#formularioContrasena input:focus,
+#formularioAnimal input:focus,
+#formularioAnimal select:focus,
+#formularioAnimal textarea:focus,
+#formularioEditarUsuario input:focus,
+#formularioAltaUsuario input:focus,
+#formularioAltaUsuario select:focus,
+#formularioZona input:focus,
+#formularioHabitaculo input:focus,
+#formularioHabitaculo select:focus,
+#formularioHabitaculo textarea:focus,
+#nuevoRolUsuario:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+/* MENSAJES DE LOS FORMULARIOS */
+
+#mensajeRegistro,
+#mensajeLogin,
+#mensajePerfil,
+#mensajeEditarPerfil,
+#mensajeFotografia,
+#mensajeContrasena,
+#mensajeAltaUsuario,
+#mensajeEditarUsuario,
+#mensajeZona,
+#mensajeHabitaculo {
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeAnimal,
+#mensajeUsuarios,
+#mensajeInstalaciones,
+#mensajeHabitaculos,
+#mensajeDetalleUsuario,
+#mensajeFichaHabitaculo {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#mensajeUsuarios,
+#mensajeInstalaciones,
+#mensajeHabitaculos,
+#mensajeDetalleUsuario,
+#mensajeFichaHabitaculo {
+    overflow-wrap: anywhere;
+}
+
+#mensajeSesion:empty,
+#mensajeRegistro:empty,
+#mensajeLogin:empty,
+#mensajePerfil:empty,
+#mensajeEditarPerfil:empty,
+#mensajeFotografia:empty,
+#mensajeContrasena:empty,
+#mensajeAnimal:empty,
+#mensajeUsuarios:empty,
+#mensajeDetalleUsuario:empty,
+#mensajeAltaUsuario:empty,
+#mensajeEditarUsuario:empty,
+#mensajeRolUsuario:empty,
+#mensajeInstalaciones:empty,
+#mensajeZona:empty,
+#mensajeHabitaculo:empty,
+#mensajeHabitaculos:empty,
+#mensajeFichaHabitaculo:empty {
+    display: none;
+}
+
+/* BOTONES COMUNES DE LOS FORMULARIOS */
+
+#botonRegistro,
+#botonLogin,
+#botonGuardarPerfil,
+#botonGuardarFotografia,
+#botonGuardarContrasena,
+#botonGuardarAnimal,
+#botonCerrarSesion,
+#botonCrearUsuario,
+#botonActualizarUsuario,
+#botonGuardarRol,
+#botonGuardarZona,
+#botonGuardarHabitaculo {
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonRegistro:hover,
+#botonLogin:hover,
+#botonGuardarPerfil:hover,
+#botonGuardarFotografia:hover,
+#botonGuardarContrasena:hover,
+#botonGuardarAnimal:hover,
+#botonCerrarSesion:hover,
+#botonCrearUsuario:hover,
+#botonActualizarUsuario:hover,
+#botonGuardarRol:hover,
+#botonGuardarZona:hover,
+#botonGuardarHabitaculo:hover {
+    background-color: #8B5C4A;
+}
+
+#botonRegistro:disabled,
+#botonLogin:disabled,
+#botonGuardarPerfil:disabled,
+#botonGuardarFotografia:disabled,
+#botonGuardarContrasena:disabled,
+#botonGuardarAnimal:disabled,
+#botonCerrarSesion:disabled,
+#botonCrearUsuario:disabled,
+#botonActualizarUsuario:disabled,
+#botonGuardarRol:disabled,
+#botonGuardarZona:disabled,
+#botonGuardarHabitaculo:disabled,
+#cerrarRolUsuario:disabled,
+#nuevoRolUsuario:disabled,
+#cerrarEditarPerfil:disabled,
+#cerrarContrasena:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#botonCrearUsuario,
+#botonActualizarUsuario {
+    margin-top: 10px;
+}
+
+#botonCrearUsuario {
+    padding-right: 22px;
+    padding-left: 22px;
+}
+
+#botonCerrarSesion {
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* CERRAR SESIÓN EN LAS CABECERAS */
+
+.pagina-inicio .cabecera #botonCerrarSesion,
+.pagina-perfil .cabecera-perfil #botonCerrarSesion {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pagina-inicio .cabecera #botonCerrarSesion:hover,
+.pagina-perfil .cabecera-perfil #botonCerrarSesion:hover {
+    background-color: transparent;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+/* ENLACES DE LOGIN Y REGISTRO */
+
+.ventana-registro a,
+.modal-acceso a {
+    color: #300E28;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.ventana-registro a:hover,
+.modal-acceso a:hover {
+    color: #8B5C4A;
+}
+
+.modal-acceso .cambiar-modal {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: #300E28;
+    font-size: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.modal-acceso .cambiar-modal:hover {
+    color: #8B5C4A;
+}
+
+/* AJUSTES DEL MODAL DE REGISTRO */
+
+#modalRegistro {
+    padding: 35px 25px 20px;
+}
+
+#modalRegistro h2 {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+#modalRegistro #formularioRegistro {
+    gap: 6px;
+}
+
+#modalRegistro #formularioRegistro label {
+    margin-top: 4px;
+}
+
+#modalRegistro #formularioRegistro input {
+    padding: 9px 12px;
+}
+
+#modalRegistro #botonRegistro {
+    margin-top: 6px;
+    padding: 11px;
+}
+
+#modalRegistro > p {
+    margin: 12px 0 0;
+}
+
+/* PÁGINAS CON DISTRIBUCIÓN DE PERFIL */
+
+.pagina-perfil {
+    min-height: 100vh;
+    background-color: #F5F5F5;
+}
+
+.pagina-perfil .contenido-perfil {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 40px 70px;
+}
+
+.pagina-perfil .titulo-perfil {
+    margin-bottom: 35px;
+}
+
+.pagina-perfil .titulo-perfil > span {
+    color: #8B5C4A;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.pagina-perfil .titulo-perfil h1 {
+    margin: 10px 0;
+    font-size: 38px;
+    font-weight: 900;
+}
+
+.pagina-perfil .titulo-perfil p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.pagina-perfil .distribucion-perfil {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    align-items: start;
+    gap: 30px;
+}
+
+.pagina-perfil #mensajePerfil {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* TARJETA LATERAL DEL PERFIL */
+
+.pagina-perfil .resumen-perfil {
+    min-width: 0;
+    padding: 30px 25px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+    text-align: center;
+}
+
+.pagina-perfil .avatar-perfil {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background-color: #FFAC16;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+}
+
+.pagina-perfil .resumen-perfil h2 {
+    margin: 0 0 12px;
+    color: #300E28;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.pagina-perfil .resumen-perfil > span {
+    display: block;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* INFORMACIÓN PERSONAL */
+
+.pagina-perfil .informacion-perfil {
+    min-width: 0;
+    padding: 35px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.pagina-perfil .informacion-perfil h2 {
+    margin: 0 0 25px;
+    color: #300E28;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.pagina-perfil .lista-datos-perfil {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
+    margin: 0;
+}
+
+.pagina-perfil .dato-perfil {
+    min-width: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.pagina-perfil .dato-perfil dt {
+    margin-bottom: 10px;
+    color: #8B5C4A;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.pagina-perfil .dato-perfil dd {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* EDICIÓN Y CONTRASEÑA FUERA DE UN MODAL */
+
+#formularioEditarPerfil {
+    margin-top: 30px;
+}
+
+#formularioContrasena {
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid #F5F5F5;
+}
+
+/* ACCIONES Y VENTANAS DEL PERFIL */
+
+.acciones-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.acciones-perfil button {
+    padding: 13px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.acciones-perfil button:hover {
+    background-color: #8B5C4A;
+}
+
+.acciones-perfil #abrirEditarPerfil {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-perfil #abrirEditarPerfil:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+#modalEditarPerfil #formularioEditarPerfil,
+#modalContrasena #formularioContrasena {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* FOTOGRAFÍA DEL PERFIL */
+
+#fotografiaPerfil {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#formularioFotografia {
+    position: relative;
+    margin-top: 20px;
+}
+
+#formularioFotografia #fotografiaEditar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: none;
+}
+
+#formularioFotografia .seleccionar-fotografia {
+    display: block;
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+
+#formularioFotografia .seleccionar-fotografia:hover {
+    background-color: #F5F5F5;
+}
+
+#formularioFotografia:has(#fotografiaEditar:focus-visible)
+.seleccionar-fotografia {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
+}
+
+/* FORMULARIO DE ANIMALES */
+
+#formularioAnimal textarea,
+#formularioHabitaculo textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+#formularioAnimal .error-campo,
+#formularioZona .error-campo,
+#formularioHabitaculo .error-campo {
+    margin: 0;
+    color: #B3261E;
+    font-size: 13px;
+}
+
+#formularioAnimal .error-campo:empty,
+#formularioZona .error-campo:empty,
+#formularioHabitaculo .error-campo:empty {
+    display: none;
+}
+
+#botonGuardarAnimal {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* BÚSQUEDA Y FILTROS */
+
+#formularioFiltros {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 0;
+    padding: 25px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+#formularioFiltros > div {
+    flex: 1 1 170px;
+    min-width: 0;
+}
+
+#formularioFiltros > div:first-child {
+    flex-grow: 2;
+}
+
+#formularioFiltros label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioFiltros input,
+#formularioFiltros select {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+#formularioFiltros input:focus,
+#formularioFiltros select:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#formularioFiltros button,
+.paginacion-usuarios button,
+.boton-detalle {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#formularioFiltros button:hover,
+.paginacion-usuarios button:hover,
+.boton-detalle:hover {
+    background-color: #8B5C4A;
+}
+
+#formularioFiltros #botonLimpiarFiltros {
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+#formularioFiltros #botonLimpiarFiltros:hover {
+    background-color: #FFAC16;
+}
+
+#formularioFiltros button:disabled,
+.paginacion-usuarios button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.boton-detalle {
+    white-space: nowrap;
+}
+
+/* TABLA Y CABECERA DEL LISTADO DE USUARIOS */
+
+.tabla-usuarios {
+    overflow-x: auto;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.tabla-usuarios table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabla-usuarios caption {
+    padding: 25px;
+    font-size: 20px;
+    font-weight: 900;
+    text-align: left;
+}
+
+.tabla-usuarios th {
+    padding: 15px 20px;
+    background-color: #FFAC16;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tabla-usuarios td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #F5F5F5;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.tabla-usuarios tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-usuarios tbody tr:hover {
+    background-color: #F5F5F5;
+}
+
+.cabecera-listado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+}
+
+.cabecera-listado h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+#abrirAltaUsuario {
+    margin-bottom: 20px;
+    padding: 13px 22px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#abrirAltaUsuario:hover {
+    background-color: #8B5C4A;
+}
+
+.cabecera-listado #abrirAltaUsuario {
+    flex-shrink: 0;
+    margin: 0;
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.cabecera-listado #abrirAltaUsuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+/* ACCIONES DE LAS CUENTAS */
+
+.acciones-cuenta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.acciones-cuenta button {
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+.acciones-cuenta .boton-editar-usuario,
+.acciones-cuenta .boton-rol-usuario {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-cuenta .boton-editar-usuario:hover,
+.acciones-cuenta .boton-rol-usuario:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.acciones-cuenta .boton-desactivar-usuario {
+    border: 1px solid #8B5C4A;
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+.acciones-cuenta .boton-desactivar-usuario:hover {
+    background-color: #8B5C4A;
+    color: #FFFFFF;
+}
+
+.acciones-cuenta button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* PAGINACIÓN DE USUARIOS */
+
+.paginacion-usuarios {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+#informacionPagina {
+    font-size: 13px;
+    text-align: center;
+}
+
+/* DETALLE DEL USUARIO */
+
+#fotografiaDetalleUsuario {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 25px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#modalDetalleUsuario .lista-datos-perfil,
+#modalFichaHabitaculo .lista-datos-perfil {
+    gap: 20px;
+}
+
+#modalDetalleUsuario .dato-perfil dd,
+#modalFichaHabitaculo .dato-perfil dd {
+    font-size: 14px;
+}
+
+/* ALTA DE USUARIOS */
+
+#modalAltaUsuario {
+    padding: 40px 25px 25px;
+}
+
+#modalAltaUsuario h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+#formularioAltaUsuario {
+    gap: 8px;
+}
+
+#formularioAltaUsuario label {
+    margin-top: 5px;
+}
+
+#formularioAltaUsuario input,
+#formularioAltaUsuario select {
+    padding: 10px 12px;
+}
+
+/* CAMBIO DE ROL */
+
+#nombreCuentaRol {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+#formularioRolUsuario {
+    gap: 12px;
+}
+
+#formularioRolUsuario label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioRolUsuario p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* SECCIÓN Y TARJETAS GENERALES DE ANIMALES */
+
+.seccion-animales {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+}
+
+.titulo-seccion {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.titulo-seccion h2 {
+    margin: 0 0 10px;
+    color: #300E28;
+    font-size: 36px;
+    font-weight: 900;
+}
+
+.titulo-seccion p {
+    margin: 0;
+    color: #300E28;
+    font-size: 15px;
+}
+
+.grid-animales {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.tarjeta-animal {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 15px rgba(48, 14, 40, 0.1);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjeta-animal:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(48, 14, 40, 0.2);
+}
+
+.tarjeta-animal img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.info-tarjeta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+}
+
+.info-tarjeta h3 {
+    margin: 0 0 5px;
+    color: #300E28;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.info-tarjeta p {
+    margin: 0;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.info-tarjeta p strong {
+    color: #8B5C4A;
+}
+
+.boton-ver-ficha {
+    align-self: flex-start;
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.boton-ver-ficha:hover {
+    background-color: #8B5C4A;
+}
+
+/* MODAL GENERAL DE DETALLE DEL ANIMAL */
+
+.modal-detalle {
+    max-width: 520px;
+}
+
+.detalle-animal-body img {
+    width: 100%;
+    max-height: 280px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.detalle-animal-body h2 {
+    margin: 0;
+    text-align: left;
+}
+
+.detalle-animal-body p {
+    margin: 0;
+    color: #300E28;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.detalle-animal-body p strong {
+    color: #8B5C4A;
+}
+
+.detalle-animal-body .boton-portada {
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* HISTORIA Y CUIDADOS PÚBLICOS */
+
+.informacion-publica-animal h3 {
+    margin: 20px 0 10px;
+    color: #300E28;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.texto-publico-animal {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* CATÁLOGO DE ADOPCIÓN */
+
+.catalogo-adopcion {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 25px;
+}
+
+.tarjeta-adopcion {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.imagen-tarjeta-adopcion,
+.imagen-predeterminada-adopcion {
+    width: 100%;
+    height: 220px;
+}
+
+.imagen-tarjeta-adopcion {
+    display: block;
+    object-fit: cover;
+}
+
+.imagen-predeterminada-adopcion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 60px;
+}
+
+.contenido-tarjeta-adopcion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.contenido-tarjeta-adopcion h3 {
+    margin: 0 0 10px;
+    color: #300E28;
+    font-size: 21px;
+    font-weight: 900;
+    overflow-wrap: anywhere;
+}
+
+.contenido-tarjeta-adopcion p {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.contenido-tarjeta-adopcion .caracter-tarjeta-adopcion {
+    margin-bottom: 20px;
+    color: #8B5C4A;
+}
+
+.boton-ficha-adopcion {
+    align-self: center;
+    margin-top: auto;
+    padding: 11px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-ficha-adopcion:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.aviso-catalogo {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 25px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* CONVERSACIONES Y MENSAJES (T65) */
+
+.distribucion-chat {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    align-items: start;
+    gap: 30px;
+}
+
+.panel-conversaciones,
+.panel-detalle-chat {
+    min-width: 0;
+}
+
+.cabecera-panel-chat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.cabecera-panel-chat h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.lista-conversaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item-conversacion {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #F5F5F5;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.item-conversacion:hover,
+.item-conversacion[aria-current="true"] {
+    border-color: #FFAC16;
+    background-color: #FFFFFF;
+}
+
+.item-conversacion strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.item-conversacion .animal-conversacion {
+    color: #8B5C4A;
+    font-size: 12px;
+}
+
+.item-conversacion .ultimo-mensaje {
+    overflow-wrap: anywhere;
+}
+
+.item-conversacion small {
+    color: #8B5C4A;
+}
+
+.aviso-chat {
+    margin: 0;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+    list-style: none;
+}
+
+.cabecera-detalle-chat h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    overflow-wrap: anywhere;
+}
+
+.cabecera-detalle-chat p {
+    margin: 0 0 6px;
+    color: #8B5C4A;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.lista-mensajes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 380px;
+    margin: 20px 0;
+    padding: 15px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    list-style: none;
+}
+
+.mensaje-chat {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    align-self: flex-start;
+}
+
+.mensaje-chat.mensaje-propio {
+    background-color: #FFAC16;
+    align-self: flex-end;
+}
+
+.mensaje-chat .mensaje-meta {
+    display: block;
+    margin-bottom: 4px;
+    color: #8B5C4A;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.mensaje-chat.mensaje-propio .mensaje-meta {
+    color: #300E28;
+}
+
+.mensaje-chat p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.formulario-mensaje,
+.formulario-nueva-conversacion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.formulario-nueva-conversacion h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+}
+
+.formulario-mensaje label,
+.formulario-nueva-conversacion label,
+.lista-contactos legend {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.formulario-mensaje textarea,
+.formulario-nueva-conversacion input[type="text"],
+.formulario-nueva-conversacion select,
+.formulario-nueva-conversacion textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.formulario-mensaje textarea:focus,
+.formulario-nueva-conversacion input:focus,
+.formulario-nueva-conversacion select:focus,
+.formulario-nueva-conversacion textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.formulario-mensaje .boton-detalle {
+    align-self: flex-start;
+}
+
+.lista-contactos {
+    margin: 0;
+    padding: 12px 15px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+}
+
+.lista-contactos legend {
+    padding: 0 6px;
+}
+
+.contacto-conversacion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 6px 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.contacto-conversacion input {
+    width: 18px;
+    height: 18px;
+    accent-color: #300E28;
+}
+
+.acciones-chat {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.boton-secundario-chat {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-secundario-chat:hover {
+    background-color: #FFAC16;
+}
+
+.estado-tiempo-real {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.estado-tiempo-real:empty {
+    display: none;
+}
+
+.estado-tiempo-real.estado-conectado {
+    color: #2E7D32;
+}
+
+.estado-tiempo-real.estado-desconectado {
+    color: #B3261E;
+}
+
+@media (max-width: 900px) {
+
+    .distribucion-chat {
+        grid-template-columns: 1fr;
+    }
+
+    .lista-mensajes {
+        height: 320px;
+    }
+
+    .mensaje-chat {
+        max-width: 92%;
+    }
+
+}
+
+/* ADAPTACIÓN A TABLETS */
+
+@media (max-width: 1000px) {
+
+    .catalogo-adopcion {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 750px) {
+
+    .pagina-perfil .distribucion-perfil {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .portada {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .imagen-portada img {
+        max-width: 300px;
+        max-height: 35dvh;
+    }
+
+}
+
+/* ADAPTACIÓN A MÓVILES */
+
+@media (max-width: 600px) {
+
+    /* CABECERAS */
+
+    .pagina-inicio .cabecera {
+        padding: 25px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .pagina-perfil .interior-cabecera {
+        padding: 25px 20px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .pagina-inicio .cabecera nav,
+    .pagina-perfil .cabecera-perfil nav {
+        gap: 20px;
+    }
+
+    .logo-protectora {
+        width: 190px;
+    }
+
+    /* INICIO */
+
+    #mensajeSesion {
+        padding: 0 20px;
+    }
+
+    .portada {
+        padding: 30px 20px;
+    }
+
+    .texto-portada h1 {
+        font-size: 56px;
+    }
+
+    /* PERFIL */
+
+    .pagina-perfil .contenido-perfil {
+        padding: 35px 20px;
+    }
+
+    .pagina-perfil .titulo-perfil h1 {
+        font-size: 30px;
+    }
+
+    .pagina-perfil .informacion-perfil {
+        padding: 25px 20px;
+    }
+
+    .pagina-perfil .lista-datos-perfil {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .acciones-perfil {
+        flex-direction: column;
+    }
+
+    .acciones-perfil button {
+        width: 100%;
+    }
+
+    /* FILTROS */
+
+    #formularioFiltros {
+        padding: 20px;
+    }
+
+    #formularioFiltros > div {
+        flex-basis: 100%;
+    }
+
+    #formularioFiltros button {
+        flex: 1 1 130px;
+    }
+
+    /* USUARIOS */
+
+    .tabla-usuarios caption {
+        padding: 20px;
+    }
+
+    .tabla-usuarios th,
+    .tabla-usuarios td {
+        padding: 12px 15px;
+    }
+
+    .cabecera-listado {
+        padding: 20px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cabecera-listado #abrirAltaUsuario {
+        width: 100%;
+    }
+
+    .paginacion-usuarios {
+        gap: 12px;
+    }
+
+    /* ANIMALES */
+
+    .seccion-animales {
+        padding: 30px 20px 60px;
+    }
+
+    .titulo-seccion h2 {
+        font-size: 28px;
+    }
+
+    .grid-animales,
+    .catalogo-adopcion {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .imagen-tarjeta-adopcion,
+    .imagen-predeterminada-adopcion {
+        height: 240px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    /* VENTANAS */
+
+    .ventana-registro {
+        padding: 25px 20px;
+    }
+
+    .ventana-registro h1,
+    .modal-acceso h2 {
+        font-size: 24px;
+    }
+
+    .modal-acceso {
+        padding: 45px 20px 25px;
+    }
+
+    #modalRegistro {
+        padding: 35px 20px 20px;
+    }
+
+    #modalAltaUsuario {
+        padding: 40px 20px 25px;
+    }
+
+    /* CAMPOS */
+
+    #formularioRegistro input,
+    #formularioLogin input,
+    #formularioEditarPerfil input,
+    #formularioFotografia input,
+    #formularioContrasena input,
+    #formularioFiltros input,
+    #formularioFiltros select,
+    #formularioAltaUsuario input,
+    #formularioAltaUsuario select,
+    #formularioEditarUsuario input,
+    #nuevoRolUsuario {
+        font-size: 16px;
+    }
+
+}
+
+/* CATÁLOGO Y GESTIÓN DE ANIMALES */
+
+.seccion-catalogo-animales {
+    margin-top: 30px;
+}
+
+#formularioFiltros .filtro-bajas label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+#formularioFiltros .filtro-bajas input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.detalle-animal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detalle-animal-body > p,
+#datosEntradaInternos p,
+#datosCuidadosInternos p {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+#datosEntradaInternos,
+#datosCuidadosInternos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.separador-ficha {
+    margin: 8px 0;
+    border: 0;
+    border-top: 2px solid #F5F5F5;
+}
+
+.bloque-gestion-modal,
+#controlesTransicionEstado {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bloque-gestion-modal {
+    margin-top: 8px;
+    padding: 18px;
+    border: none;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.bloque-gestion-modal label {
+    display: block;
+    margin: 0;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bloque-gestion-modal select,
+.bloque-gestion-modal textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.bloque-gestion-modal select:focus,
+.bloque-gestion-modal textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.bloque-gestion-modal textarea {
+    resize: vertical;
+}
+
+.bloque-gestion-modal small {
+    color: #8B5C4A;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.bloque-gestion-modal .boton-detalle {
+    align-self: flex-start;
+    padding: 11px 22px;
+}
+
+.fila-control-modal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fila-control-modal select {
+    flex: 1;
+}
+
+.fila-control-modal .boton-detalle {
+    align-self: center;
+    white-space: nowrap;
+}
+
+.fila-botones-baja {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bloque-baja-modal {
+    border-left-color: #B3261E;
+}
+
+.aviso-baja-modal {
+    padding: 14px 18px;
+    border-left: 4px solid #B3261E;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    color: #B3261E;
+    font-weight: 600;
+}
+
+.boton-eliminar-animal {
+    background-color: #B3261E;
+}
+
+.boton-eliminar-animal:hover {
+    background-color: #8B5C4A;
+}
+
+.informacion-publica-animal {
+    margin-top: 8px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.informacion-publica-animal h3:first-child {
+    margin-top: 0;
+}
+
+.acciones-modal-animal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #F5F5F5;
+}
+
+.acciones-modal-animal .boton-portada {
+    padding: 11px 20px;
+    color: #FFFFFF;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.acciones-modal-animal .boton-portada:hover {
+    color: #FFFFFF;
+}
+
+/* EDICIÓN DE FICHA DE ANIMAL */
+
+#imagenAnimal {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#formularioImagen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#formularioImagen #imagenEditar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: none;
+}
+
+#formularioImagen .seleccionar-fotografia {
+    display: block;
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+
+#formularioImagen .seleccionar-fotografia:hover {
+    background-color: #F5F5F5;
+}
+
+#formularioImagen:has(#imagenEditar:focus-visible) .seleccionar-fotografia {
+    outline: 2px solid #300E28;
+    outline-offset: 3px;
+}
+
+#mensajeFicha,
+#mensajeImagen,
+#mensajeClinico {
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeFicha:empty,
+#mensajeImagen:empty,
+#mensajeClinico:empty {
+    display: none;
+}
+
+#formularioClinico {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid #F5F5F5;
+}
+
+#formularioClinico label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioClinico textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+    resize: vertical;
+}
+
+#formularioClinico textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#botonGuardarImagen,
+#botonGuardarClinico {
+    padding: 13px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarImagen:hover,
+#botonGuardarClinico:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarImagen:disabled,
+#botonGuardarClinico:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#avisoClinico {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.informacion-perfil > a[href="animales.html"] {
+    display: inline-block;
+    margin-top: 25px;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.informacion-perfil > a[href="animales.html"]:hover {
+    color: #8B5C4A;
+}
+
+/* HISTORIAL DEL ANIMAL */
+
+#mensajeHistorial,
+#mensajeObservacion {
+    margin: 5px 0 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#mensajeHistorial:empty,
+#mensajeObservacion:empty {
+    display: none;
+}
+
+#formularioObservacion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formularioObservacion label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formularioObservacion textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 90px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+    resize: vertical;
+}
+
+#formularioObservacion textarea:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#formularioObservacion .error-campo {
+    margin: 0;
+    color: #B3261E;
+    font-size: 13px;
+}
+
+#formularioObservacion .error-campo:empty {
+    display: none;
+}
+
+#botonGuardarObservacion {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarObservacion:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarObservacion:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.nota-observacion {
+    display: block;
+    margin-top: 12px;
+    color: #8B5C4A;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.aviso-historial-baja {
+    margin: 20px 0 0;
+}
+
+.seccion-tabla-historial {
+    margin-top: 30px;
+}
+
+.enlace-volver-animales {
+    margin-top: 25px;
+}
+
+.enlace-volver-animales a {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.enlace-volver-animales a:hover {
+    color: #8B5C4A;
+}
+
+@media (max-width: 600px) {
+
+    .fila-control-modal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acciones-modal-animal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acciones-modal-animal a,
+    .acciones-modal-animal button {
+        width: 100%;
+        text-align: center;
+    }
+
+}
+
+/* FORMULARIO DEL HOGAR */
+#seccionHogar {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.formulario-hogar {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.formulario-hogar fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 24px;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+}
+
+.formulario-hogar legend {
+    padding: 0 10px;
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.campos-hogar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.campo-hogar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.formulario-hogar fieldset > .campo-hogar + .campo-hogar {
+    margin-top: 22px;
+}
+
+.campo-hogar label {
+    color: #300E28;
+    font-weight: 600;
+}
+
+.campo-hogar input,
+.campo-hogar select,
+.campo-hogar textarea {
+    width: 100%;
+    margin: 0;
+    padding: 13px 15px;
+    border: 1px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font: inherit;
+}
+
+.campo-hogar textarea {
+    resize: vertical;
+}
+
+.campo-hogar input:focus-visible,
+.campo-hogar select:focus-visible,
+.campo-hogar textarea:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.campo-hogar small {
+    color: #8B5C4A;
+    line-height: 1.5;
+}
+
+.acciones-hogar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+#botonGuardarHogar {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 30px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mensaje-estado {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.mensaje-ok {
+    color: #2E7D32;
+}
+
+.mensaje-error {
+    color: #B3261E;
+}
+
+.seccion-personal [role="status"],
+.bloque-asignaciones [role="status"] {
+    min-height: 1.2em;
+    margin: 0;
+    color: #8B5C4A;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ---------- SECCIONES DEL DETALLE DE USUARIO ---------- */
+
+.seccion-personal {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.seccion-personal hr {
+    width: 100%;
+    margin: 6px 0 0;
+    border: none;
+    border-top: 2px solid #F5F5F5;
+}
+
+.seccion-personal h3 {
+    margin: 0;
+    color: #300E28;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.seccion-personal h4 {
+    margin: 0;
+    color: #300E28;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.seccion-personal .lista-datos-perfil {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 20px;
+    margin: 0;
+}
+
+.seccion-personal .dato-perfil {
+    min-width: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.seccion-personal .dato-perfil dt {
+    margin-bottom: 6px;
+    color: #8B5C4A;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.seccion-personal .dato-perfil dd {
+    margin: 0;
+    color: #300E28;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* ---------- BOTONES ---------- */
+
+.seccion-personal button {
+    align-self: flex-start;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonGuardarHogar:hover {
+    background-color: #8B5C4A;
+}
+
+#botonGuardarHogar:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.acciones-hogar a {
+    color: #300E28;
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+    .campos-hogar {
+        grid-template-columns: 1fr;
+    }
+
+    .formulario-hogar fieldset {
+        padding: 18px;
+    }
+
+    .formulario-hogar legend {
+        font-size: 18px;
+    }
+
+    .acciones-hogar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+}
+
+/* TÍTULO DEL PERFIL Y ACCESO AL HOGAR */
+.cabecera-contenido-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.acceso-hogar {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 12px 20px;
+    border-top: 1px solid #E5E5E5;
+    color: #300E28;
+    text-decoration: none;
+    flex-shrink: 0;
+    border-radius: 18px;
+    background-color: #FFFFFF;
+    font-weight: 600;
+}
+
+.icono-acceso-hogar {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    display: block;
+}
+
+.acceso-hogar:hover {
+    background-color: #FFAC16;
+}
+
+.acceso-hogar:focus-visible {
+    outline: 3px solid #300E28;
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+@media (max-width: 700px) {
+    .cabecera-contenido-perfil {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .acceso-hogar {
+        margin-bottom: 24px;
+    }
+}
+
+.grupo-hogar {
+    padding: 24px;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+}
+
+.grupo-hogar h2 {
+    margin: 0 0 24px;
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.grupo-hogar > .campo-hogar {
+    margin-top: 22px;
+}
+
+/* FOTOGRAFÍA EN LOS RESULTADOS DE COMPATIBILIDAD */
+.animal-compatibilidad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.foto-compatibilidad {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* RESULTADOS DE COMPATIBILIDAD */
+#mensajeCompatibilidad {
+    margin: 0 0 20px;
+    line-height: 1.6;
+}
+
+#mensajeCompatibilidad:empty {
+    display: none;
+}
+
+#seccionCompatibilidad td {
+    vertical-align: middle;
+}
+
+#tablaCompatibilidad ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+#tablaCompatibilidad li + li {
+    margin-top: 6px;
+}
+
+.animal-compatibilidad span {
+    font-weight: 600;
+}
+
+/* AVISO Y ACCESO AL HOGAR */
+.acciones-compatibilidad {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.acciones-compatibilidad p {
+    flex: 1 1 300px;
+    margin: 0;
+    color: #8B5C4A;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.enlace-editar-hogar {
+    display: inline-block;
+    padding: 13px 22px;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.enlace-editar-hogar:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+@media (max-width: 600px) {
+    .acciones-compatibilidad {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .acciones-compatibilidad p {
+        flex: auto;
+    }
+}
+
+/* ACCIONES DEL FORMULARIO DEL HOGAR */
+.acciones-hogar .boton-consultar-compatibilidad,
+.acciones-hogar .boton-volver-perfil {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 24px;
+    border: 1px solid transparent;
+    border-radius: 30px;
+    color: #300E28;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.acciones-hogar .boton-consultar-compatibilidad {
+    background-color: #FFAC16;
+}
+
+.acciones-hogar .boton-consultar-compatibilidad:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.acciones-hogar .boton-volver-perfil {
+    border-color: #300E28;
+    background-color: #FFFFFF;
+}
+
+.acciones-hogar .boton-volver-perfil:hover {
+    background-color: #F5F5F5;
+}
+
+.seccion-personal button:hover {
+    background-color: #8B5C4A;
+}
+
+.seccion-personal button:focus-visible {
+    outline: 2px solid #FFAC16;
+    outline-offset: 2px;
+}
+
+.seccion-personal button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Botones secundarios: cancelar */
+#cancelarFichaLaboral,
+#cancelarPerfilVeterinario,
+#botonCancelarJornadaEmpleado {
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+#cancelarFichaLaboral:hover,
+#cancelarPerfilVeterinario:hover,
+#botonCancelarJornadaEmpleado:hover {
+    background-color: #FFAC16;
+}
+
+/* ---------- FORMULARIOS (ficha laboral, perfil veterinario) ---------- */
+
+#formularioFichaLaboral,
+#formularioPerfilVeterinario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.seccion-personal label {
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.seccion-personal input[type="text"],
+.seccion-personal input[type="tel"],
+.seccion-personal input[type="time"],
+.seccion-personal input[type="datetime-local"],
+.seccion-personal select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.seccion-personal input:focus,
+.seccion-personal select:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.seccion-personal input:disabled {
+    border-color: #E0D6D2;
+    background-color: #F5F5F5;
+    cursor: not-allowed;
+}
+
+/* ---------- JORNADA SEMANAL (T32) ---------- */
+
+.bloque-jornada,
+.bloque-ausencias {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    border: 1px solid #F5F5F5;
+}
+
+#resumenJornadaEmpleado {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+#formularioJornadaEmpleado {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fila-jornada {
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr);
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+.fila-jornada label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* En las filas de la jornada el texto "Desde"/"Hasta" va encima del campo */
+.fila-jornada label:not(:first-child) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #8B5C4A;
+}
+
+.fila-jornada input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #300E28;
+}
+
+#formularioJornadaEmpleado button[type="submit"] {
+    align-self: flex-start;
+}
+
+#formularioJornadaEmpleado .acciones-jornada {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ---------- AUSENCIAS (T32) ---------- */
+
+#listaAusenciasEmpleado {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#listaAusenciasEmpleado li {
+    padding: 10px 12px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#formularioAusenciaEmpleado {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 14px;
+    padding-top: 6px;
+}
+
+#formularioAusenciaEmpleado label:nth-of-type(3),
+#motivoAusenciaEmpleado {
+    grid-column: 1 / -1;
+}
+
+#formularioAusenciaEmpleado button {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+}
+
+/* ---------- VETERINARIOS ASIGNADOS A UN ANIMAL (T33) ---------- */
+
+.bloque-asignaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.bloque-asignaciones hr {
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-top: 2px solid #F5F5F5;
+}
+
+.bloque-asignaciones h3 {
+    margin: 0;
+    color: #300E28;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.lista-asignaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-asignaciones li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.boton-retirar-asignacion {
+    padding: 8px 14px;
+    border: 1px solid #B3261E;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    color: #B3261E;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-retirar-asignacion:hover {
+    background-color: #B3261E;
+    color: #FFFFFF;
+}
+
+.boton-retirar-asignacion:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.formulario-asignacion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.formulario-asignacion label {
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.formulario-asignacion select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+.formulario-asignacion select:focus {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+.formulario-asignacion button {
+    align-self: flex-start;
+}
+
+/* ---------- PANTALLAS PEQUEÑAS ---------- */
+
+@media (max-width: 600px) {
+    .seccion-personal .lista-datos-perfil,
+    #formularioAusenciaEmpleado {
+        grid-template-columns: 1fr;
+    }
+
+    .fila-jornada {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .fila-jornada label:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ACCESO A LA FICHA DESDE LAS RECOMENDACIONES */
+.enlace-ficha-compatibilidad {
+    display: inline-block;
+    padding: 9px 16px;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.enlace-ficha-compatibilidad:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+/* AVISO DE VALORACIONES PENDIENTES */
+#avisoPendientesCompatibilidad {
+    margin: 0 0 24px;
+    padding: 15px 20px;
+    border-left: 4px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #8B5C4A;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#avisoPendientesCompatibilidad:empty {
+    display: none;
+}
+
+/* SOLICITUD DE ADOPCIÓN EN LA FICHA */
+.formulario-solicitud {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #FFAC16;
+    border-radius: 16px;
+    background-color: #F5F5F5;
+}
+
+.formulario-solicitud h3 {
+    margin: 0;
+    color: #300E28;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.formulario-solicitud > p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.formulario-solicitud label {
+    color: #300E28;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.formulario-solicitud textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.formulario-solicitud textarea:focus-visible {
+    outline: 2px solid #300E28;
+    outline-offset: 2px;
+}
+
+#mensajeSolicitud:empty {
+    display: none;
+}
+
+#botonEnviarSolicitud {
+    align-self: flex-start;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#botonEnviarSolicitud:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+#botonEnviarSolicitud:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* BOTONES DE LAS TARJETAS DE ADOPCIÓN */
+.acciones-tarjeta-adopcion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.acciones-tarjeta-adopcion .boton-ficha-adopcion {
+    margin-top: 0;
+}
+
+.boton-solicitar-adopcion {
+    padding: 11px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-solicitar-adopcion:hover {
+    background-color: #8B5C4A;
+}
+
+/* ACCESO A LAS SOLICITUDES DESDE EL PERFIL */
+.enlace-mis-solicitudes {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 24px;
+    border-radius: 25px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+}
+
+.enlace-mis-solicitudes:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+/* BOTÓN DE FICHA EN MIS SOLICITUDES */
+.boton-ficha-solicitud {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* FICHAS DE ANIMALES: CATÁLOGO Y MIS SOLICITUDES */
+#modalAnimalSolicitud,
+#modalDetalleAnimal {
+    position: fixed;
+    inset: 0;
+    width: min(500px, calc(100% - 32px));
+    height: fit-content;
+    max-height: 85dvh;
+    margin: auto;
+    padding: 30px 24px 24px;
+    overflow-y: auto;
+    transform: none;
+    border: none;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    box-shadow: 0 20px 60px rgba(48, 14, 40, 0.22);
+    scrollbar-width: none;
+}
+
+#modalAnimalSolicitud::-webkit-scrollbar,
+#modalDetalleAnimal::-webkit-scrollbar {
+    display: none;
+}
+
+#modalAnimalSolicitud::backdrop,
+#modalDetalleAnimal::backdrop {
+    background-color: rgba(48, 14, 40, 0.65);
+}
+
+#modalAnimalSolicitud h2,
+#modalDetalleAnimal h2 {
+    margin: 8px 32px 22px;
+    padding: 0;
+    font-size: 25px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+#cerrarAnimalSolicitud {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #F5F5F5;
+    color: #300E28;
+    font-size: 24px;
+}
+
+#cerrarAnimalSolicitud:hover {
+    background-color: #FFAC16;
+}
+
+/* FOTOGRAFÍAS */
+#fotoAnimalSolicitud,
+#fichaImagen {
+    display: block;
+    width: 100%;
+    height: 240px;
+    max-height: none;
+    margin: 0 0 10px;
+    padding: 0;
+    border-radius: 16px;
+    background-color: #F5F5F5;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* DATOS EN DOS COLUMNAS */
+#contenidoAnimalSolicitud,
+#contenidoFichaAnimal {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#contenidoAnimalSolicitud > :not(p),
+#contenidoFichaAnimal > :not(p),
+#contenidoFichaAnimal > .aviso-baja-modal {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+#contenidoAnimalSolicitud > p,
+#contenidoFichaAnimal > p:not(.aviso-baja-modal) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 5px;
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#contenidoAnimalSolicitud > p strong,
+#contenidoFichaAnimal > p:not(.aviso-baja-modal) strong {
+    color: #8B5C4A;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#contenidoAnimalSolicitud > p span,
+#contenidoFichaAnimal > p:not(.aviso-baja-modal) span {
+    color: #300E28;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#estadoAnimalSolicitud,
+#fichaEstado {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background-color: #FFAC16;
+    font-size: 12px;
+}
+
+/* HISTORIA Y CUIDADOS SIN BORDE LATERAL */
+#modalAnimalSolicitud .informacion-publica-animal,
+#modalDetalleAnimal .informacion-publica-animal {
+    margin: 6px 0 0;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+#modalAnimalSolicitud .informacion-publica-animal h3,
+#modalDetalleAnimal .informacion-publica-animal h3 {
+    margin: 18px 0 8px;
+    color: #300E28;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+#modalAnimalSolicitud .informacion-publica-animal h3:first-child,
+#modalDetalleAnimal .informacion-publica-animal h3:first-child {
+    margin-top: 0;
+}
+
+#modalAnimalSolicitud .texto-publico-animal,
+#modalDetalleAnimal .texto-publico-animal {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+#contenidoFichaAnimal > .separador-ficha {
+    width: 100%;
+}
+
+#mensajeAnimalSolicitud {
+    margin: 0;
+    color: #8B5C4A;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#mensajeAnimalSolicitud:empty {
+    display: none;
+}
+
+/* FICHAS EN MÓVILES */
+@media (max-width: 480px) {
+    #modalAnimalSolicitud,
+    #modalDetalleAnimal {
+        padding: 28px 18px 18px;
+        border-radius: 20px;
+    }
+
+    #modalAnimalSolicitud h2,
+    #modalDetalleAnimal h2 {
+        margin-left: 0;
+        margin-right: 32px;
+        font-size: 22px;
+    }
+
+    #fotoAnimalSolicitud,
+    #fichaImagen {
+        height: 200px;
+    }
+
+    #contenidoAnimalSolicitud,
+    #contenidoFichaAnimal {
+        gap: 10px;
+    }
+
+    #contenidoAnimalSolicitud > p,
+    #contenidoFichaAnimal > p:not(.aviso-baja-modal) {
+        padding: 12px;
+        font-size: 13px;
+    }
+}
+
+/* CANCELAR SOLICITUD */
+#tablaMisSolicitudes .boton-cancelar-solicitud {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-left: 12px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: #FDECEC;
+    color: #B42318;
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+#tablaMisSolicitudes .boton-ficha-solicitud {
+    vertical-align: middle;
+}
+
+#tablaMisSolicitudes .boton-cancelar-solicitud:hover {
+    background-color: #B42318;
+    color: #FFFFFF;
+}
+
+#tablaMisSolicitudes .boton-cancelar-solicitud:focus-visible {
+    outline: 2px solid #B42318;
+    outline-offset: 3px;
+}
+
+#tablaMisSolicitudes .boton-cancelar-solicitud:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+/* ESTADOS DE LAS SOLICITUDES */
+.estado-solicitud {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.estado-cancelada {
+    background-color: #FDECEC;
+    color: #B42318;
+}
+
+.estado-pendiente {
+    background-color: #FFF3D6;
+    color: #805000;
+}
+
+.cabecera-mis-solicitudes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 35px;
+}
+
+.cabecera-mis-solicitudes .titulo-perfil {
+    margin-bottom: 0;
+}
+
+.cabecera-mis-solicitudes .boton-volver-perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 14px 26px;
+    border-radius: 30px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.cabecera-mis-solicitudes .boton-volver-perfil:hover {
+    background-color: #8B5C4A;
+}
+
+@media (max-width: 700px) {
+    .cabecera-mis-solicitudes {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* FILTROS DE REVISIÓN */
+#formularioFiltrosRevision {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 24px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+}
+
+#formularioFiltrosRevision > div {
+    flex: 1;
+    min-width: 200px;
+}
+
+#formularioFiltrosRevision label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#formularioFiltrosRevision input,
+#formularioFiltrosRevision select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font: inherit;
+}
+
+/* BOTONES DE REVISIÓN */
+#formularioFiltrosRevision button,
+.paginacion-revision button,
+#guardarObservacionesRevision {
+    padding: 13px 24px;
+    border: none;
+    border-radius: 30px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#formularioFiltrosRevision #limpiarFiltrosRevision {
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+.paginacion-revision {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 24px;
+}
+
+#formularioFiltrosRevision button:disabled,
+.paginacion-revision button:disabled,
+#guardarObservacionesRevision:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* MODAL DE REVISIÓN */
+#modalRevision {
+    width: min(760px, calc(100% - 32px));
+    max-height: 85dvh;
+    margin: auto;
+    padding: 36px;
+    overflow-y: auto;
+    border: none;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    position: fixed;
+    inset: 0;
+    height: fit-content;
+    max-width: 760px;
+    transform: none;
+}
+
+#modalRevision::backdrop {
+    background-color: rgba(48, 14, 40, 0.65);
+}
+
+#modalRevision h2 {
+    margin: 0 35px 28px 0;
+    font-size: 26px;
+    text-align: left;
+}
+
+#contenidoDetalleRevision h3 {
+    margin: 28px 0 16px;
+    font-size: 20px;
+}
+
+#datosSolicitudRevision,
+#datosAnimalRevision,
+#datosHogarRevision {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dato-revision {
+    min-width: 0;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+}
+
+.dato-revision strong {
+    color: #8B5C4A;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.dato-revision p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* OBSERVACIONES INTERNAS */
+#formularioObservacionesRevision {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #EEEEEE;
+}
+
+#formularioObservacionesRevision label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+#observacionesInternasRevision {
+    width: 100%;
+    min-height: 140px;
+    padding: 14px;
+    border: 1px solid #FFAC16;
+    border-radius: 12px;
+    color: #300E28;
+    font: inherit;
+    resize: vertical;
+}
+
+#formularioObservacionesRevision p {
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    #modalRevision {
+        padding: 28px 20px;
+    }
+
+    #datosSolicitudRevision,
+    #datosAnimalRevision,
+    #datosHogarRevision {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ENLACE A LA FICHA DEL ANIMAL */
+#datosAnimalRevision > a.enlace-ficha-compatibilidad {
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: auto;
+    margin-top: 4px;
+    padding: 12px 22px;
+    border-radius: 30px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+}
+
+#datosAnimalRevision > a.enlace-ficha-compatibilidad:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/* BOTÓN DE LA FICHA EN REVISIÓN */
+#datosAnimalRevision .boton-ficha-revision {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: 4px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 30px;
+    background-color: #FFAC16;
+    color: #300E28;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#datosAnimalRevision .boton-ficha-revision:hover {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+/* MODAL DE LA FICHA DEL ANIMAL */
+#modalAnimalRevision {
+    position: fixed;
+    inset: 0;
+    width: min(560px, calc(100% - 32px));
+    max-width: 560px;
+    height: fit-content;
+    max-height: 85dvh;
+    margin: auto;
+    padding: 30px 24px;
+    overflow-y: auto;
+    transform: none;
+    border: none;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    scrollbar-width: none;
+}
+
+#modalAnimalRevision::-webkit-scrollbar {
+    display: none;
+}
+
+#modalAnimalRevision::backdrop {
+    background-color: rgba(48, 14, 40, 0.5);
+}
+
+#modalAnimalRevision h2 {
+    margin: 8px 32px 24px 0;
+    font-size: 25px;
+    text-align: left;
+}
+
+#fotoAnimalRevision {
+    display: block;
+    width: 100%;
+    height: 260px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+#datosFichaAnimalRevision {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#modalAnimalRevision .informacion-publica-animal {
+    margin-top: 20px;
+    padding: 18px;
+    border: none;
+    border-radius: 14px;
+    background-color: #F5F5F5;
+}
+
+#modalAnimalRevision .informacion-publica-animal h3 {
+    margin: 18px 0 8px;
+    font-size: 17px;
+}
+
+#modalAnimalRevision .informacion-publica-animal h3:first-child {
+    margin-top: 0;
+}
+
+#modalAnimalRevision .texto-publico-animal {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    #datosFichaAnimalRevision {
+        grid-template-columns: 1fr;
+    }
+
+    #fotoAnimalRevision {
+        height: 220px;
+    }
+}
+
+/* OCULTAR LA BARRA DEL MODAL DE REVISIÓN */
+#modalRevision {
+    scrollbar-width: none;
+}
+
+#modalRevision::-webkit-scrollbar {
+    display: none;
+}
+
+/* SOBRE NOSOTROS */
+.presentacion-protectora {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 32px;
+}
+
+.imagen-protectora {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border-radius: 24px;
+    background-color: #FFAC16;
+}
+
+.imagen-protectora img {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    height: 330px;
+    object-fit: contain;
+}
+
+.texto-protectora {
+    padding: 36px;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+}
+
+.texto-protectora h2 {
+    margin: 0 0 20px;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.texto-protectora p {
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.texto-protectora p:last-child {
+    margin-bottom: 0;
+}
+
+/* VALORES */
+.valores-protectora {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.tarjeta-valor {
+    padding: 28px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+}
+
+.tarjeta-valor h2 {
+    margin: 0 0 14px;
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.tarjeta-valor p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* ENLACES DE LAS PÁGINAS INFORMATIVAS */
+.acciones-protectora {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.acciones-protectora .boton-informacion,
+.acciones-protectora .boton-contacto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 26px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.boton-informacion {
+    background-color: #300E28;
+    color: #FFFFFF;
+}
+
+.boton-contacto {
+    background-color: #FFAC16;
+    color: #300E28;
+}
+
+.acciones-protectora a:hover {
+    background-color: #8B5C4A;
+    color: #FFFFFF;
+}
+
+@media (max-width: 800px) {
+    .presentacion-protectora,
+    .valores-protectora {
+        grid-template-columns: 1fr;
+    }
+
+    .presentacion-protectora {
+        gap: 24px;
+    }
+
+    .texto-protectora {
+        padding: 26px;
+    }
+}
+
+.imagen-protectora {
+    overflow: hidden;
+    border-radius: 24px;
+    background-color: transparent;
+}
+
+.imagen-protectora img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: 390px;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+@media (max-width: 800px) {
+    .imagen-protectora img {
+        height: 300px;
+    }
+
+}
+
+/* ENTREVISTAS Y DECISIONES */
+
+.seguimiento-solicitud {
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #E8E2E6;
+}
+
+#formularioSeguimiento {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#formularioSeguimiento label {
+    color: #300E28;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#formularioSeguimiento select,
+#formularioSeguimiento textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #FFAC16;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #300E28;
+    font-size: 14px;
+}
+
+#formularioSeguimiento textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+#guardarSeguimiento {
+    align-self: flex-end;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 30px;
+    background-color: #300E28;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#guardarSeguimiento:hover {
+    background-color: #8B5C4A;
+}
+
+#guardarSeguimiento:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+#mensajeSeguimiento {
+    margin: 0;
+    font-size: 14px;
+}
+
+#historialSeguimientos {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.actuacion-solicitud {
+    padding: 18px;
+    border-radius: 14px;
+    background-color: #F5F5F5;
+}
+
+.actuacion-solicitud h4 {
+    margin: 0 0 12px;
+    color: #300E28;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.actuacion-solicitud p {
+    margin: 6px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* ESTADOS DE REVISIÓN Y DECISIÓN */
+
+.estado-revision {
+    background-color: #EAF2FF;
+    color: #2455A4;
+}
+
+.estado-aprobada {
+    background-color: #E8F5EC;
+    color: #216E39;
+}
+
+.estado-rechazada {
+    background-color: #FDECEC;
+    color: #B42318;
+}
+
+/* AJUSTES DE INSTALACIONES Y HABITÁCULOS */
+
+.cabecera-listado a,
+a[href*="habitaculos.html"] {
+    text-decoration: none;
+}
+
+.cabecera-listado a:hover,
+a[href*="habitaculos.html"]:hover {
+    text-decoration: none;
+}
+
+/* PLANO / VISTA GENERAL DE INSTALACIONES (T28) */
+
+.bloque-plano-t28 {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border-radius: 16px;
+    background-color: #FFFFFF;
+}
+
+.leyenda-plano-t28 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 25px 20px;
+}
+
+.indicador-t28,
+.badge-t28 {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.indicador-libre,
+.badge-libre {
+    background-color: #E8F5EC;
+    color: #216E39;
+}
+
+.indicador-ocupado,
+.badge-ocupado {
+    background-color: #FFF3D6;
+    color: #805000;
+}
+
+.indicador-limpieza,
+.badge-limpieza {
+    background-color: #EAF2FF;
+    color: #2455A4;
+}
+
+.indicador-mantenimiento,
+.badge-mantenimiento {
+    background-color: #FDECEC;
+    color: #B42318;
+}
+
+.indicador-aislamiento,
+.badge-aislamiento {
+    background-color: #F3E8FF;
+    color: #5B21B6;
+}
+
+.badge-ok {
+    background-color: #F5F5F5;
+    color: #300E28;
+}
+
+.badge-inactivo {
+    background-color: #E5E7EB;
+    color: #374151;
+}
+
+.contenedor-plano-t28 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 25px 25px;
+}
+
+.titulo-zona-t28 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.grid-plano-t28 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.celda-plano-t28 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+}
+
+.celda-plano-t28.es-inactivo {
+    opacity: 0.7;
+}
+
+.cabecera-celda-t28 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.plazas-celda-t28 {
+    font-size: 12px;
+    color: #8B5C4A;
+    font-weight: 600;
+}
+
+.badges-celda-t28 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.plano-vacio-t28 {
+    margin: 0;
+    font-size: 14px;
+    color: #8B5C4A;
+
+
+}
