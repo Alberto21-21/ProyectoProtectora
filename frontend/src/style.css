@@ -861,7 +861,7 @@ button:focus-visible {
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 0;
     padding: 25px;
     border-radius: 16px;
     background-color: #FFFFFF;
@@ -4064,4 +4064,16 @@ button:focus-visible {
 .estado-rechazada {
     background-color: #FDECEC;
     color: #B42318;
+}
+
+/* AJUSTES DE INSTALACIONES Y HABITÁCULOS */
+
+.cabecera-listado a,
+a[href*="habitaculos.html"] {
+    text-decoration: none;
+}
+
+.cabecera-listado a:hover,
+a[href*="habitaculos.html"]:hover {
+    text-decoration: none;
 }
