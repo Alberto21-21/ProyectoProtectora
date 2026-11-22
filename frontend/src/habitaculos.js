@@ -96,6 +96,25 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function mostrarErrorAlojamiento(error) {
+        mensajeAlojarAnimal.replaceChildren();
+
+        if (Array.isArray(error.motivos) && error.motivos.length > 0) {
+            const titulo = document.createElement("strong");
+            titulo.textContent = "Alojamiento rechazado:";
+            mensajeAlojarAnimal.appendChild(titulo);
+
+            const lista = document.createElement("ul");
+            error.motivos.forEach(function (motivo) {
+                lista.appendChild(crearElementoLista(motivo));
+            });
+            mensajeAlojarAnimal.appendChild(lista);
+            return;
+        }
+
+        mensajeAlojarAnimal.textContent = error.message;
+    }
+
    
     // COMPROBAR QUE ES UN TRABAJADOR
     
@@ -367,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
             await cargarHistorial();
 
         } catch (error) {
-            mensajeAlojarAnimal.textContent = error.message;
+            mostrarErrorAlojamiento(error);
         } finally {
             botonGuardarAlojamiento.disabled = false;
         }

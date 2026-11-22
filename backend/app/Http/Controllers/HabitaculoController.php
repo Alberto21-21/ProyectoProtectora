@@ -310,7 +310,7 @@ class HabitaculoController extends Controller
         ], 200);
     }
 
-    // ALOJAR O TRASLADAR UN ANIMAL A UN HABITÁCULO (T25)
+    // ALOJAR O TRASLADAR UN ANIMAL A UN HABITÁCULO (T25 / T27)
     public function alojarAnimal(Request $request)
     {
         $request->validate([
@@ -333,30 +333,103 @@ class HabitaculoController extends Controller
         if (!$animal->activo) {
             return response()->json([
                 'success' => false,
-                'message' => 'No se puede alojar un animal dado de baja o inactivo.'
+                'message' => 'Rechazado por disponibilidad: no se puede alojar un animal dado de baja o inactivo.',
+                'motivos' => ['El animal seleccionado no está activo.']
             ], 422);
         }
 
-        $habitaculoDestino = Habitaculo::with('zona:id,nombre,activo')->find($request->habitaculo_destino_id);
+        $habitaculoDestino = Habitaculo::with([
+            'zona:id,nombre,activo',
+            'animales' => function ($query) {
+                $query->where('activo', true)
+                    ->select('id', 'nombre', 'especie', 'estado', 'con_otros_animales', 'tiene_necesidades_especiales', 'habitaculo_id');
+            }
+        ])->find($request->habitaculo_destino_id);
 
+        $motivosRechazo = [];
+
+        // 1. DISPONIBILIDAD (habitáculo, zona, mantenimiento y mismo habitáculo)
         if (!$habitaculoDestino->activo) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El habitáculo "' . $habitaculoDestino->identificador . '" está desactivado y no admite animales.'
-            ], 422);
+            $motivosRechazo[] = 'Disponibilidad: el habitáculo "' . $habitaculoDestino->identificador . '" está desactivado.';
+        }
+
+        if ($habitaculoDestino->zona && !$habitaculoDestino->zona->activo) {
+            $motivosRechazo[] = 'Disponibilidad: la zona "' . $habitaculoDestino->zona->nombre . '" está desactivada.';
         }
 
         if ($habitaculoDestino->estado_mantenimiento !== 'Operativo') {
-            return response()->json([
-                'success' => false,
-                'message' => 'El habitáculo "' . $habitaculoDestino->identificador . '" está en estado "' . $habitaculoDestino->estado_mantenimiento . '" y no admite animales.'
-            ], 422);
+            $motivosRechazo[] = 'Disponibilidad: el habitáculo "' . $habitaculoDestino->identificador . '" está en estado "' . $habitaculoDestino->estado_mantenimiento . '" y no admite animales.';
         }
 
         if ((int) $animal->habitaculo_id === (int) $habitaculoDestino->id) {
+            $motivosRechazo[] = 'Disponibilidad: el animal ya se encuentra alojado en el habitáculo "' . $habitaculoDestino->identificador . '".';
+        }
+
+        $animalesAlojados = $habitaculoDestino->animales;
+        $textoRestricciones = mb_strtolower((string) $habitaculoDestino->restricciones);
+        $textoZona = mb_strtolower((string) ($habitaculoDestino->zona->nombre ?? ''));
+
+        // 2. ESPECIE
+        $especieAnimal = mb_strtolower((string) $animal->especie);
+
+        if (str_contains($textoRestricciones, 'solo perros') || str_contains($textoZona, 'perrera')) {
+            if ($especieAnimal !== 'perro') {
+                $motivosRechazo[] = 'Especie: el habitáculo "' . $habitaculoDestino->identificador . '" es exclusivo para perros.';
+            }
+        }
+
+        if (str_contains($textoRestricciones, 'solo gatos') || str_contains($textoZona, 'gatera')) {
+            if ($especieAnimal !== 'gato') {
+                $motivosRechazo[] = 'Especie: el habitáculo "' . $habitaculoDestino->identificador . '" es exclusivo para gatos.';
+            }
+        }
+
+        foreach ($animalesAlojados as $companero) {
+            if (mb_strtolower((string) $companero->especie) !== $especieAnimal) {
+                $motivosRechazo[] = 'Especie: no se puede mezclar "' . $animal->especie . '" con "' . $companero->especie . '" (' . $companero->nombre . ') en el mismo habitáculo.';
+                break;
+            }
+        }
+
+        // 3. CONVIVENCIA
+        if ($animalesAlojados->count() > 0) {
+            if ($animal->con_otros_animales === 'No compatible') {
+                $motivosRechazo[] = 'Convivencia: "' . $animal->nombre . '" está marcado como no compatible con otros animales y el habitáculo ya tiene ocupantes.';
+            }
+
+            foreach ($animalesAlojados as $companero) {
+                if ($companero->con_otros_animales === 'No compatible') {
+                    $motivosRechazo[] = 'Convivencia: "' . $companero->nombre . '" ya alojado no es compatible con otros animales.';
+                }
+            }
+        }
+
+        // 4. AISLAMIENTO
+        $esHabitaculoAislamiento = str_contains($textoRestricciones, 'aislamiento')
+            || str_contains($textoRestricciones, 'cuarentena')
+            || str_contains($textoZona, 'aislamiento')
+            || str_contains($textoZona, 'cuarentena');
+
+        $animalRequiereAislamiento = $animal->estado === 'En tratamiento'
+            || (bool) $animal->tiene_necesidades_especiales;
+
+        if ($esHabitaculoAislamiento && !$animalRequiereAislamiento) {
+            $motivosRechazo[] = 'Aislamiento: el habitáculo "' . $habitaculoDestino->identificador . '" está reservado para aislamiento/cuarentena y el animal no lo requiere.';
+        }
+
+        if ($esHabitaculoAislamiento && $animalesAlojados->count() > 0) {
+            $motivosRechazo[] = 'Aislamiento: un habitáculo de aislamiento/cuarentena no debe compartirse con otros animales.';
+        }
+
+        if ($animalRequiereAislamiento && $animalesAlojados->count() > 0) {
+            $motivosRechazo[] = 'Aislamiento: "' . $animal->nombre . '" requiere aislamiento/atención especial y el habitáculo ya tiene animales alojados.';
+        }
+
+        if (count($motivosRechazo) > 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'El animal ya se encuentra alojado en el habitáculo "' . $habitaculoDestino->identificador . '".'
+                'message' => implode(' ', $motivosRechazo),
+                'motivos' => $motivosRechazo
             ], 422);
         }
 
@@ -395,9 +468,12 @@ class HabitaculoController extends Controller
         });
 
         if (is_null($resultado)) {
+            $motivoCapacidad = 'Disponibilidad: el habitáculo "' . $habitaculoDestino->identificador . '" está completo (capacidad máxima: ' . $habitaculoDestino->capacidad . ').';
+
             return response()->json([
                 'success' => false,
-                'message' => 'El habitáculo "' . $habitaculoDestino->identificador . '" está completo (capacidad máxima: ' . $habitaculoDestino->capacidad . ').'
+                'message' => $motivoCapacidad,
+                'motivos' => [$motivoCapacidad]
             ], 422);
         }
 
