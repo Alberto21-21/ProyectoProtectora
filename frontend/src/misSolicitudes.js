@@ -87,6 +87,20 @@ function mostrarSolicitudes(solicitudes) {
             etiquetaEstado.classList.add("estado-cancelada");
         }
 
+        } else if (solicitud.estado === "en_revision") {
+            etiquetaEstado.textContent = "En revisión";
+            etiquetaEstado.classList.add("estado-revision");
+
+        } else if (solicitud.estado === "aprobada") {
+            etiquetaEstado.classList.add("estado-aprobada");
+
+        } else if (solicitud.estado === "rechazada") {
+            etiquetaEstado.classList.add("estado-rechazada");
+
+        } else if (solicitud.estado === "cancelada") {
+            etiquetaEstado.classList.add("estado-cancelada");
+        }
+        
         estado.appendChild(etiquetaEstado);
 
         const fechaSolicitud = document.createElement("td");

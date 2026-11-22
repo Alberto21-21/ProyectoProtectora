@@ -3,13 +3,13 @@ const enlacesMenu = [
     { href: "index.html", texto: "Inicio" },
     { href: "animales.html", texto: "Animales" },
     { href: "sobreNosotros.html", texto: "Sobre nosotros", roles: [null, "adoptante"]},
-    {href: "contacto.html", texto: "Contacto", roles: [null, "adoptante"]},
     { href: "perfil.html", texto: "Mi perfil", id: "enlacePerfil", roles: ["admin", "adoptante", "personal", "veterinario"] },
     { href: "usuarios.html", texto: "Usuarios", id: "enlaceUsuarios", roles: ["admin"] },
     { href: "revisionSolicitudes.html", texto: "Solicitudes", id: "enlaceRevisionSolicitudes", roles: ["admin"]},
     { href: "misAnimales.html", texto: "Mis animales", id: "enlaceMisAnimales", roles: ["personal", "veterinario"] },
     { href: "conversaciones.html", texto: "Conversaciones", id: "enlaceConversaciones", roles: ["personal", "veterinario"] },
-    { href: "instalaciones.html", texto: "Instalaciones", id: "enlaceInstalaciones", roles: ["admin"] }
+    { href: "instalaciones.html", texto: "Instalaciones", id: "enlaceInstalaciones", roles: ["admin"] },
+    { href: "index.html?login=1", texto: "Iniciar sesión", roles: [null]}
 ];
 
 const paginaActual = window.location.pathname.split("/").pop() || "index.html";
@@ -58,6 +58,15 @@ async function prepararMenu() {
         const fragmento = document.createDocumentFragment();
 
         enlacesMenu.forEach(function (definicion) {
+
+            // EN EL INICIO YA EXISTE EL BOTÓN QUE ABRE EL MODAL
+            if (
+                paginaActual === "index.html" &&
+                definicion.href === "index.html?login=1"
+            ) {
+                return;
+            }
+            
             const enlacesCoincidentes = Array.from(menu.querySelectorAll('a[href="' + definicion.href + '"]'));
             let enlace = enlacesCoincidentes[0];
 
