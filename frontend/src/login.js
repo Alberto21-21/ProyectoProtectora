@@ -20,9 +20,14 @@ const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
 const enlaceHabitaculos = document.querySelector("#enlaceHabitaculos");
 const mensajeSesion = document.querySelector("#mensajeSesion");
 const modalLogin = document.querySelector("#modalLogin");
+const botonComenzar = document.querySelector("#comenzarRegistro");
 
 // ACTUALIZAR LA CABECERA
 function actualizarCabecera(sesionActiva, rol = "") {
+
+    if (botonComenzar) {
+        botonComenzar.hidden = sesionActiva;
+    }
 
     if (abrirLogin) {
         abrirLogin.hidden = sesionActiva;

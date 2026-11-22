@@ -6,7 +6,8 @@ import {
 import {
     obtenerSolicitudesRevision,
     obtenerDetalleSolicitudRevision,
-    guardarObservacionesSolicitud
+    guardarObservacionesSolicitud,
+    registrarSeguimiento
 } from "./providers/solicitudesProvider.js";
 
 import { obtenerAnimal } from "./providers/animalesProvider.js";
@@ -38,6 +39,14 @@ const contenidoDetalle = document.querySelector("#contenidoDetalleRevision");
 const datosSolicitud = document.querySelector("#datosSolicitudRevision");
 const datosAnimal = document.querySelector("#datosAnimalRevision");
 const datosHogar = document.querySelector("#datosHogarRevision");
+
+// ELEMENTOS DEL SEGUIMIENTO
+const formularioSeguimiento = document.querySelector("#formularioSeguimiento");
+const tipoSeguimiento = document.querySelector("#tipoSeguimiento");
+const observacionesSeguimiento = document.querySelector("#observacionesSeguimiento");
+const mensajeSeguimiento = document.querySelector("#mensajeSeguimiento");
+const guardarSeguimiento = document.querySelector("#guardarSeguimiento");
+const historialSeguimientos = document.querySelector("#historialSeguimientos");
 
 // OBSERVACIONES INTERNAS
 const formularioObservaciones = document.querySelector("#formularioObservacionesRevision");
@@ -98,12 +107,25 @@ function mostrarSolicitudes(solicitudes) {
         etiquetaEstado.textContent = solicitud.estado;
         etiquetaEstado.className = "estado-solicitud";
 
-        if (solicitud.estado === "cancelada") {
-            etiquetaEstado.classList.add("estado-cancelada");
-        }
-
         if (solicitud.estado === "pendiente") {
+            etiquetaEstado.textContent = "Pendiente";
             etiquetaEstado.classList.add("estado-pendiente");
+
+        } else if (solicitud.estado === "en_revision") {
+            etiquetaEstado.textContent = "En revisión";
+            etiquetaEstado.classList.add("estado-revision");
+
+        } else if (solicitud.estado === "aprobada") {
+            etiquetaEstado.textContent = "Aprobada";
+            etiquetaEstado.classList.add("estado-aprobada");
+
+        } else if (solicitud.estado === "rechazada") {
+            etiquetaEstado.textContent = "Rechazada";
+            etiquetaEstado.classList.add("estado-rechazada");
+
+        } else if (solicitud.estado === "cancelada") {
+            etiquetaEstado.textContent = "Cancelada";
+            etiquetaEstado.classList.add("estado-cancelada");
         }
 
         celdaEstado.appendChild(etiquetaEstado);
@@ -239,6 +261,64 @@ function mostrarDato(contenedor, etiqueta, valor) {
     contenedor.appendChild(bloque);
 }
 
+// MOSTRAR LAS ENTREVISTAS Y DECISIONES
+function mostrarSeguimientos(seguimientos) {
+
+    historialSeguimientos.replaceChildren();
+
+    if (seguimientos.length === 0) {
+        const aviso = document.createElement("p");
+        aviso.textContent = "Todavía no hay actuaciones registradas.";
+
+        historialSeguimientos.appendChild(aviso);
+        return;
+    }
+
+    seguimientos.forEach(function (seguimiento) {
+
+        const bloque = document.createElement("article");
+        bloque.className = "actuacion-solicitud";
+
+        const titulo = document.createElement("h4");
+
+        if (seguimiento.tipo === "entrevista") {
+            titulo.textContent = "Entrevista";
+        } else if (seguimiento.tipo === "aprobacion") {
+            titulo.textContent = "Aprobación";
+        } else {
+            titulo.textContent = "Rechazo";
+        }
+
+        const responsable = document.createElement("p");
+
+        responsable.textContent = "Responsable: " +
+            (seguimiento.responsable
+                ? seguimiento.responsable.name
+                : "No indicado");
+
+        const fecha = document.createElement("p");
+        fecha.textContent = "Fecha: " + seguimiento.fecha;
+
+        const cambioEstado = document.createElement("p");
+        cambioEstado.textContent =
+            seguimiento.estado_anterior + " → " +
+            seguimiento.estado_nuevo;
+
+        const observaciones = document.createElement("p");
+        observaciones.textContent = seguimiento.observaciones;
+
+        bloque.append(
+            titulo,
+            responsable,
+            fecha,
+            cambioEstado,
+            observaciones
+        );
+
+        historialSeguimientos.appendChild(bloque);
+    });
+}
+
 // ABRIR EL DETALLE DE UNA SOLICITUD
 async function abrirDetalleSolicitud(id) {
 
@@ -328,6 +408,17 @@ async function abrirDetalleSolicitud(id) {
 
         observacionesInternas.value =
             solicitud.observaciones_internas || "";
+
+        formularioSeguimiento.reset();
+        mensajeSeguimiento.textContent = "";
+
+        mostrarSeguimientos(solicitud.seguimientos || []);
+
+        const admiteActuaciones =
+            solicitud.estado === "pendiente" ||
+            solicitud.estado === "en_revision";
+
+        formularioSeguimiento.hidden = !admiteActuaciones;
 
         mensajeDetalle.textContent = "";
         contenidoDetalle.hidden = false;
@@ -426,6 +517,51 @@ function mostrarSiNo(valor) {
     }
 
     return "No indicado";
+}
+
+// GUARDAR UNA ENTREVISTA O DECISIÓN
+async function enviarSeguimiento(evento) {
+
+    evento.preventDefault();
+
+    const token = sessionStorage.getItem("token");
+    const id = solicitudSeleccionadaId;
+
+    if (!token || !id) {
+        mensajeSeguimiento.textContent =
+            "Debes iniciar sesión y seleccionar una solicitud.";
+        return;
+    }
+
+    const datos = {
+        tipo: tipoSeguimiento.value,
+        observaciones: observacionesSeguimiento.value.trim()
+    };
+
+    mensajeSeguimiento.textContent = "Guardando actuación...";
+    guardarSeguimiento.disabled = true;
+
+    try {
+        const resultado = await registrarSeguimiento(id, datos, token);
+
+        if (solicitudSeleccionadaId === id && modal.open) {
+            await abrirDetalleSolicitud(id);
+
+            if (solicitudSeleccionadaId === id && modal.open) {
+                mensajeSeguimiento.textContent = resultado.message;
+            }
+        }
+
+        await cargarSolicitudes();
+
+    } catch (error) {
+        if (solicitudSeleccionadaId === id && modal.open) {
+            mensajeSeguimiento.textContent = error.message;
+        }
+
+    } finally {
+        guardarSeguimiento.disabled = false;
+    }
 }
 
 // GUARDAR LAS OBSERVACIONES INTERNAS
@@ -625,6 +761,7 @@ botonSiguiente.addEventListener("click", function () {
 
 // OBSERVACIONES INTERNAS
 formularioObservaciones.addEventListener("submit", guardarObservaciones);
+formularioSeguimiento.addEventListener("submit", enviarSeguimiento);
 
 // CERRAR EL MODAL
 cerrarModal.addEventListener("click", function () {

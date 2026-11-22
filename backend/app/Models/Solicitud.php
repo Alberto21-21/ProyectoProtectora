@@ -23,4 +23,13 @@ class Solicitud extends Model
     {
         return $this->belongsTo(Animal::class, 'animal_id');
     }
+
+    // HISTORIAL DE ENTREVISTAS Y DECISIONES
+    public function seguimientos()
+    {
+        return $this->hasMany(
+            SeguimientoSolicitud::class,
+            'solicitud_id'
+        );
+    }
 }

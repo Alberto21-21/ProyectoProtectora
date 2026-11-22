@@ -6,6 +6,7 @@ use App\Models\Animal;
 use App\Models\Solicitud;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\SeguimientoSolicitud;
 
 class SolicitudController extends Controller
 {
@@ -182,8 +183,14 @@ class SolicitudController extends Controller
         $solicitud = Solicitud::with([
             'usuario:id,name,email,fecha_nacimiento',
             'usuario.hogar',
-            'animal:id,nombre,especie,raza,estado'
+            'animal:id,nombre,especie,raza,estado',
+            'seguimientos' => function ($consulta) {
+                $consulta->orderByDesc('fecha')
+                    ->orderByDesc('id');
+            },
+            'seguimientos.responsable:id,name'
         ])
+
             ->select(
                 'id',
                 'user_id',
@@ -242,5 +249,106 @@ class SolicitudController extends Controller
                 'updated_at' => $solicitud->updated_at
             ]
         ], 200);
+    }
+
+    // REGISTRAR UNA ENTREVISTA O DECISIÓN
+    public function registrarSeguimiento(Request $request, $id)
+    {
+        $datos = $request->validate([
+            'tipo' => 'required|in:entrevista,aprobacion,rechazo',
+            'observaciones' => 'required|string|min:5|max:2000'
+        ], [
+            'tipo.required' => 'Debes seleccionar una actuación.',
+            'tipo.in' => 'La actuación seleccionada no es válida.',
+            'observaciones.required' => 'Debes escribir las observaciones.',
+            'observaciones.string' => 'Las observaciones deben ser un texto.',
+            'observaciones.min' => 'Escribe al menos 5 caracteres.',
+            'observaciones.max' => 'No puedes superar los 2000 caracteres.'
+        ]);
+
+        return DB::transaction(function () use ($request, $datos, $id) {
+
+            $solicitud = Solicitud::where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$solicitud) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La solicitud no existe.'
+                ], 404);
+            }
+
+            $estadoAnterior = $solicitud->estado;
+
+            if (!in_array($estadoAnterior, ['pendiente', 'en_revision'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Esta solicitud ya está cerrada y no admite nuevas actuaciones.'
+                ], 422);
+            }
+
+            if (
+                $datos['tipo'] === 'aprobacion'
+                && $estadoAnterior !== 'en_revision'
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Primero debes registrar una entrevista.'
+                ], 422);
+            }
+
+            // COMPROBAR EL ANIMAL ANTES DE APROBAR
+            if ($datos['tipo'] === 'aprobacion') {
+
+                $animal = $solicitud->animal()
+                    ->lockForUpdate()
+                    ->first();
+
+                if (
+                    !$animal
+                    || !$animal->activo
+                    || $animal->estado !== 'Disponible'
+                ) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No se puede aprobar: el animal no está disponible para adopción.'
+                    ], 422);
+                }
+            }
+
+            if ($datos['tipo'] === 'entrevista') {
+                $estadoNuevo = 'en_revision';
+            } elseif ($datos['tipo'] === 'aprobacion') {
+                $estadoNuevo = 'aprobada';
+            } else {
+                $estadoNuevo = 'rechazada';
+            }
+
+            $seguimiento = new SeguimientoSolicitud();
+            $seguimiento->tipo = $datos['tipo'];
+            $seguimiento->estado_anterior = $estadoAnterior;
+            $seguimiento->estado_nuevo = $estadoNuevo;
+            $seguimiento->fecha = now();
+            $seguimiento->observaciones = $datos['observaciones'];
+
+            $seguimiento->responsable()->associate($request->user());
+            $solicitud->seguimientos()->save($seguimiento);
+
+            $solicitud->estado = $estadoNuevo;
+            $solicitud->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Actuación registrada correctamente.',
+                'data' => [
+                    'id' => $solicitud->id,
+                    'estado' => $solicitud->estado,
+                    'seguimiento' => $seguimiento->load(
+                        'responsable:id,name'
+                    )
+                ]
+            ], 200);
+        });
     }
 }
