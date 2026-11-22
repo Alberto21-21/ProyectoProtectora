@@ -422,7 +422,11 @@ async function cargarPerfilVeterinario(usuario) {
     } catch (error) {
         mensaje.textContent = error.message;
 
-        if (error.message === "Esta cuenta todavía no tiene perfil veterinario.") {
+              if (
+            error.message === "Esta cuenta todavía no tiene perfil veterinario." ||
+            error.message === "Esta cuenta no tiene un perfil veterinario disponible."
+        ) {
+            mensaje.textContent = "Esta cuenta todavía no tiene información profesional.";
             botonCrear.hidden = false;
         }
     }
