@@ -13,25 +13,20 @@ import {
 } from "./providers/instalacionesProvider.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-   
-    // ELEMENTOS DEL DOM
-   
     const mensajeHabitaculos = document.querySelector("#mensajeHabitaculos");
     const contenidoHabitaculos = document.querySelector("#contenidoHabitaculos");
     const enlaceInstalaciones = document.querySelector("#enlaceInstalaciones");
     const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
 
-    // Filtros y listado
     const formularioFiltros = document.querySelector("#formularioFiltros");
     const filtroZona = document.querySelector("#filtroZona");
     const filtroLimpieza = document.querySelector("#filtroLimpieza");
     const botonLimpiarFiltros = document.querySelector("#botonLimpiarFiltros");
+    const contenedorPlanoHabitaculos = document.querySelector("#contenedorPlanoHabitaculos");
     const tablaHabitaculos = document.querySelector("#tablaHabitaculos");
 
-    // Historial de alojamientos (T25)
     const tablaHistorialAlojamientos = document.querySelector("#tablaHistorialAlojamientos");
 
-    // Modal alojar / trasladar animal (T25)
     const botonAbrirAlojar = document.querySelector("#botonAbrirAlojar");
     const modalAlojarAnimal = document.querySelector("#modalAlojarAnimal");
     const cerrarAlojarAnimal = document.querySelector("#cerrarAlojarAnimal");
@@ -42,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensajeAlojarAnimal = document.querySelector("#mensajeAlojarAnimal");
     const botonGuardarAlojamiento = document.querySelector("#botonGuardarAlojamiento");
 
-    // Ficha
     const modalFichaHabitaculo = document.querySelector("#modalFichaHabitaculo");
     const cerrarFichaHabitaculo = document.querySelector("#cerrarFichaHabitaculo");
     const tituloFichaHabitaculo = document.querySelector("#tituloFichaHabitaculo");
@@ -60,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const listaActuaciones = document.querySelector("#listaActuaciones");
     const tablaAnimalesAlojados = document.querySelector("#tablaAnimalesAlojados");
 
-    // ROLES QUE PUEDEN CONSULTAR Y ALOJAR EN LOS HABITÁCULOS
     const rolesTrabajadores = ["admin", "personal", "veterinario"];
 
     function obtenerToken() {
@@ -96,28 +89,181 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function extraerMotivosError(error) {
+        if (!error) {
+            return [];
+        }
+        if (Array.isArray(error.motivos) && error.motivos.length > 0) {
+            return error.motivos;
+        }
+        if (Array.isArray(error.data?.motivos) && error.data.motivos.length > 0) {
+            return error.data.motivos;
+        }
+        if (error.errors && typeof error.errors === "object") {
+            return Object.values(error.errors).flat().filter(Boolean);
+        }
+        return [];
+    }
+
     function mostrarErrorAlojamiento(error) {
         mensajeAlojarAnimal.replaceChildren();
 
-        if (Array.isArray(error.motivos) && error.motivos.length > 0) {
+        const motivos = extraerMotivosError(error);
+        if (motivos.length > 0) {
             const titulo = document.createElement("strong");
             titulo.textContent = "Alojamiento rechazado:";
             mensajeAlojarAnimal.appendChild(titulo);
 
             const lista = document.createElement("ul");
-            error.motivos.forEach(function (motivo) {
+            motivos.forEach(function (motivo) {
                 lista.appendChild(crearElementoLista(motivo));
             });
             mensajeAlojarAnimal.appendChild(lista);
             return;
         }
 
-        mensajeAlojarAnimal.textContent = error.message;
+        mensajeAlojarAnimal.textContent = error?.message || "No se pudo completar el alojamiento.";
     }
 
-   
-    // COMPROBAR QUE ES UN TRABAJADOR
-    
+    function normalizarTexto(valor) {
+        return String(valor || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function esAislamiento(habitaculo) {
+        const texto = normalizarTexto(habitaculo.restricciones) + " " + normalizarTexto(habitaculo.zona?.nombre);
+        return texto.includes("aislamiento") || texto.includes("cuarentena");
+    }
+
+    function crearBadgeEstado(texto, claseExtra) {
+        const span = document.createElement("span");
+        span.className = "badge-t28 " + claseExtra;
+        span.textContent = texto;
+        return span;
+    }
+
+    function pintarPlanoHabitaculos(habitaculos) {
+        if (!contenedorPlanoHabitaculos) {
+            return;
+        }
+
+        contenedorPlanoHabitaculos.replaceChildren();
+
+        if (!Array.isArray(habitaculos) || habitaculos.length === 0) {
+            const vacio = document.createElement("p");
+            vacio.className = "plano-vacio-t28";
+            vacio.textContent = "No hay habitáculos para mostrar en el plano con esos filtros.";
+            contenedorPlanoHabitaculos.appendChild(vacio);
+            return;
+        }
+
+        const gruposPorZona = new Map();
+        for (let i = 0; i < habitaculos.length; i++) {
+            const hab = habitaculos[i];
+            const nombreZona = hab.zona?.nombre || "Sin zona";
+            if (!gruposPorZona.has(nombreZona)) {
+                gruposPorZona.set(nombreZona, []);
+            }
+            gruposPorZona.get(nombreZona).push(hab);
+        }
+
+        gruposPorZona.forEach(function (listaZona, nombreZona) {
+            const bloqueZona = document.createElement("div");
+            bloqueZona.className = "zona-plano-t28";
+
+            const tituloZona = document.createElement("h3");
+            tituloZona.className = "titulo-zona-t28";
+            tituloZona.textContent = nombreZona;
+            bloqueZona.appendChild(tituloZona);
+
+            const grid = document.createElement("div");
+            grid.className = "grid-plano-t28";
+
+            for (let i = 0; i < listaZona.length; i++) {
+                const hab = listaZona[i];
+                const ocupados = Number(hab.animales_activos_count ?? 0);
+                const capacidad = Number(hab.capacidad ?? 0);
+                const estaOcupado = capacidad > 0 && ocupados >= capacidad;
+                const requiereAislamiento = esAislamiento(hab);
+                const requiereLimpieza = hab.estado_limpieza && hab.estado_limpieza !== "Limpio";
+                const requiereMantenimiento = hab.estado_mantenimiento && hab.estado_mantenimiento !== "Operativo";
+
+                const celda = document.createElement("article");
+                celda.className = "celda-plano-t28 " + (estaOcupado ? "es-ocupado" : "es-libre");
+                if (requiereAislamiento) {
+                    celda.classList.add("es-aislamiento");
+                }
+                if (!hab.activo) {
+                    celda.classList.add("es-inactivo");
+                }
+
+                const cabecera = document.createElement("div");
+                cabecera.className = "cabecera-celda-t28";
+
+                const identificador = document.createElement("strong");
+                identificador.textContent = hab.identificador;
+
+                const plazasTexto = document.createElement("span");
+                plazasTexto.className = "plazas-celda-t28";
+                plazasTexto.textContent = ocupados + "/" + capacidad + " plazas";
+
+                cabecera.appendChild(identificador);
+                cabecera.appendChild(plazasTexto);
+                celda.appendChild(cabecera);
+
+                const badges = document.createElement("div");
+                badges.className = "badges-celda-t28";
+
+                badges.appendChild(
+                    crearBadgeEstado(
+                        estaOcupado ? "Ocupado" : "Libre",
+                        estaOcupado ? "badge-ocupado" : "badge-libre"
+                    )
+                );
+
+                badges.appendChild(
+                    crearBadgeEstado(
+                        "Limpieza: " + hab.estado_limpieza,
+                        requiereLimpieza ? "badge-limpieza" : "badge-ok"
+                    )
+                );
+
+                badges.appendChild(
+                    crearBadgeEstado(
+                        "Mant.: " + hab.estado_mantenimiento,
+                        requiereMantenimiento ? "badge-mantenimiento" : "badge-ok"
+                    )
+                );
+
+                if (requiereAislamiento) {
+                    badges.appendChild(crearBadgeEstado("Aislamiento", "badge-aislamiento"));
+                }
+
+                if (!hab.activo) {
+                    badges.appendChild(crearBadgeEstado("Desactivado", "badge-inactivo"));
+                }
+
+                celda.appendChild(badges);
+
+                const botonDetalle = document.createElement("button");
+                botonDetalle.type = "button";
+                botonDetalle.className = "boton-detalle";
+                botonDetalle.textContent = "Ver detalle";
+                botonDetalle.addEventListener("click", function () {
+                    verFicha(hab.id);
+                });
+
+                celda.appendChild(botonDetalle);
+                grid.appendChild(celda);
+            }
+
+            bloqueZona.appendChild(grid);
+            contenedorPlanoHabitaculos.appendChild(bloqueZona);
+        });
+    }
+
     async function comprobarAcceso() {
         const token = obtenerToken();
 
@@ -134,7 +280,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // EL ENLACE A LA GESTIÓN SOLO LO VE EL ADMINISTRADOR
             enlaceInstalaciones.hidden = usuario.rol !== "admin";
 
             contenidoHabitaculos.hidden = false;
@@ -147,7 +292,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // RELLENAR EL FILTRO DE ZONAS
     async function cargarZonas() {
         try {
             const resultado = await obtenerZonas(obtenerToken());
@@ -165,9 +309,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    
-    // LISTADO DE HABITÁCULOS
-    
     async function cargarHabitaculos() {
         const filtros = {
             zona_id: filtroZona.value,
@@ -176,7 +317,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const resultado = await obtenerHabitaculos(filtros, obtenerToken());
-            pintarTablaHabitaculos(resultado.data);
+            const lista = resultado.data || [];
+            pintarPlanoHabitaculos(lista);
+            pintarTablaHabitaculos(lista);
 
         } catch (error) {
             mensajeHabitaculos.textContent = error.message;
@@ -226,9 +369,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-   
-    // HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (T25)
-   
     async function cargarHistorial() {
         try {
             const resultado = await obtenerHistorialAlojamientos({}, obtenerToken());
@@ -280,9 +420,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-  
-    // MODAL ALOJAR / TRASLADAR ANIMAL (T25)
-    
     async function abrirModalAlojar() {
         mensajeAlojarAnimal.textContent = "Cargando animales y habitáculos...";
         formularioAlojarAnimal.reset();
@@ -392,9 +529,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    
-    // FICHA DEL HABITÁCULO
-   
     async function verFicha(id) {
         datosFichaHabitaculo.hidden = true;
         tituloFichaHabitaculo.textContent = "Ficha del habitáculo";
@@ -490,9 +624,6 @@ document.addEventListener("DOMContentLoaded", function () {
         modalFichaHabitaculo.close();
     });
 
-  
-    // FILTROS
-    
     formularioFiltros.addEventListener("submit", function (e) {
         e.preventDefault();
         cargarHabitaculos();
@@ -504,9 +635,6 @@ document.addEventListener("DOMContentLoaded", function () {
         cargarHabitaculos();
     });
 
-   
-    // CERRAR SESIÓN
-    
     botonCerrarSesion.addEventListener("click", async function () {
         const token = obtenerToken();
 

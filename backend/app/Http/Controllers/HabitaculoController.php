@@ -24,7 +24,10 @@ class HabitaculoController extends Controller
             'estado_limpieza.in' => 'El estado de limpieza no es válido.'
         ]);
 
-        $consulta = Habitaculo::with('zona:id,nombre,activo');
+        $consulta = Habitaculo::with('zona:id,nombre,activo')
+            ->withCount(['animales as animales_activos_count' => function ($query) {
+                $query->where('activo', true);
+            }]);
 
         if ($request->zona_id) {
             $consulta->where('zona_id', $request->zona_id);
@@ -67,14 +70,12 @@ class HabitaculoController extends Controller
     {
         $request->validate($this->reglas($request, null), $this->mensajes());
 
-        // SI SE DA DE ALTA COMO LIMPIO Y NO HAY FECHA, SE HA LIMPIADO HOY
         $fechaUltimaLimpieza = $request->fecha_ultima_limpieza;
 
         if ($request->estado_limpieza === 'Limpio' && !$fechaUltimaLimpieza) {
             $fechaUltimaLimpieza = now()->toDateString();
         }
 
-        // CREAR EL HABITÁCULO DESDE LA RELACIÓN DE SU ZONA
         $zona = Zona::find($request->zona_id);
 
         $habitaculo = $zona->habitaculos()->create([
@@ -110,7 +111,6 @@ class HabitaculoController extends Controller
 
         $request->validate($this->reglas($request, $habitaculo->id), $this->mensajes());
 
-        // LA CAPACIDAD NO PUEDE SER MENOR QUE LOS ANIMALES QUE YA ESTÁN ALOJADOS (T24)
         $alojados = $habitaculo->animales()->where('activo', true)->count();
 
         if ($request->capacidad < $alojados) {
@@ -123,7 +123,6 @@ class HabitaculoController extends Controller
             ], 422);
         }
 
-        // SI PASA A ESTAR LIMPIO Y NO SE INDICA LA FECHA, SE HA LIMPIADO HOY
         $fechaUltimaLimpieza = $request->fecha_ultima_limpieza;
 
         if ($request->estado_limpieza === 'Limpio' && $habitaculo->estado_limpieza !== 'Limpio' && !$fechaUltimaLimpieza) {
@@ -160,7 +159,6 @@ class HabitaculoController extends Controller
             ], 404);
         }
 
-        // PARA ACTIVARLO, SU ZONA TIENE QUE ESTAR ACTIVA
         if (!$habitaculo->activo && !$habitaculo->zona->activo) {
             return response()->json([
                 'success' => false,
@@ -168,7 +166,6 @@ class HabitaculoController extends Controller
             ], 422);
         }
 
-        // NO SE PUEDE DESACTIVAR SI TIENE ANIMALES ALOJADOS (T24)
         if ($habitaculo->activo) {
             $alojados = $habitaculo->animales()->where('activo', true)->count();
 
@@ -183,11 +180,9 @@ class HabitaculoController extends Controller
         $habitaculo->activo = !$habitaculo->activo;
         $habitaculo->save();
 
-        if ($habitaculo->activo) {
-            $mensaje = 'Habitáculo activado correctamente.';
-        } else {
-            $mensaje = 'Habitáculo desactivado correctamente.';
-        }
+        $mensaje = $habitaculo->activo
+            ? 'Habitáculo activado correctamente.'
+            : 'Habitáculo desactivado correctamente.';
 
         return response()->json([
             'success' => true,
@@ -196,8 +191,7 @@ class HabitaculoController extends Controller
         ], 200);
     }
 
-    // FICHA DEL HABITÁCULO PARA LOS TRABAJADORES (T24):
-    // ANIMALES ALOJADOS, PLAZAS, RESTRICCIONES, ESTADOS Y PRÓXIMAS ACTUACIONES
+    // FICHA DEL HABITÁCULO PARA LOS TRABAJADORES (T24)
     public function ficha($id)
     {
         $habitaculo = Habitaculo::with('zona:id,nombre,activo')->find($id);
@@ -209,21 +203,14 @@ class HabitaculoController extends Controller
             ], 404);
         }
 
-        // ANIMALES ALOJADOS (SOLO DATOS GENERALES, NADA CLÍNICO)
         $animales = $habitaculo->animales()
             ->where('activo', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre', 'especie', 'sexo', 'tamano', 'estado']);
 
-        // PLAZAS
         $ocupadas = count($animales);
-        $libres = $habitaculo->capacidad - $ocupadas;
+        $libres = max(0, $habitaculo->capacidad - $ocupadas);
 
-        if ($libres < 0) {
-            $libres = 0;
-        }
-
-        // RESTRICCIONES: LAS QUE ESCRIBE EL ADMINISTRADOR Y LAS QUE SALEN DEL ESTADO
         $restricciones = [];
 
         if ($habitaculo->restricciones) {
@@ -242,7 +229,6 @@ class HabitaculoController extends Controller
             $restricciones[] = 'Completo: no quedan plazas libres.';
         }
 
-        // PRÓXIMAS ACTUACIONES
         $actuaciones = [];
         $hoy = now()->toDateString();
 
@@ -256,12 +242,9 @@ class HabitaculoController extends Controller
 
         if ($habitaculo->fecha_proxima_limpieza) {
             $fechaProxima = $habitaculo->fecha_proxima_limpieza->toDateString();
-
-            if ($fechaProxima < $hoy) {
-                $descripcion = 'Limpieza programada con fecha vencida.';
-            } else {
-                $descripcion = 'Limpieza programada.';
-            }
+            $descripcion = $fechaProxima < $hoy
+                ? 'Limpieza programada con fecha vencida.'
+                : 'Limpieza programada.';
 
             $actuaciones[] = [
                 'tipo' => 'Limpieza',
@@ -334,7 +317,7 @@ class HabitaculoController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Rechazado por disponibilidad: no se puede alojar un animal dado de baja o inactivo.',
-                'motivos' => ['El animal seleccionado no está activo.']
+                'motivos' => ['Disponibilidad: el animal seleccionado no está activo.']
             ], 422);
         }
 
@@ -346,9 +329,16 @@ class HabitaculoController extends Controller
             }
         ])->find($request->habitaculo_destino_id);
 
+        $normalizar = function ($valor) {
+            $texto = mb_strtolower(trim((string) $valor));
+            return strtr($texto, [
+                'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                'ü' => 'u', 'ñ' => 'n'
+            ]);
+        };
+
         $motivosRechazo = [];
 
-        // 1. DISPONIBILIDAD (habitáculo, zona, mantenimiento y mismo habitáculo)
         if (!$habitaculoDestino->activo) {
             $motivosRechazo[] = 'Disponibilidad: el habitáculo "' . $habitaculoDestino->identificador . '" está desactivado.';
         }
@@ -366,35 +356,37 @@ class HabitaculoController extends Controller
         }
 
         $animalesAlojados = $habitaculoDestino->animales;
-        $textoRestricciones = mb_strtolower((string) $habitaculoDestino->restricciones);
-        $textoZona = mb_strtolower((string) ($habitaculoDestino->zona->nombre ?? ''));
 
-        // 2. ESPECIE
-        $especieAnimal = mb_strtolower((string) $animal->especie);
+        if ($animalesAlojados->count() >= (int) $habitaculoDestino->capacidad) {
+            $motivosRechazo[] = 'Disponibilidad: el habitáculo "' . $habitaculoDestino->identificador . '" está completo (capacidad máxima: ' . $habitaculoDestino->capacidad . ').';
+        }
+
+        $textoRestricciones = $normalizar($habitaculoDestino->restricciones);
+        $textoZona = $normalizar($habitaculoDestino->zona->nombre ?? '');
+        $especieAnimal = $normalizar($animal->especie);
 
         if (str_contains($textoRestricciones, 'solo perros') || str_contains($textoZona, 'perrera')) {
-            if ($especieAnimal !== 'perro') {
+            if (!in_array($especieAnimal, ['perro', 'perros'], true)) {
                 $motivosRechazo[] = 'Especie: el habitáculo "' . $habitaculoDestino->identificador . '" es exclusivo para perros.';
             }
         }
 
         if (str_contains($textoRestricciones, 'solo gatos') || str_contains($textoZona, 'gatera')) {
-            if ($especieAnimal !== 'gato') {
+            if (!in_array($especieAnimal, ['gato', 'gatos'], true)) {
                 $motivosRechazo[] = 'Especie: el habitáculo "' . $habitaculoDestino->identificador . '" es exclusivo para gatos.';
             }
         }
 
         foreach ($animalesAlojados as $companero) {
-            if (mb_strtolower((string) $companero->especie) !== $especieAnimal) {
+            if ($normalizar($companero->especie) !== $especieAnimal) {
                 $motivosRechazo[] = 'Especie: no se puede mezclar "' . $animal->especie . '" con "' . $companero->especie . '" (' . $companero->nombre . ') en el mismo habitáculo.';
                 break;
             }
         }
 
-        // 3. CONVIVENCIA
         if ($animalesAlojados->count() > 0) {
             if ($animal->con_otros_animales === 'No compatible') {
-                $motivosRechazo[] = 'Convivencia: "' . $animal->nombre . '" está marcado como no compatible con otros animales y el habitáculo ya tiene ocupantes.';
+                $motivosRechazo[] = 'Convivencia: "' . $animal->nombre . '" no es compatible con otros animales y el habitáculo ya tiene ocupantes.';
             }
 
             foreach ($animalesAlojados as $companero) {
@@ -404,7 +396,6 @@ class HabitaculoController extends Controller
             }
         }
 
-        // 4. AISLAMIENTO
         $esHabitaculoAislamiento = str_contains($textoRestricciones, 'aislamiento')
             || str_contains($textoRestricciones, 'cuarentena')
             || str_contains($textoZona, 'aislamiento')
@@ -433,7 +424,6 @@ class HabitaculoController extends Controller
             ], 422);
         }
 
-        // COMPROBAR CAPACIDAD Y REALIZAR MOVIMIENTO EN TRANSACCIÓN PARA EVITAR INCONSISTENCIAS
         $resultado = DB::transaction(function () use ($request, $animal, $habitaculoDestino) {
             $destinoBloqueado = Habitaculo::where('id', $habitaculoDestino->id)->lockForUpdate()->first();
             $ocupadas = $destinoBloqueado->animales()->where('activo', true)->count();
@@ -442,7 +432,7 @@ class HabitaculoController extends Controller
                 return null;
             }
 
-            $origenId = $animal->habitaculo_id; // null si es primer alojamiento, o ID anterior si es traslado
+            $origenId = $animal->habitaculo_id;
 
             $movimiento = Alojamiento::create([
                 'animal_id' => $animal->id,
@@ -488,7 +478,7 @@ class HabitaculoController extends Controller
         ], 201);
     }
 
-    // CONSULTAR HISTORIAL DE ALOJAMIENTOS Y TRASLADOS (OPCIONALMENTE FILTRADO POR ANIMAL O HABITÁCULO)
+    // CONSULTAR HISTORIAL DE ALOJAMIENTOS Y TRASLADOS
     public function historialAlojamientos(Request $request)
     {
         $consulta = Alojamiento::with([
@@ -516,17 +506,14 @@ class HabitaculoController extends Controller
         ], 200);
     }
 
-    // REGLAS DE VALIDACIÓN DEL ALTA Y DE LA EDICIÓN
     private function reglas(Request $request, $idHabitaculo)
     {
-        // EL IDENTIFICADOR NO SE PUEDE REPETIR (AL EDITAR SE IGNORA EL PROPIO)
         $reglaIdentificador = 'required|string|max:50|unique:habitaculos,identificador';
 
         if ($idHabitaculo) {
             $reglaIdentificador = $reglaIdentificador . ',' . $idHabitaculo;
         }
 
-        // LA PRÓXIMA LIMPIEZA TIENE QUE SER DESPUÉS DE LA ÚLTIMA (SI SE CONOCE)
         $reglaProximaLimpieza = 'nullable|date';
 
         if ($request->fecha_ultima_limpieza) {
@@ -550,7 +537,6 @@ class HabitaculoController extends Controller
         ];
     }
 
-    // MENSAJES DE ERROR EN ESPAÑOL
     private function mensajes()
     {
         return [
