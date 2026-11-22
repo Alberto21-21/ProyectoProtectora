@@ -1638,6 +1638,24 @@ button:focus-visible {
     background-color: #FFAC16;
 }
 
+.estado-tiempo-real {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.estado-tiempo-real:empty {
+    display: none;
+}
+
+.estado-tiempo-real.estado-conectado {
+    color: #2E7D32;
+}
+
+.estado-tiempo-real.estado-desconectado {
+    color: #B3261E;
+}
+
 @media (max-width: 900px) {
 
     .distribucion-chat {
@@ -3957,6 +3975,7 @@ button:focus-visible {
     .imagen-protectora img {
         height: 300px;
     }
+
 }
 
 /* ENTREVISTAS Y DECISIONES */
@@ -4200,4 +4219,6 @@ a[href*="habitaculos.html"]:hover {
     margin: 0;
     font-size: 14px;
     color: #8B5C4A;
+
+
 }

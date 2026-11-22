@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MensajeEnviado;
 use App\Models\Conversacion;
 use App\Models\Mensaje;
 use Illuminate\Http\Request;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 // T65: mensajes de una conversación.
-// En T66 el mensaje guardado también se publicará por WebSocket.
+// T66: el mensaje guardado también se publica por WebSocket en un canal privado.
 class MensajeController extends Controller
 {
 
@@ -96,6 +97,15 @@ public function store(Request $request, int $id)
     });
 
     $mensaje->load('emisor:id,name,rol');
+
+    // PUBLICAR EL MENSAJE EN TIEMPO REAL.
+    // Ya está guardado: si el servidor WebSocket no responde, el mensaje no se pierde
+    // y los participantes lo recuperan al reconectar.
+    try {
+        event(new MensajeEnviado($mensaje));
+    } catch (\Throwable $error) {
+        report($error);
+    }
 
     return response()->json([
         'success' => true,

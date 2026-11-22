@@ -16,6 +16,11 @@ import {
     obtenerAnimales
 } from "./providers/animalesProvider.js";
 
+import {
+    obtenerPusher,
+    cerrarPusher
+} from "./pusher.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     // -------------------------------------------------------------
     // ELEMENTOS DEL DOM
@@ -41,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const tituloConversacion = document.querySelector("#tituloConversacion");
     const participantesConversacion = document.querySelector("#participantesConversacion");
     const animalDetalle = document.querySelector("#animalConversacionDetalle");
+    const estadoTiempoReal = document.querySelector("#estadoTiempoReal");
     const listaMensajes = document.querySelector("#listaMensajes");
     const formularioMensaje = document.querySelector("#formularioMensaje");
     const textoMensaje = document.querySelector("#textoMensaje");
@@ -53,6 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let token = null;
     let usuarioActual = null;
     let conversacionAbiertaId = null;
+
+    // Tiempo real (T66)
+    let nombreCanalActivo = null;
+    let ultimoMensajeId = 0;
+    const mensajesMostrados = new Set();
 
     // -------------------------------------------------------------
     // UTILIDADES
@@ -178,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function crearElementoMensaje(mensaje) {
         const elemento = document.createElement("li");
         elemento.className = "mensaje-chat";
+        elemento.dataset.id = mensaje.id;
 
         if (mensaje.emisor.id === usuarioActual.id) {
             elemento.classList.add("mensaje-propio");
@@ -197,6 +209,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function pintarMensajes(mensajes) {
         listaMensajes.replaceChildren();
+        mensajesMostrados.clear();
+        ultimoMensajeId = 0;
+
+        mensajes.forEach(function (mensaje) {
+            mensajesMostrados.add(mensaje.id);
+            ultimoMensajeId = Math.max(ultimoMensajeId, mensaje.id);
+        });
 
         if (mensajes.length === 0) {
             const vacio = document.createElement("li");
@@ -211,6 +230,116 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         listaMensajes.scrollTop = listaMensajes.scrollHeight;
+    }
+
+    // AÑADIR UN MENSAJE A LA CONVERSACIÓN ABIERTA SIN REPETIRLO
+    // (puede llegar por WebSocket y también en la respuesta de la API)
+    function anadirMensaje(mensaje) {
+        if (mensajesMostrados.has(mensaje.id)) {
+            return;
+        }
+
+        mensajesMostrados.add(mensaje.id);
+        ultimoMensajeId = Math.max(ultimoMensajeId, mensaje.id);
+
+        // Quitar el aviso de "sin mensajes" si estaba
+        const aviso = listaMensajes.querySelector(".aviso-chat");
+        if (aviso) {
+            aviso.remove();
+        }
+
+        listaMensajes.appendChild(crearElementoMensaje(mensaje));
+        listaMensajes.scrollTop = listaMensajes.scrollHeight;
+    }
+
+    function mostrarEstadoTiempoReal(estado) {
+        if (!estadoTiempoReal) {
+            return;
+        }
+
+        const conectado = estado === "connected";
+                estadoTiempoReal.textContent = conectado
+            ? "Conectado"
+            : "Reconectando… los mensajes se recuperarán al volver.";
+        estadoTiempoReal.className = "estado-tiempo-real " +
+            (conectado ? "estado-conectado" : "estado-desconectado");
+    }
+
+    // RECUPERAR LOS MENSAJES GUARDADOS QUE SE HAYAN PERDIDO (al reconectar)
+    async function sincronizarMensajes(idConversacion) {
+        try {
+            const resultado = await obtenerMensajes(idConversacion, token, {
+                despues_de: ultimoMensajeId
+            });
+
+            if (idConversacion !== conversacionAbiertaId) {
+                return;
+            }
+
+            resultado.data.forEach(anadirMensaje);
+
+        } catch (error) {
+            console.error("No se pudo sincronizar la conversación:", error);
+        }
+    }
+
+    // MENSAJE RECIBIDO POR EL CANAL PRIVADO
+    function recibirMensaje(datos) {
+        const mensaje = datos && datos.mensaje;
+
+        if (!mensaje) {
+            return;
+        }
+
+        if (mensaje.conversacion_id === conversacionAbiertaId) {
+            anadirMensaje(mensaje);
+        }
+
+        cargarConversaciones();
+    }
+
+    // CAMBIAR DE CANAL: solo se escucha la conversación abierta
+    function suscribirConversacion(idConversacion) {
+        const pusher = obtenerPusher();
+
+        if (!pusher) {
+            return;
+        }
+
+        if (nombreCanalActivo) {
+            pusher.unsubscribe(nombreCanalActivo);
+        }
+
+        nombreCanalActivo = "private-conversacion." + idConversacion;
+
+        const canal = pusher.subscribe(nombreCanalActivo);
+        canal.bind("mensaje.enviado", recibirMensaje);
+
+        // Se dispara al suscribirse y cada vez que Pusher se vuelve a conectar
+        canal.bind("pusher:subscription_succeeded", function () {
+            sincronizarMensajes(idConversacion);
+        });
+
+        canal.bind("pusher:subscription_error", function () {
+            mostrarMensaje(
+                "No se pudo abrir el canal en tiempo real de esta conversación.",
+                true
+            );
+        });
+    }
+
+    function escucharConexion() {
+        const pusher = obtenerPusher();
+
+        if (!pusher) {
+            return;
+        }
+
+        mostrarEstadoTiempoReal(pusher.connection.state);
+
+        pusher.connection.bind("state_change", function (estados) {
+            mostrarEstadoTiempoReal(estados.current);
+        });
     }
 
     async function abrirConversacion(id) {
@@ -239,6 +368,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             pintarMensajes(mensajes.data);
             mostrarPanel("detalle");
+            suscribirConversacion(conversacion.id);
             await cargarConversaciones();
 
         } catch (error) {
@@ -265,14 +395,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const resultado = await enviarMensaje(conversacionAbiertaId, texto, token);
 
-            // Quitar el aviso de "sin mensajes" si estaba
-            const aviso = listaMensajes.querySelector(".aviso-chat");
-            if (aviso) {
-                aviso.remove();
-            }
-
-            listaMensajes.appendChild(crearElementoMensaje(resultado.data));
-            listaMensajes.scrollTop = listaMensajes.scrollHeight;
+            anadirMensaje(resultado.data);
             textoMensaje.value = "";
 
             await cargarConversaciones();
@@ -335,6 +458,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     botonNuevaConversacion.addEventListener("click", async function () {
         conversacionAbiertaId = null;
+
+        if (nombreCanalActivo) {
+            const pusher = obtenerPusher();
+
+            if (pusher) {
+                pusher.unsubscribe(nombreCanalActivo);
+            }
+
+            nombreCanalActivo = null;
+        }
+
         mostrarPanel("nueva");
         await prepararFormularioNueva();
         await cargarConversaciones();
@@ -410,6 +544,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             contenidoConversaciones.hidden = false;
             mostrarPanel("aviso");
+            escucharConexion();
             await cargarConversaciones();
 
         } catch (error) {
@@ -434,6 +569,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
+            cerrarPusher();
             sessionStorage.removeItem("token");
             localStorage.removeItem("token");
             window.location.href = "index.html";
