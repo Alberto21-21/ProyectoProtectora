@@ -18,6 +18,8 @@ use App\Http\Middleware\VeterinarioAutorizadoParaAnimal;
 use App\Http\Controllers\HogarController;
 use App\Http\Controllers\CompatibilidadController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\ConversacionController;
+use App\Http\Controllers\MensajeController;
 
 
 // AUTENTICACIÓN Y PERFIL
@@ -398,4 +400,31 @@ Route::prefix('solicitudes')
         Route::patch('/revision/{id}/observaciones', [SolicitudController::class, 'guardarObservacionesInternas'])
             ->whereNumber('id')
             ->middleware('abilities:solicitudes:revisar');
+    });
+
+// CONVERSACIONES Y MENSAJES (T65)
+Route::prefix('conversaciones')
+    ->middleware(['auth:sanctum', CuentaActiva::class, 'abilities:chat:usar'])
+    ->group(function () {
+
+        // CUENTAS CON LAS QUE SE PUEDE INICIAR UNA CONVERSACIÓN
+        Route::get('/contactos', [ConversacionController::class, 'contactos']);
+
+        // LISTAR LAS CONVERSACIONES DE LA CUENTA
+        Route::get('/', [ConversacionController::class, 'index']);
+
+        // INICIAR UNA CONVERSACIÓN
+        Route::post('/', [ConversacionController::class, 'store']);
+
+        // CONSULTAR EL DETALLE DE UNA CONVERSACIÓN
+        Route::get('/{id}', [ConversacionController::class, 'show'])
+            ->whereNumber('id');
+
+        // CONSULTAR LOS MENSAJES
+        Route::get('/{id}/mensajes', [MensajeController::class, 'index'])
+            ->whereNumber('id');
+
+        // ENVIAR UN MENSAJE
+        Route::post('/{id}/mensajes', [MensajeController::class, 'store'])
+            ->whereNumber('id');
     });

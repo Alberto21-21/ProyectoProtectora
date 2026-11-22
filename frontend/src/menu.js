@@ -8,6 +8,7 @@ const enlacesMenu = [
     { href: "usuarios.html", texto: "Usuarios", id: "enlaceUsuarios", roles: ["admin"] },
     { href: "revisionSolicitudes.html", texto: "Solicitudes", id: "enlaceRevisionSolicitudes", roles: ["admin"]},
     { href: "misAnimales.html", texto: "Mis animales", id: "enlaceMisAnimales", roles: ["personal", "veterinario"] },
+    { href: "conversaciones.html", texto: "Conversaciones", id: "enlaceConversaciones", roles: ["personal", "veterinario"] },
     { href: "instalaciones.html", texto: "Instalaciones", id: "enlaceInstalaciones", roles: ["admin"] }
 ];
 

@@ -52,8 +52,7 @@ return [
             'disponibilidad:consultar',
             'asignaciones:consultar',
             'instalaciones:consultar',
-
-
+            'chat:usar',
         ],
 
         'veterinario' => [
@@ -64,6 +63,7 @@ return [
             'clinica:gestionar',
             'asignaciones:consultar',
             'instalaciones:consultar',
+            'chat:usar',
         ],
 
     ],

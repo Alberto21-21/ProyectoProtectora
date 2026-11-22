@@ -66,7 +66,7 @@ class PersonalYAsignacionesTest extends TestCase
 
     // ---------- T33 ----------
 
-    public function test_el_admin_asigna_y_retira_un_veterinario(): void
+    public function test_admin_asigna_y_retira_veterinario(): void
     {
         [$admin, , , , $fichaVet, $animal] = $this->escenario();
         $this->entrarComo($admin);
@@ -88,7 +88,7 @@ class PersonalYAsignacionesTest extends TestCase
         $this->assertDatabaseMissing('animal_asignaciones', ['id' => $id]);
     }
 
-    public function test_no_se_puede_asignar_dos_veces_ni_a_personal(): void
+    public function test_no_asignar_dos_veces_ni_a_personal(): void
     {
         [$admin, , , $fichaPersonal, $fichaVet, $animal] = $this->escenario();
         $this->entrarComo($admin);
@@ -103,7 +103,7 @@ class PersonalYAsignacionesTest extends TestCase
         ])->assertStatus(422);
     }
 
-    public function test_el_personal_no_puede_asignar_ni_retirar_veterinarios(): void
+    public function test_personal_no_asigna_ni_retira(): void
     {
         [$admin, $personal, , , $fichaVet, $animal] = $this->escenario();
 
@@ -122,7 +122,7 @@ class PersonalYAsignacionesTest extends TestCase
         $this->getJson('/api/animal-asignaciones/veterinarios')->assertStatus(403);
     }
 
-    public function test_el_personal_consulta_los_veterinarios_de_un_animal(): void
+    public function test_personal_ve_veterinarios_del_animal(): void
     {
         [$admin, $personal, , , $fichaVet, $animal] = $this->escenario();
 
@@ -140,7 +140,7 @@ class PersonalYAsignacionesTest extends TestCase
         $this->getJson('/api/animal-asignaciones')->assertStatus(422);
     }
 
-    public function test_el_veterinario_solo_ve_sus_asignaciones(): void
+    public function test_veterinario_ve_solo_las_suyas(): void
     {
         [$admin, , $vet, , $fichaVet, $animal] = $this->escenario();
         $otro = $this->crearCuenta('veterinario', 'otro@test.com');
@@ -163,7 +163,7 @@ class PersonalYAsignacionesTest extends TestCase
 
     // ---------- T32 ----------
 
-    public function test_la_jornada_semanal_solo_existe_para_personal(): void
+    public function test_jornada_solo_para_personal(): void
     {
         [$admin, $personal, $vet] = $this->escenario();
         $this->entrarComo($admin);
@@ -186,7 +186,7 @@ class PersonalYAsignacionesTest extends TestCase
         $this->getJson("/api/empleados/usuario/{$vet->id}/jornada")->assertStatus(404);
     }
 
-    public function test_las_ausencias_se_validan_y_ocultan_el_motivo(): void
+    public function test_ausencias_validas_y_sin_motivo(): void
     {
         [$admin, $personal, $vet, $fichaPersonal, $fichaVet] = $this->escenario();
         $this->entrarComo($admin);
@@ -220,7 +220,7 @@ class PersonalYAsignacionesTest extends TestCase
         $this->assertArrayNotHasKey('motivo', $respuesta->json('data.0'));
     }
 
-    public function test_la_disponibilidad_por_fechas_ya_no_existe(): void
+    public function test_disponibilidad_por_fechas_eliminada(): void
     {
         [$admin] = $this->escenario();
         $this->entrarComo($admin);
