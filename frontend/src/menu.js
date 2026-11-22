@@ -2,7 +2,7 @@
 const enlacesMenu = [
     { href: "index.html", texto: "Inicio" },
     { href: "animales.html", texto: "Animales" },
-    { href: "sobreNosotros.html", texto: "Sobre nosotros"},
+    { href: "sobreNosotros.html", texto: "Sobre nosotros", roles: [null, "adoptante"]},
     { href: "perfil.html", texto: "Mi perfil", id: "enlacePerfil", roles: ["admin", "adoptante", "personal", "veterinario"] },
     { href: "usuarios.html", texto: "Usuarios", id: "enlaceUsuarios", roles: ["admin"] },
     { href: "revisionSolicitudes.html", texto: "Solicitudes", id: "enlaceRevisionSolicitudes", roles: ["admin"]},
