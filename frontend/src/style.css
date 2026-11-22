@@ -1638,6 +1638,24 @@ button:focus-visible {
     background-color: #FFAC16;
 }
 
+.estado-tiempo-real {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.estado-tiempo-real:empty {
+    display: none;
+}
+
+.estado-tiempo-real.estado-conectado {
+    color: #2E7D32;
+}
+
+.estado-tiempo-real.estado-desconectado {
+    color: #B3261E;
+}
+
 @media (max-width: 900px) {
 
     .distribucion-chat {
@@ -3958,110 +3976,4 @@ button:focus-visible {
     .imagen-protectora img {
         height: 300px;
     }
-}
-
-/* ENTREVISTAS Y DECISIONES */
-
-.seguimiento-solicitud {
-    margin-top: 30px;
-    padding-top: 10px;
-    border-top: 1px solid #E8E2E6;
-}
-
-#formularioSeguimiento {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-#formularioSeguimiento label {
-    color: #300E28;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-#formularioSeguimiento select,
-#formularioSeguimiento textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #FFAC16;
-    border-radius: 10px;
-    background-color: #FFFFFF;
-    color: #300E28;
-    font-size: 14px;
-}
-
-#formularioSeguimiento textarea {
-    min-height: 110px;
-    resize: vertical;
-}
-
-#guardarSeguimiento {
-    align-self: flex-end;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 30px;
-    background-color: #300E28;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#guardarSeguimiento:hover {
-    background-color: #8B5C4A;
-}
-
-#guardarSeguimiento:disabled {
-    opacity: 0.5;
-    cursor: wait;
-}
-
-#mensajeSeguimiento {
-    margin: 0;
-    font-size: 14px;
-}
-
-#historialSeguimientos {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.actuacion-solicitud {
-    padding: 18px;
-    border-radius: 14px;
-    background-color: #F5F5F5;
-}
-
-.actuacion-solicitud h4 {
-    margin: 0 0 12px;
-    color: #300E28;
-    font-size: 16px;
-    font-weight: 900;
-}
-
-.actuacion-solicitud p {
-    margin: 6px 0;
-    font-size: 14px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-}
-
-/* ESTADOS DE REVISIÓN Y DECISIÓN */
-
-.estado-revision {
-    background-color: #EAF2FF;
-    color: #2455A4;
-}
-
-.estado-aprobada {
-    background-color: #E8F5EC;
-    color: #216E39;
-}
-
-.estado-rechazada {
-    background-color: #FDECEC;
-    color: #B42318;
 }
