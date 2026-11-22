@@ -3959,3 +3959,18 @@ button:focus-visible {
         height: 300px;
     }
 }
+
+.estado-revision {
+    background-color: #EAF2FF;
+    color: #2455A4;
+}
+
+.estado-aprobada {
+    background-color: #E8F5EC;
+    color: #216E39;
+}
+
+.estado-rechazada {
+    background-color: #FDECEC;
+    color: #B42318;
+}
