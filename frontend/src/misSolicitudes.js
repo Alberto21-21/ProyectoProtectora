@@ -66,12 +66,25 @@ function mostrarSolicitudes(solicitudes) {
         etiquetaEstado.textContent = solicitud.estado;
         etiquetaEstado.className = "estado-solicitud";
 
-        if (solicitud.estado === "cancelada") {
-            etiquetaEstado.classList.add("estado-cancelada");
-        }
-
         if (solicitud.estado === "pendiente") {
+            etiquetaEstado.textContent = "Pendiente";
             etiquetaEstado.classList.add("estado-pendiente");
+
+        } else if (solicitud.estado === "en_revision") {
+            etiquetaEstado.textContent = "En revisión";
+            etiquetaEstado.classList.add("estado-revision");
+
+        } else if (solicitud.estado === "aprobada") {
+            etiquetaEstado.textContent = "Aprobada";
+            etiquetaEstado.classList.add("estado-aprobada");
+
+        } else if (solicitud.estado === "rechazada") {
+            etiquetaEstado.textContent = "Rechazada";
+            etiquetaEstado.classList.add("estado-rechazada");
+
+        } else if (solicitud.estado === "cancelada") {
+            etiquetaEstado.textContent = "Cancelada";
+            etiquetaEstado.classList.add("estado-cancelada");
         }
 
         estado.appendChild(etiquetaEstado);

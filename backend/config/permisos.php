@@ -34,6 +34,7 @@ return [
             'instalaciones:gestionar',
             'instalaciones:consultar',
             'solicitudes:revisar',
+            'solicitudes:gestionar',        
         ],
 
         'adoptante' => [
