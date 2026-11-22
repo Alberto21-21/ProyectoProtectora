@@ -400,6 +400,13 @@ Route::prefix('solicitudes')
         Route::patch('/revision/{id}/observaciones', [SolicitudController::class, 'guardarObservacionesInternas'])
             ->whereNumber('id')
             ->middleware('abilities:solicitudes:revisar');
+
+        Route::post('/revision/{id}/seguimientos', [
+            SolicitudController::class,
+            'registrarSeguimiento'
+        ])
+            ->whereNumber('id')
+            ->middleware('abilities:solicitudes:gestionar');
     });
 
 // CONVERSACIONES Y MENSAJES (T65)

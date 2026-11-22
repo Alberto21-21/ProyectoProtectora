@@ -155,3 +155,31 @@ export async function guardarObservacionesSolicitud(id, datos, token) {
 
     return resultado;
 }
+
+// REGISTRAR UNA ENTREVISTA O DECISIÓN
+export async function registrarSeguimiento(id, datos, token) {
+
+    const respuesta = await fetch(
+        "http://127.0.0.1:8000/api/solicitudes/revision/" +
+        id + "/seguimientos",
+        {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(datos)
+        }
+    );
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            resultado.message || "No se pudo registrar la actuación."
+        );
+    }
+
+    return resultado;
+}

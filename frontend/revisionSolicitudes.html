@@ -185,6 +185,50 @@
 
             </form>
 
+            <!-- ENTREVISTAS Y DECISIONES -->
+            <section class="seguimiento-solicitud">
+
+                <h3>Registrar actuación</h3>
+
+                <form id="formularioSeguimiento">
+
+                    <label for="tipoSeguimiento">
+                        Tipo de actuación
+                    </label>
+
+                    <select id="tipoSeguimiento" required>
+                        <option value="">Selecciona una actuación</option>
+                        <option value="entrevista">Registrar entrevista</option>
+                        <option value="aprobacion">Aprobar solicitud</option>
+                        <option value="rechazo">Rechazar solicitud</option>
+                    </select>
+
+                    <label for="observacionesSeguimiento">
+                        Observaciones de la actuación
+                    </label>
+
+                    <textarea
+                        id="observacionesSeguimiento"
+                        rows="4"
+                        minlength="5"
+                        maxlength="2000"
+                        required
+                    ></textarea>
+
+                    <p id="mensajeSeguimiento" role="status"></p>
+
+                    <button type="submit" id="guardarSeguimiento">
+                        Guardar actuación
+                    </button>
+
+                </form>
+
+                <h3>Historial de actuaciones</h3>
+
+                <div id="historialSeguimientos"></div>
+
+            </section>
+
         </div>
 
     </dialog>
